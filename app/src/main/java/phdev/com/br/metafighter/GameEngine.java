@@ -11,6 +11,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import phdev.com.br.metafighter.models.Component;
+import phdev.com.br.metafighter.screens.MainScreen;
 
 /**
  * @author Paulo Henrique Gonçalves Bacelar
@@ -40,6 +41,8 @@ class GameEngine extends SurfaceView implements SurfaceHolder.Callback{
         Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": Surface criada.");
         Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": Tela principal criada.");
         this.thread.setRunning(true);
+
+        this.screen = new MainScreen();
 
         Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": Iniciando a thread.");
         this.thread.start();
@@ -97,8 +100,9 @@ class GameEngine extends SurfaceView implements SurfaceHolder.Callback{
     }
 
     private void drawDebug(Canvas canvas){
-        if (this.thread != null)
-            canvas.drawText(this.thread.getAverageFPS() + "", 40, 40, debugPaint);
+        if (this.thread != null) {
+            //canvas.drawText(this.thread.getAverageFPS() + "", 40, 40, debugPaint);
+        }
     }
 
     public void update(){

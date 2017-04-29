@@ -2,6 +2,8 @@ package phdev.com.br.metafighter.models;
 
 import android.graphics.RectF;
 
+import phdev.com.br.metafighter.listeners.ActionListener;
+import phdev.com.br.metafighter.listeners.Event;
 import phdev.com.br.metafighter.listeners.EventListener;
 
 /**
@@ -10,7 +12,7 @@ import phdev.com.br.metafighter.listeners.EventListener;
  */
 public abstract class Entity implements Component {
 
-    private EventListener listener;
+    private ActionListener listener;
     private RectF area;
     private boolean active;
 
@@ -19,12 +21,17 @@ public abstract class Entity implements Component {
         this.active = true;
     }
 
-    public EventListener getListener() {
+    public ActionListener getListener() {
         return listener;
     }
 
-    public void setListener(EventListener listener) {
+    public void setListener(ActionListener listener) {
         this.listener = listener;
+    }
+
+    public void processActionEvent(Event evt){
+        ActionListener al = listener;
+        al.actionPerformed(evt);
     }
 
     public RectF getArea() {

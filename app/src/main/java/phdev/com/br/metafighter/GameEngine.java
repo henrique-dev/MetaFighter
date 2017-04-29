@@ -3,6 +3,8 @@ package phdev.com.br.metafighter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -16,19 +18,112 @@ import phdev.com.br.metafighter.models.Component;
  */
 class GameEngine extends SurfaceView implements SurfaceHolder.Callback{
 
-    public class MainThread extends Thread{
+    private MainThread thread;
+    private Component screen;
+    private Paint debugPaint;
 
-        // Taxa máxima de quadros por segundo a ser trabalhada.
+    public GameEngine(Context context) {
+        super(context);
+
+        getHolder().addCallback(this);
+
+        this.debugPaint = new Paint();
+        this.debugPaint.setColor(Color.YELLOW);
+        this.debugPaint.setTextSize(50);
+        this.thread = new MainThread(getHolder(), this);
+
+        setFocusable(true);
+    }
+
+    @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+        Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": Surface criada.");
+        Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": Tela principal criada.");
+        this.thread.setRunning(true);
+
+        Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": Iniciando a thread.");
+        this.thread.start();
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+        Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": Surface alterada.");
+
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {
+        Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": Surface destruida.");
+
+        boolean retry = true;
+        while(retry){
+            try{
+                retry = false;
+                this.thread.setRunning(false);
+                this.thread.join();
+
+            }
+            catch (InterruptedException e){
+                Log.e("GameEngine", e.getMessage());
+                Log.e("GameEngine", e.getCause().toString());
+                //e.printStackTrace();
+            }
+            finally {
+                if(!this.thread.running){
+                    Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": Zerando a lista de telas.");
+                    this.screen = null;
+                }
+            }
+
+        }
+    }
+
+    @SuppressLint("MissingSuperCall")
+    @Override
+    public void draw(Canvas canvas){
+
+        if (canvas != null){
+            final int savedState = canvas.save();
+
+            canvas.drawColor(Color.BLACK);
+
+            if (this.screen != null)
+                this.screen.draw(canvas);
+
+            this.drawDebug(canvas);
+
+            canvas.restoreToCount(savedState);
+        }
+    }
+
+    private void drawDebug(Canvas canvas){
+        if (this.thread != null)
+            canvas.drawText(this.thread.getAverageFPS() + "", 40, 40, debugPaint);
+    }
+
+    public void update(){
+
+        if (this.screen != null)
+            this.screen.update();
+
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event){
+
+        if (this.screen != null)
+            this.screen.onTouchEvent(event);
+
+        return true;
+    }
+
+    private class MainThread extends Thread{
+
         private int FPS = 60;
-        // Utilizada para armzazenar a taxa atual de quadros por segundo do jogo.
-        private double averageFPS;
-        // Utilizada para trabalhar com o Canvas e SurfaceView.
+        private int averageFPS;
         private final SurfaceHolder surfaceHolder;
-        // Utilizada para chamar os metodos update() e draw()
         private GameEngine gameEngine;
-        // Para definir se o loop está ou não ativo.
         private boolean running;
-        // Define o canvas para desenho.
         private Canvas canvas;
 
         // Metodo construtor que recebe e inicializa a surfaceHolder e a gameEngine.
@@ -92,115 +187,20 @@ class GameEngine extends SurfaceView implements SurfaceHolder.Callback{
                 totalTime += System.nanoTime() - startTime;
                 frameCount++;
                 if(frameCount  == FPS){
-                    averageFPS = 1000/((totalTime/frameCount)/1000000);
+                    averageFPS = (int)(1000/((totalTime/frameCount)/1000000));
                     frameCount = 0;
                     totalTime = 0;
-                    //System.out.println(averageFPS);
                 }
             }
-            //**********************************************************************
-
-
         }
 
-        // Metodo responsavel pela execução do loop do motor do jogo.
-        void setRunning(boolean running) {
+        protected void setRunning(boolean running) {
             this.running = running;
         }
-    }
 
-    private MainThread thread;
-
-    private Component screen;
-
-    public GameEngine(Context context) {
-        super(context);
-
-        getHolder().addCallback(this);
-
-        thread = new MainThread(getHolder(), this);
-
-        setFocusable(true);
-    }
-
-    @Override
-    public void surfaceCreated(SurfaceHolder holder) {
-        Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": Surface criada.");
-
-
-        Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": Tela principal criada.");
-
-        thread.setRunning(true);
-
-        Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": Iniciando a thread.");
-
-        thread.start();
-    }
-
-    @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": Surface alterada.");
-
-    }
-
-    @Override
-    public void surfaceDestroyed(SurfaceHolder holder) {
-        Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": Surface destruida.");
-
-        boolean retry = true;
-        while(retry){
-            try{
-                retry = false;
-                thread.setRunning(false);
-                thread.join();
-
-            }
-            catch (InterruptedException e){
-                Log.e("GameEngine", e.getMessage());
-                Log.e("GameEngine", e.getCause().toString());
-                //e.printStackTrace();
-            }
-            finally {
-                // Para e esvazia toda a lista de telas.
-                if(!this.thread.running){
-                    Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": Zerando a lista de telas.");
-                    //screens = null;
-                    //this.screenManager = null;
-                }
-            }
-
+        protected int getAverageFPS(){
+            return this.averageFPS;
         }
-    }
-
-    // Metodo responsavel por desenhar na tela.
-    @SuppressLint("MissingSuperCall")
-    @Override
-    public void draw(Canvas canvas){
-
-        if (canvas != null){
-            final int savedState = canvas.save();
-
-            if (this.screen != null)
-                this.screen.draw(canvas);
-
-            canvas.restoreToCount(savedState);
-        }
-    }
-
-    public void update(){
-
-        if (this.screen != null)
-            this.screen.update();
-
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event){
-
-        if (this.screen != null)
-            this.screen.onTouchEvent(event);
-
-        return true;
     }
 
 

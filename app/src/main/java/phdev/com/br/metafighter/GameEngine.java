@@ -10,7 +10,7 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import phdev.com.br.metafighter.models.Component;
+import phdev.com.br.metafighter.cmp.Component;
 import phdev.com.br.metafighter.screens.MainScreen;
 
 /**

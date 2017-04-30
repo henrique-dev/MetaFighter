@@ -3,7 +3,7 @@ package phdev.com.br.metafighter;
 import java.util.ArrayList;
 import java.util.List;
 
-import phdev.com.br.metafighter.models.Component;
+import phdev.com.br.metafighter.cmp.Component;
 
 /**
  * @author Paulo Henrique Gonçalves Bacelar

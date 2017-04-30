@@ -7,11 +7,8 @@ import android.view.MotionEvent;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import phdev.com.br.metafighter.GameParameters;
-import phdev.com.br.metafighter.listeners.ActionListener;
-import phdev.com.br.metafighter.listeners.Event;
 
 /**
  * @author Paulo Henrique Gonçalves Bacelar
@@ -39,7 +36,7 @@ public abstract class Screen implements Component{
 
     private void init(){
 
-        
+
         new Thread(
                 new Runnable(){
                     @Override

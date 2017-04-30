@@ -15,6 +15,10 @@ public class Event {
         objs = new ArrayList<>();
     }
 
+    public Event(List<Object> objs){
+        this.objs = objs;
+    }
+
     public List<Object> getObjs() {
         return objs;
     }

@@ -3,6 +3,7 @@ package phdev.com.br.metafighter.cmp.window;
 import android.graphics.Canvas;
 import android.graphics.RectF;
 
+import phdev.com.br.metafighter.cmp.event.ClickListener;
 import phdev.com.br.metafighter.cmp.window.graphics.Texture;
 import phdev.com.br.metafighter.cmp.WindowEntity;
 
@@ -17,8 +18,8 @@ public class Label extends WindowEntity {
     public Label(RectF area, String text, Texture texture){
         super(area, null, texture);
         super.texture.scaleImage((int)super.getArea().width(), (int)super.getArea().height());
-        //this.text = new Text(text);
-        //this.text.setDrawableArea(super.getArea());
+        this.text = new Text(text);
+        this.text.setDrawableArea(super.getArea());
     }
 
     public Text getText() {

@@ -4,9 +4,17 @@ import android.graphics.Canvas;
 import android.graphics.RectF;
 import android.view.MotionEvent;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import phdev.com.br.metafighter.GameParameters;
 import phdev.com.br.metafighter.cmp.event.ActionListener;
+import phdev.com.br.metafighter.cmp.event.AnimationListener;
+import phdev.com.br.metafighter.cmp.event.ClickEvent;
+import phdev.com.br.metafighter.cmp.event.ClickListener;
 import phdev.com.br.metafighter.cmp.event.Event;
+import phdev.com.br.metafighter.cmp.event.EventListener;
+import phdev.com.br.metafighter.cmp.event.animation.GoAndBack;
 
 /**
  * @author Paulo Henrique Gonçalves Bacelar
@@ -14,27 +22,86 @@ import phdev.com.br.metafighter.cmp.event.Event;
  */
 public abstract class Entity implements Component {
 
-    private ActionListener listener;
+    private AnimationListener animationListener;
+    private List<EventListener> listeners;
     private RectF area;
     private boolean active;
+    private boolean clicked = false;
+    private float startx = -1;
+    private float starty = -1;
 
     public Entity(RectF area){
         this.area = area;
         this.active = true;
+        this.listeners = new ArrayList<>();
         logMessages(this, null);
     }
 
-    public ActionListener getListener() {
-        return listener;
+    public List<EventListener> getListener() {
+        return listeners;
     }
 
-    public void addActionListener(ActionListener listener) {
-        this.listener = listener;
+    public void addAnimationListener(AnimationListener listener){
+        this.animationListener = listener;
     }
 
-    public void processActionEvent(Event evt){
-        ActionListener al = listener;
-        al.actionPerformed(evt);
+    public void addListener(EventListener listener) {
+        this.listeners.add(listener);
+    }
+
+    public void removerListener(EventListener listener){
+        this.listeners.remove(listener);
+    }
+
+    public boolean processActionEvent(Event evt){
+
+        for (EventListener listener : listeners){
+            if (listener instanceof ActionListener) {
+                ((ActionListener) listener).actionPerformed(evt);
+            }
+            if (listener instanceof ClickListener){
+
+                ClickListener ls = (ClickListener)listener;
+                ClickEvent event = (ClickEvent)evt;
+
+                switch (event.action){
+                    // Quando a entidade é pressionada
+                    case ClickEvent.CLICKED:
+                        // Executa a ação correspondente
+                        ls.pressedPerformed(event);
+
+                        // Caso haja uma animação, à executa
+                        if (animationListener != null)
+                            // Executa a animação de ir e voltar
+                            ((GoAndBack)animationListener).go();
+                        // Define que a entidade foi pressionada
+                        this.clicked = true;
+                        break;
+                    // Quando a entidade é solta
+                    case ClickEvent.RELEASED:
+                        // Caso ela tenha sido pressionada
+                        if (clicked) {
+                            // Executa a ação correspondente
+                            ls.releasedPerformed(event);
+
+                            // Caso haja uma animação, à executa
+                            if (animationListener != null)
+                                // Executa a animação de ir e voltar
+                                ((GoAndBack)animationListener).back();
+
+                            // Caso a entidade tenha sido soltada para executar sua função
+                            if (event.execute)
+                                // Executa a ação correspodente
+                                ls.executePerformed(event);
+
+                            // Define que a entidade foi e não esta mais pressionada.
+                            return this.clicked = false;
+                        }
+                        break;
+                }
+            }
+        }
+        return true;
     }
 
     public RectF getArea() {
@@ -97,9 +164,13 @@ public abstract class Entity implements Component {
         float y = event.getY();
 
         if (checkCollision(new RectF(x,y,x,y), this.area)){
-            if (listener != null) {
-                this.processActionEvent(new Event());
+            if (listeners != null) {
+                return this.processActionEvent(new ClickEvent(action, x, y, true));
             }
+        }
+        else {
+            if (clicked)
+                this.processActionEvent(new ClickEvent(MotionEvent.ACTION_UP, x, y, false));
         }
 
         return true;

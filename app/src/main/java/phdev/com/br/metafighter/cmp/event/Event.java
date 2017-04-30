@@ -9,22 +9,4 @@ import java.util.List;
  */
 public class Event {
 
-    private List<Object> objs;
-
-    public Event(){
-        objs = new ArrayList<>();
-    }
-
-    public Event(List<Object> objs){
-        this.objs = objs;
-    }
-
-    public List<Object> getObjs() {
-        return objs;
-    }
-
-    public void setObjs(List<Object> objs) {
-        this.objs = objs;
-    }
-
 }

@@ -23,6 +23,30 @@ public abstract class WindowEntity extends Entity{
         this.drawableArea = new RectF();
     }
 
+    public Paint getPaint() {
+        return paint;
+    }
+
+    public void setPaint(Paint paint) {
+        this.paint = paint;
+    }
+
+    public Texture getTexture() {
+        return texture;
+    }
+
+    public void setTexture(Texture texture) {
+        this.texture = texture;
+    }
+
+    public RectF getDrawableArea() {
+        return drawableArea;
+    }
+
+    public void setDrawableArea(RectF drawableArea) {
+        this.drawableArea = drawableArea;
+    }
+
     @Override
     public void draw(Canvas canvas){
         super.draw(canvas);
@@ -30,5 +54,7 @@ public abstract class WindowEntity extends Entity{
         if (this.texture != null){
             canvas.drawBitmap(this.texture.getImage(), super.getX(), super.getY(), this.paint);
         }
+        else
+            canvas.drawRect(super.getArea(), this.paint);
     }
 }

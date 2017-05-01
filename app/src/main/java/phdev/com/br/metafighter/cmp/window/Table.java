@@ -11,6 +11,13 @@ import java.util.List;
 
 import phdev.com.br.metafighter.GameParameters;
 import phdev.com.br.metafighter.cmp.WindowEntity;
+import phdev.com.br.metafighter.cmp.event.ActionListener;
+import phdev.com.br.metafighter.cmp.event.AnimationListener;
+import phdev.com.br.metafighter.cmp.event.ClickEvent;
+import phdev.com.br.metafighter.cmp.event.ClickListener;
+import phdev.com.br.metafighter.cmp.event.Event;
+import phdev.com.br.metafighter.cmp.event.EventListener;
+import phdev.com.br.metafighter.cmp.event.animation.GoAndBack;
 import phdev.com.br.metafighter.cmp.window.graphics.Texture;
 
 /**
@@ -27,7 +34,7 @@ public class Table extends WindowEntity{
     private Texture textureHead;
     private Texture textureBody;
     private Texture textureShow;
-    private Texture textureItem;
+    protected Texture textureItem;
     private List<TableItem> items;
 
     public Table(RectF area, Paint paint, Texture textureBody, Texture textureHead, Texture textureShow, Texture textureItem, String tableName) {
@@ -67,12 +74,45 @@ public class Table extends WindowEntity{
     }
 
     public void addItem(String text){
-        this.items.add(
-                new TableItem( new RectF(this.areaItem.left,
+        final TableItem item = new TableItem(text);
+
+        item.setTexture(this.textureItem);
+        item.setArea( new RectF(this.areaItem.left,
+                this.areaShow.top + (this.areaItem.height() * this.items.size()),
+                this.areaItem.right,
+                this.areaShow.top + (this.areaItem.height() * (this.items.size()+1))));
+
+        item.addEventListener(new ClickListener() {
+            @Override
+            public boolean pressedPerformed(ClickEvent event) {
+                Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": Clicou.");
+                return true;
+            }
+
+            @Override
+            public boolean releasedPerformed(ClickEvent event) {
+                Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": Soltou.");
+                return true;
+            }
+
+            @Override
+            public boolean executePerformed(ClickEvent event) {
+                Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": executou o " + item.getText());
+                return true;
+            }
+        });
+        item.addAnimationListener(new GoAndBack(item));
+        this.items.add(item);
+    }
+
+    public void addItem(TableItem item){
+        //TableItem tableItem = new TableItem(item.getText());
+        item.setArea( new RectF(this.areaItem.left,
                         this.areaShow.top + (this.areaItem.height() * this.items.size()),
                         this.areaItem.right,
-                        this.areaShow.top + (this.areaItem.height() * (this.items.size()+1))),
-                this.textureItem, text) );
+                        this.areaShow.top + (this.areaItem.height() * (this.items.size()+1))));
+        item.setTexture(this.textureItem);
+        this.items.add(item);
     }
 
     public void removerItem(TableItem item){
@@ -93,8 +133,6 @@ public class Table extends WindowEntity{
         }
 
         canvas.restore();
-
-
     }
 
     private float startY = -1;
@@ -106,10 +144,10 @@ public class Table extends WindowEntity{
         float y = event.getY();
 
         if (checkCollision(new RectF(x,y,x,y), this.areaShow)){
-            if (items != null)
-                if (items.size() > 3){
+            if (items != null){
+                if (items.size() > 3) {
 
-                    switch (action){
+                    switch (action) {
                         case MotionEvent.ACTION_DOWN:
                             this.startY = y;
                             break;
@@ -117,46 +155,22 @@ public class Table extends WindowEntity{
                             this.startY = -1;
                             break;
                         case MotionEvent.ACTION_MOVE:
-                            if (!(items.get(0).getArea().top + (y-startY) > this.areaShow.top)
-                                    && !(items.get(items.size()-1).getArea().bottom + (y-startY) < this.areaShow.bottom))
-                                for (TableItem item : items){
+                            if (!(items.get(0).getArea().top + (y - startY) > this.areaShow.top)
+                                    && !(items.get(items.size() - 1).getArea().bottom + (y - startY) < this.areaShow.bottom))
+                                for (TableItem item : items) {
                                     item.move(0, y - startY);
                                 }
-                            Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": " + items.get(0).getArea().top + " - " + this.areaShow.top + " - " + (y - startY));
                             this.startY = y;
                             break;
                     }
-
                 }
+                for (TableItem item : items){
+                    item.onTouchEvent(event);
+                }
+            }
         }
 
         return true;
     }
 
-    public class TableItem extends WindowEntity{
-
-        private Text text;
-
-        public TableItem(RectF area, Texture texture, String text){
-            super(area, new Paint(), texture);
-            this.text = new Text(text);
-            this.text.setDrawableArea(area);
-            this.text.setAutosize(true);
-        }
-
-        @Override
-        public void move(float x, float y){
-            super.move(x, y);
-            if(text != null){
-                this.text.move(x, y);
-            }
-        }
-
-        @Override
-        public void draw(Canvas canvas){
-            super.draw(canvas);
-            this.text.draw(canvas);
-        }
-
-    }
 }

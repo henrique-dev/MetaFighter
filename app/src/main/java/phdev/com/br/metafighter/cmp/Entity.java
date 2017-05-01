@@ -22,8 +22,8 @@ import phdev.com.br.metafighter.cmp.event.animation.GoAndBack;
  */
 public abstract class Entity implements Component {
 
-    private AnimationListener animationListener;
-    private List<EventListener> listeners;
+    protected AnimationListener animationListener;
+    protected List<EventListener> listeners;
     protected RectF area;
     private boolean active;
     private boolean clicked = false;
@@ -44,7 +44,7 @@ public abstract class Entity implements Component {
         this.animationListener = listener;
     }
 
-    protected void removerAnimationListener(){
+    protected void removeAnimationListener(){
         this.animationListener = null;
     }
 
@@ -60,22 +60,22 @@ public abstract class Entity implements Component {
         this.listeners.remove(listener);
     }
 
-    protected boolean processListeners(Event evt){
+    protected boolean processListeners(Event event){
 
         for (EventListener listener : listeners){
             if (listener instanceof ActionListener) {
-                ((ActionListener) listener).actionPerformed(evt);
+                ((ActionListener) listener).actionPerformed(event);
             }
             if (listener instanceof ClickListener){
 
                 ClickListener ls = (ClickListener)listener;
-                ClickEvent event = (ClickEvent)evt;
+                ClickEvent clickEvent = (ClickEvent)event;
 
-                switch (event.action){
+                switch (clickEvent.action){
                     // Quando a entidade é pressionada
                     case ClickEvent.CLICKED:
                         // Executa a ação correspondente
-                        ls.pressedPerformed(event);
+                        ls.pressedPerformed(clickEvent);
 
                         // Caso haja uma animação, à executa
                         if (animationListener != null)
@@ -89,7 +89,7 @@ public abstract class Entity implements Component {
                         // Caso ela tenha sido pressionada
                         if (clicked) {
                             // Executa a ação correspondente
-                            ls.releasedPerformed(event);
+                            ls.releasedPerformed(clickEvent);
 
                             // Caso haja uma animação, à executa
                             if (animationListener != null)
@@ -97,9 +97,9 @@ public abstract class Entity implements Component {
                                 ((GoAndBack)animationListener).back();
 
                             // Caso a entidade tenha sido soltada para executar sua função
-                            if (event.execute)
+                            if (clickEvent.execute)
                                 // Executa a ação correspodente
-                                ls.executePerformed(event);
+                                ls.executePerformed(clickEvent);
 
                             // Define que a entidade foi e não esta mais pressionada.
                             return this.clicked = false;

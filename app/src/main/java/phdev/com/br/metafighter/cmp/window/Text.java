@@ -240,6 +240,8 @@ public class Text extends WindowEntity {
     }
 
 
+
+
     @Override
     public void draw(Canvas canvas) {
         //canvas.clipRect(super.drawableArea);

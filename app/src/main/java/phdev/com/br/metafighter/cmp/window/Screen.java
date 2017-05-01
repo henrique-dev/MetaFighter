@@ -45,13 +45,17 @@ public abstract class Screen implements Component {
                         try{
                             if (loadTextures()) {
                                 Thread.sleep(500);
-                                progressHud.setProgress(35);
+                                progressHud.setProgress(25);
                                 if (loadFonts()) {
                                     Thread.sleep(500);
-                                    progressHud.setProgress(70);
+                                    progressHud.setProgress(50);
                                     if (loadSounds()) {
                                         Thread.sleep(500);
-                                        progressHud.setProgress(100);
+                                        progressHud.setProgress(75);
+                                        if (loadComponents()){
+                                            Thread.sleep(500);
+                                            progressHud.setProgress(100);
+                                        }
                                     }
                                 }
                             }
@@ -84,6 +88,8 @@ public abstract class Screen implements Component {
     protected abstract boolean loadFonts();
 
     protected abstract boolean loadSounds();
+
+    protected abstract boolean loadComponents();
 
     protected void add(Component cmp){
         this.entities.add(cmp);

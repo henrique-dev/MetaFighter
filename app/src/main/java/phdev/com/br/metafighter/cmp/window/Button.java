@@ -3,7 +3,6 @@ package phdev.com.br.metafighter.cmp.window;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
-import android.view.MotionEvent;
 
 import phdev.com.br.metafighter.cmp.WindowEntity;
 import phdev.com.br.metafighter.cmp.event.AnimationListener;
@@ -23,6 +22,7 @@ public class Button extends WindowEntity {
         super.texture.scaleImage((int)super.getArea().width(), (int)super.getArea().height());
         this.text = new Text(text);
         this.text.setDrawableArea(super.getArea());
+        this.text.adaptText();
     }
 
     public Text getText() {
@@ -49,8 +49,8 @@ public class Button extends WindowEntity {
     }
 
     @Override
-    public void removerAnimationListener(){
-        super.removerAnimationListener();
+    public void removeAnimationListener(){
+        super.removeAnimationListener();
     }
 
     @Override

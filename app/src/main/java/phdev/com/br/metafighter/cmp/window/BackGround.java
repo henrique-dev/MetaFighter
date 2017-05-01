@@ -23,9 +23,4 @@ public class BackGround extends WindowEntity {
         super.texture.scaleImage((int)rect.width(), (int)rect.height());
     }
 
-    @Override
-    public void draw(Canvas canvas){
-        canvas.drawBitmap(super.texture.getImage(), 0, 0, super.paint);
-    }
-
 }

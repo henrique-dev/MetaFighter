@@ -1,6 +1,7 @@
 package phdev.com.br.metafighter;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.RectF;
@@ -17,6 +18,7 @@ public class GameActivity extends Activity{
 
     private final int LANDSCAPE = 0;
     private final int PORTRAIT = 1;
+    private GameEngine gameEngine;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -24,7 +26,11 @@ public class GameActivity extends Activity{
 
         this.setupParameters();
 
-        super.setContentView(new GameEngine(this));
+        gameEngine = new GameEngine(this);
+
+        super.setContentView(gameEngine);
+
+        BluetoothManager.getInstance().gameEngine = gameEngine;
 
     }
 

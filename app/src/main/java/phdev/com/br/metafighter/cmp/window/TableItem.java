@@ -35,7 +35,7 @@ public class TableItem extends WindowEntity {
     public void setArea(RectF area){
         super.setArea(area);
         this.text.setDrawableArea(area);
-        this.text.setAutosize(true);
+        //this.text.setAutosize(true);
     }
 
     @Override
@@ -153,12 +153,12 @@ public class TableItem extends WindowEntity {
 
         if (checkCollision(new RectF(x,y,x,y), this.area)){
             if (super.listeners != null) {
-                return this.processListeners(new ClickEvent(action, x, y, true));
+                return this.processListeners(new ClickEvent(action, x, y, true, super.id));
             }
         }
         else {
             if (clicked)
-                this.processListeners(new ClickEvent(MotionEvent.ACTION_UP, x, y, false));
+                this.processListeners(new ClickEvent(MotionEvent.ACTION_UP, x, y, false, super.id));
         }
 
         return true;

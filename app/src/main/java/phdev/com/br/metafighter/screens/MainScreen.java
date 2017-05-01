@@ -6,6 +6,7 @@ import android.graphics.RectF;
 import android.util.Log;
 
 import phdev.com.br.metafighter.GameParameters;
+import phdev.com.br.metafighter.cmp.Entity;
 import phdev.com.br.metafighter.cmp.event.ClickEvent;
 import phdev.com.br.metafighter.cmp.event.ClickListener;
 import phdev.com.br.metafighter.cmp.window.BackGround;
@@ -14,6 +15,7 @@ import phdev.com.br.metafighter.cmp.window.Label;
 import phdev.com.br.metafighter.cmp.window.Screen;
 import phdev.com.br.metafighter.cmp.window.Table;
 import phdev.com.br.metafighter.cmp.window.TableItem;
+import phdev.com.br.metafighter.cmp.window.Text;
 import phdev.com.br.metafighter.cmp.window.graphics.Texture;
 import phdev.com.br.metafighter.cmp.event.animation.GoAndBack;
 
@@ -22,7 +24,6 @@ import phdev.com.br.metafighter.cmp.event.animation.GoAndBack;
  * @version 1.0
  */
 public class MainScreen extends Screen {
-
 
     private Texture buttonTexture;
     private Texture mainBackgroundTexture;
@@ -40,7 +41,6 @@ public class MainScreen extends Screen {
     @Override
     protected boolean loadTextures() {
 
-        this.mainBackgroundTexture = new Texture("images/backgrounds/background1.png");
         this.buttonTexture = new Texture("images/buttons/button1.png");
 
         return true;
@@ -67,19 +67,31 @@ public class MainScreen extends Screen {
 
         RectF buttonSize = new RectF(0, 0, screenSize.width()/4, screenSize.height()/4);
 
+        float fontSize = Text.adaptText(new String[]{"Multijogador"}, buttonSize);
+
+        ButtonHandler buttonHandler = new ButtonHandler();
+
         this.singleplayerButton = new Button(
                 new RectF( screenSize.centerX() - marginX - buttonSize.width(),
                         screenSize.centerY() - marginY - buttonSize.height(),
                         screenSize.centerX() - marginX,
                         screenSize.centerY() - marginY),
                 "Um jogador", this.buttonTexture);
+        this.singleplayerButton.getText().setTextSize(fontSize);
+        this.singleplayerButton.addEventListener(buttonHandler);
+        this.singleplayerButton.addAnimationListener(new GoAndBack(this.singleplayerButton));
+        this.singleplayerButton.setId(0);
 
         this.multiplayerButton = new Button(
                 new RectF( screenSize.centerX() + marginX,
                         screenSize.centerY() - marginY - buttonSize.height(),
                         screenSize.centerX() + marginX + buttonSize.width(),
                         screenSize.centerY() - marginY),
-                "VS", this.buttonTexture);
+                "Multijogador", this.buttonTexture);
+        this.multiplayerButton.getText().setTextSize(fontSize);
+        this.multiplayerButton.addEventListener(buttonHandler);
+        this.multiplayerButton.addAnimationListener(new GoAndBack(this.multiplayerButton));
+        this.multiplayerButton.setId(1);
 
         this.optionsButton = new Button(
                 new RectF( screenSize.centerX() - (buttonSize.width()/2),
@@ -87,6 +99,10 @@ public class MainScreen extends Screen {
                         screenSize.centerX() + (buttonSize.width()/2),
                         screenSize.centerY() + marginY + buttonSize.height()),
                 "Opções", this.buttonTexture);
+        this.optionsButton.getText().setTextSize(fontSize);
+        this.optionsButton.addEventListener(buttonHandler);
+        this.optionsButton.addAnimationListener(new GoAndBack(this.optionsButton));
+        this.optionsButton.setId(2);
 
         add(mainBackGround);
         add(singleplayerButton);
@@ -94,5 +110,34 @@ public class MainScreen extends Screen {
         add(optionsButton);
 
         return true;
+    }
+
+    public class ButtonHandler implements ClickListener{
+
+        @Override
+        public boolean pressedPerformed(ClickEvent event) {
+            return true;
+        }
+
+        @Override
+        public boolean releasedPerformed(ClickEvent event) {
+            return true;
+        }
+
+        @Override
+        public boolean executePerformed(ClickEvent event) {
+
+            switch (event.id){
+                case 0:
+                    break;
+                case 1:
+                    new MultiplayerSelectScreen();
+                    break;
+                case 2:
+                    break;
+            }
+
+            return true;
+        }
     }
 }

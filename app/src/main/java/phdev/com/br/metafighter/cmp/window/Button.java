@@ -22,7 +22,7 @@ public class Button extends WindowEntity {
         super.texture.scaleImage((int)super.getArea().width(), (int)super.getArea().height());
         this.text = new Text(text);
         this.text.setDrawableArea(super.getArea());
-        this.text.adaptText();
+        //this.text.adaptText();
     }
 
     public Text getText() {

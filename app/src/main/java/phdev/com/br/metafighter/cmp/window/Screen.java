@@ -8,6 +8,7 @@ import android.view.MotionEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import phdev.com.br.metafighter.GameEngine;
 import phdev.com.br.metafighter.GameParameters;
 import phdev.com.br.metafighter.cmp.Component;
 
@@ -33,6 +34,8 @@ public abstract class Screen implements Component {
             Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": ERROR: " + ex.getMessage());
         }
 
+        GameEngine.screen = this;
+
     }
 
     private void init(){
@@ -44,16 +47,16 @@ public abstract class Screen implements Component {
                     public void run() {
                         try{
                             if (loadTextures()) {
-                                Thread.sleep(500);
+                                //Thread.sleep(500);
                                 progressHud.setProgress(25);
                                 if (loadFonts()) {
-                                    Thread.sleep(500);
+                                    //Thread.sleep(500);
                                     progressHud.setProgress(50);
                                     if (loadSounds()) {
-                                        Thread.sleep(500);
+                                        //Thread.sleep(500);
                                         progressHud.setProgress(75);
                                         if (loadComponents()){
-                                            Thread.sleep(500);
+                                            //Thread.sleep(500);
                                             progressHud.setProgress(100);
                                         }
                                     }
@@ -120,5 +123,12 @@ public abstract class Screen implements Component {
         for (Component cmp : entities)
             cmp.onTouchEvent(evt);
         return true;
+    }
+
+    @Deprecated
+    protected static void logMessages(String msg){
+        if(!GameParameters.getInstance().debug)
+            return;
+        GameParameters.getInstance().log(msg);
     }
 }

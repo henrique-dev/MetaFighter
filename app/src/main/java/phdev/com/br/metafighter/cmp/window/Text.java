@@ -55,18 +55,13 @@ public class Text extends WindowEntity {
         prepareTextToDraw();
     }
 
-    public void setFont(String fontName){
-        loadFont(fontName);
-        prepareTextToDraw();
-        if(autosize)
-            this.adaptText();
-    }
-
     public void setTextSize(float size){
         this.textSize = size;
-        //this.prepareTextToDraw();
+        this.prepareTextToDraw();
+        /*
         if(autosize)
             this.adaptText();
+            */
     }
 
     public String getText(){
@@ -199,10 +194,10 @@ public class Text extends WindowEntity {
 
     public void setAutosize(boolean autosize){
         this.autosize = autosize;
-        this.adaptText();
+        //adaptText();
     }
 
-    public void adaptText(){
+    public static float adaptText(String textToDraw[], RectF drawableArea){
         int largerWord = 0;
         int indexLargerWord = 0;
         for(int i=0; i<textToDraw.length; i++){
@@ -213,13 +208,13 @@ public class Text extends WindowEntity {
         }
 
         Paint paint = new Paint();
-        paint.setTextSize( this.textSize );
+        paint.setTextSize( 150 );
 
         Rect rect = new Rect();
         paint.getTextBounds(textToDraw[indexLargerWord], 0, textToDraw[indexLargerWord].length(), rect);
 
-        if(rect.width() >= (super.drawableArea.width() - (super.drawableArea.width()/10)))
-            while(rect.width() >= (super.drawableArea.width() - (super.drawableArea.width()/10))){
+        if(rect.width() >= (drawableArea.width() - (drawableArea.width()/10)))
+            while(rect.width() >= (drawableArea.width() - (drawableArea.width()/10))){
                 paint.setTextSize( paint.getTextSize() - 2);
                 paint.getTextBounds(textToDraw[indexLargerWord], 0, textToDraw[indexLargerWord].length(), rect);
             }
@@ -227,16 +222,16 @@ public class Text extends WindowEntity {
 
         paint.getTextBounds(textToDraw[indexLargerWord], 0, textToDraw[indexLargerWord].length(), rect);
 
-        if(rect.height() * textToDraw.length >= (super.drawableArea.height() - super.drawableArea.width()/10))
-            while(rect.height() * textToDraw.length >= (super.drawableArea.height() - super.drawableArea.width()/10 )){
+        if(rect.height() * textToDraw.length >= (drawableArea.height() - drawableArea.width()/10))
+            while(rect.height() * textToDraw.length >= (drawableArea.height() - drawableArea.width()/10 )){
                 //this.setTextSize( this.textSize - 2);
                 paint.setTextSize( paint.getTextSize() - 2);
                 paint.getTextBounds(textToDraw[indexLargerWord], 0, textToDraw[indexLargerWord].length(), rect);
             }
 
-        this.textSize = paint.getTextSize();
-        this.prepareTextToDraw();
-
+        //this.textSize = paint.getTextSize();
+        //this.prepareTextToDraw();
+        return paint.getTextSize();
     }
 
 

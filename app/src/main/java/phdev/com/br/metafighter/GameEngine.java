@@ -1,7 +1,9 @@
 package phdev.com.br.metafighter;
 
 import android.annotation.SuppressLint;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -17,10 +19,11 @@ import phdev.com.br.metafighter.screens.MainScreen;
  * @author Paulo Henrique Gonçalves Bacelar
  * @version 1.0
  */
-class GameEngine extends SurfaceView implements SurfaceHolder.Callback{
+public class GameEngine extends SurfaceView implements SurfaceHolder.Callback{
 
+    private BluetoothManager bluetoothManager;
     private MainThread thread;
-    private Component screen;
+    public static Component screen;
     private Paint debugPaint;
 
     public GameEngine(Context context) {
@@ -36,13 +39,18 @@ class GameEngine extends SurfaceView implements SurfaceHolder.Callback{
         setFocusable(true);
     }
 
+    public void showIntent(Intent intent){
+        getContext().startActivity(intent);
+    }
+
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": Surface criada.");
         Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": Tela principal criada.");
         this.thread.setRunning(true);
 
-        this.screen = new MainScreen();
+        //screen = new MainScreen();
+        new MainScreen();
 
         Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": Iniciando a thread.");
         this.thread.start();
@@ -74,7 +82,7 @@ class GameEngine extends SurfaceView implements SurfaceHolder.Callback{
             finally {
                 if(!this.thread.running){
                     Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": Zerando a lista de telas.");
-                    this.screen = null;
+                    screen = null;
                 }
             }
 
@@ -90,8 +98,8 @@ class GameEngine extends SurfaceView implements SurfaceHolder.Callback{
 
             canvas.drawColor(Color.BLACK);
 
-            if (this.screen != null)
-                this.screen.draw(canvas);
+            if (screen != null)
+                screen.draw(canvas);
 
             this.drawDebug(canvas);
 
@@ -107,16 +115,16 @@ class GameEngine extends SurfaceView implements SurfaceHolder.Callback{
 
     public void update(){
 
-        if (this.screen != null)
-            this.screen.update();
+        if (screen != null)
+            screen.update();
 
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event){
 
-        if (this.screen != null)
-            this.screen.onTouchEvent(event);
+        if (screen != null)
+            screen.onTouchEvent(event);
 
         return true;
     }

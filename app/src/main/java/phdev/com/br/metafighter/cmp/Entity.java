@@ -22,6 +22,7 @@ import phdev.com.br.metafighter.cmp.event.animation.GoAndBack;
  */
 public abstract class Entity implements Component {
 
+    protected int id;
     protected AnimationListener animationListener;
     protected List<EventListener> listeners;
     protected RectF area;
@@ -119,6 +120,14 @@ public abstract class Entity implements Component {
         this.area = area;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public boolean isActive() {
         return active;
     }
@@ -172,12 +181,12 @@ public abstract class Entity implements Component {
 
         if (checkCollision(new RectF(x,y,x,y), this.area)){
             if (listeners != null) {
-                return this.processListeners(new ClickEvent(action, x, y, true));
+                return this.processListeners(new ClickEvent(action, x, y, true, this.id));
             }
         }
         else {
             if (clicked)
-                this.processListeners(new ClickEvent(MotionEvent.ACTION_UP, x, y, false));
+                this.processListeners(new ClickEvent(MotionEvent.ACTION_UP, x, y, false, this.id));
         }
 
         return true;

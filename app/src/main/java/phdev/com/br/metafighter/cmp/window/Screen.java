@@ -95,8 +95,10 @@ public abstract class Screen implements Component {
 
     @Override
     public void draw(Canvas canvas) {
-        for (Component cmp : entities)
+        for (Component cmp : entities) {
             cmp.draw(canvas);
+            canvas.clipRect(GameParameters.getInstance().screenSize);
+        }
 
     }
 

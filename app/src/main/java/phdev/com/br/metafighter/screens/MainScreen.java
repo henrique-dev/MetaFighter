@@ -1,15 +1,17 @@
 package phdev.com.br.metafighter.screens;
 
+import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.Log;
 
 import phdev.com.br.metafighter.GameParameters;
-import phdev.com.br.metafighter.cmp.event.AnimationListener;
 import phdev.com.br.metafighter.cmp.event.ClickEvent;
 import phdev.com.br.metafighter.cmp.event.ClickListener;
 import phdev.com.br.metafighter.cmp.window.BackGround;
+import phdev.com.br.metafighter.cmp.window.Button;
 import phdev.com.br.metafighter.cmp.window.Label;
 import phdev.com.br.metafighter.cmp.window.Screen;
+import phdev.com.br.metafighter.cmp.window.Table;
 import phdev.com.br.metafighter.cmp.window.graphics.Texture;
 import phdev.com.br.metafighter.cmp.event.animation.GoAndBack;
 
@@ -20,7 +22,9 @@ import phdev.com.br.metafighter.cmp.event.animation.GoAndBack;
 public class MainScreen extends Screen {
 
     private BackGround backGround;
-    private Label label;
+    private Button botao;
+    private Table tabela;
+
 
     public MainScreen(){
         super();
@@ -28,8 +32,8 @@ public class MainScreen extends Screen {
         Texture textureBackground = new Texture("images/backgrounds/background1.png");
         Texture textureLabel = new Texture("images/labels/label2.png");
         backGround = new BackGround(GameParameters.getInstance().screenSize, textureBackground);
-        label = new Label(new RectF(20,20,500,200), "Novo label", textureLabel);
-        label.addListener(new ClickListener() {
+        botao = new Button(new RectF(220,20,700,200), "Novo label", textureLabel);
+        botao.addEventListener(new ClickListener() {
             @Override
             public boolean pressedPerformed(ClickEvent event) {
                 Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": Clicou");
@@ -52,10 +56,24 @@ public class MainScreen extends Screen {
             }
         });
 
-        label.addAnimationListener(new GoAndBack(label));
+        tabela = new Table(new RectF(20,80, 500, 480), new Paint(),
+                new Texture("cmp/table/body.png"),
+                new Texture("cmp/table/head.png"),
+                new Texture("cmp/table/show.png"),
+                new Texture("cmp/table/item.png"),
+                "Tabela");
+        tabela.addItem("Item 1");
+        tabela.addItem("Item 2");
+        tabela.addItem("Item 3");
+        tabela.addItem("Item 4");
+
+        botao.addAnimationListener(new GoAndBack(botao));
 
         add(backGround);
-        add(label);
+        add(tabela);
+        //add(botao);
+
+
 
 
     }

@@ -4,6 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.RectF;
 
 import phdev.com.br.metafighter.cmp.event.ClickListener;
+import phdev.com.br.metafighter.cmp.event.EventListener;
 import phdev.com.br.metafighter.cmp.window.graphics.Texture;
 import phdev.com.br.metafighter.cmp.WindowEntity;
 
@@ -28,6 +29,16 @@ public class Label extends WindowEntity {
 
     public void setText(Text text) {
         this.text = text;
+    }
+
+    @Override
+    public void addEventListener(EventListener listener){
+        super.addEventListener(listener);
+    }
+
+    @Override
+    public void removeEventListener(EventListener listener){
+        super.removeEventListener(listener);
     }
 
     @Override

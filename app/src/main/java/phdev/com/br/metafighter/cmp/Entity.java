@@ -24,7 +24,7 @@ public abstract class Entity implements Component {
 
     private AnimationListener animationListener;
     private List<EventListener> listeners;
-    private RectF area;
+    protected RectF area;
     private boolean active;
     private boolean clicked = false;
     private float startx = -1;
@@ -33,7 +33,6 @@ public abstract class Entity implements Component {
     public Entity(RectF area){
         this.area = area;
         this.active = true;
-        this.listeners = new ArrayList<>();
         logMessages(this, null);
     }
 
@@ -41,19 +40,27 @@ public abstract class Entity implements Component {
         return listeners;
     }
 
-    public void addAnimationListener(AnimationListener listener){
+    protected void addAnimationListener(AnimationListener listener){
         this.animationListener = listener;
     }
 
-    public void addListener(EventListener listener) {
+    protected void removerAnimationListener(){
+        this.animationListener = null;
+    }
+
+    protected void addEventListener(EventListener listener) {
+        if (listeners == null)
+            listeners = new ArrayList<>();
         this.listeners.add(listener);
     }
 
-    public void removerListener(EventListener listener){
+    protected void removeEventListener(EventListener listener){
+        if (listeners == null)
+            return;
         this.listeners.remove(listener);
     }
 
-    public boolean processActionEvent(Event evt){
+    protected boolean processListeners(Event evt){
 
         for (EventListener listener : listeners){
             if (listener instanceof ActionListener) {
@@ -165,12 +172,12 @@ public abstract class Entity implements Component {
 
         if (checkCollision(new RectF(x,y,x,y), this.area)){
             if (listeners != null) {
-                return this.processActionEvent(new ClickEvent(action, x, y, true));
+                return this.processListeners(new ClickEvent(action, x, y, true));
             }
         }
         else {
             if (clicked)
-                this.processActionEvent(new ClickEvent(MotionEvent.ACTION_UP, x, y, false));
+                this.processListeners(new ClickEvent(MotionEvent.ACTION_UP, x, y, false));
         }
 
         return true;

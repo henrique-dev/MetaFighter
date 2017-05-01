@@ -6,6 +6,8 @@ import android.graphics.RectF;
 import android.view.MotionEvent;
 
 import phdev.com.br.metafighter.cmp.WindowEntity;
+import phdev.com.br.metafighter.cmp.event.AnimationListener;
+import phdev.com.br.metafighter.cmp.event.EventListener;
 import phdev.com.br.metafighter.cmp.window.graphics.Texture;
 
 /**
@@ -14,22 +16,67 @@ import phdev.com.br.metafighter.cmp.window.graphics.Texture;
  */
 public class Button extends WindowEntity {
 
-    public Button(RectF area, Texture texture) {
+    private Text text;
+
+    public Button(RectF area, String text, Texture texture) {
         super(area, new Paint(), texture);
+        super.texture.scaleImage((int)super.getArea().width(), (int)super.getArea().height());
+        this.text = new Text(text);
+        this.text.setDrawableArea(super.getArea());
+    }
+
+    public Text getText() {
+        return text;
+    }
+
+    public void setText(Text text) {
+        this.text = text;
+    }
+
+    @Override
+    public void addEventListener(EventListener listener){
+        super.addEventListener(listener);
+    }
+
+    @Override
+    public void removeEventListener(EventListener listener){
+        super.removeEventListener(listener);
+    }
+
+    @Override
+    public void addAnimationListener(AnimationListener listener){
+        super.addAnimationListener(listener);
+    }
+
+    @Override
+    public void removerAnimationListener(){
+        super.removerAnimationListener();
+    }
+
+    @Override
+    public void setX(float x){
+        super.setX(x);
+        this.text.setDrawableArea(super.getArea());
+    }
+
+    @Override
+    public void setY(float y){
+        super.setY(y);
+        this.text.setDrawableArea(super.getArea());
+    }
+
+    @Override
+    public void move(float x, float y){
+        super.move(x, y);
+        if(text != null){
+            this.text.move(x, y);
+        }
     }
 
     @Override
     public void draw(Canvas canvas) {
-
-    }
-
-    @Override
-    public void update() {
-
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent evt) {
-        return false;
+        super.draw(canvas);
+        if(this.text != null)
+            this.text.draw(canvas);
     }
 }

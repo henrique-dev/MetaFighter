@@ -73,6 +73,46 @@ public class Table extends WindowEntity{
         this.items = new ArrayList<>();
     }
 
+    public RectF getAreaHead() {
+        return areaHead;
+    }
+
+    public void setAreaHead(RectF areaHead) {
+        this.areaHead = areaHead;
+    }
+
+    public RectF getAreaShow() {
+        return areaShow;
+    }
+
+    public void setAreaShow(RectF areaShow) {
+        this.areaShow = areaShow;
+    }
+
+    public RectF getAreaBody() {
+        return areaBody;
+    }
+
+    public void setAreaBody(RectF areaBody) {
+        this.areaBody = areaBody;
+    }
+
+    public RectF getAreaItem() {
+        return areaItem;
+    }
+
+    public void setAreaItem(RectF areaItem) {
+        this.areaItem = areaItem;
+    }
+
+    public Text getTextHead() {
+        return textHead;
+    }
+
+    public void setTextHead(Text textHead) {
+        this.textHead = textHead;
+    }
+
     public void addItem(String text){
         final TableItem item = new TableItem(text);
 

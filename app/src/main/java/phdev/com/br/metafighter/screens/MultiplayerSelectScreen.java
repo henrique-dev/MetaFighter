@@ -132,13 +132,15 @@ public class MultiplayerSelectScreen extends Screen {
                 case 0:
                     if (!bluetoothManager.isEnabled())
                         Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": O bluetooth deve estar ativado para proseeguir.");
+                    else
+                        new MultiplayerHostScreen();
                     break;
                 case 1:
                     if (!bluetoothManager.isEnabled()) {
                             Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": O bluetooth deve estar ativado para proseeguir.");
                     }
                     else {
-                        bluetoothManager.check();
+                        new MultiplayerJoinScreen();
                     }
 
                     break;

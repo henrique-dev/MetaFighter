@@ -1,8 +1,126 @@
 package phdev.com.br.metafighter.screens;
 
+import android.bluetooth.BluetoothDevice;
+import android.graphics.Paint;
+import android.graphics.RectF;
+
+import java.util.List;
+import java.util.Set;
+
+import phdev.com.br.metafighter.BluetoothManager;
+import phdev.com.br.metafighter.GameParameters;
+import phdev.com.br.metafighter.cmp.event.ClickEvent;
+import phdev.com.br.metafighter.cmp.event.ClickListener;
+import phdev.com.br.metafighter.cmp.window.BackGround;
+import phdev.com.br.metafighter.cmp.window.Screen;
+import phdev.com.br.metafighter.cmp.window.Table;
+import phdev.com.br.metafighter.cmp.window.TableItem;
+import phdev.com.br.metafighter.cmp.window.Text;
+import phdev.com.br.metafighter.cmp.window.graphics.Texture;
+
 /**
  * @author Paulo Henrique Gonçalves Bacelar
  * @version 1.0
  */
-public class MultiplayerJoinScreen {
+public class MultiplayerJoinScreen extends Screen {
+
+    private List<BluetoothDevice> pairedDevices;
+
+    private BackGround mainBackGround;
+
+    private Texture textureTableHead;
+    private Texture textureTableBody;
+    private Texture textureTableShow;
+    private Texture textureTableItem;
+
+    private Table table;
+
+    public MultiplayerJoinScreen(){
+
+        pairedDevices = BluetoothManager.getInstance().getBondedDevices();
+
+    }
+
+    @Override
+    protected boolean loadTextures() {
+
+        this.textureTableHead = new Texture("cmp/table/head.png");
+        this.textureTableBody = new Texture("cmp/table/body.png");
+        this.textureTableShow = new Texture("cmp/table/show.png");
+        this.textureTableItem = new Texture("cmp/table/item.png");
+
+        return true;
+    }
+
+    @Override
+    protected boolean loadFonts() {
+        return true;
+    }
+
+    @Override
+    protected boolean loadSounds() {
+        return true;
+    }
+
+    @Override
+    protected boolean loadComponents() {
+
+        RectF screenSize = GameParameters.getInstance().screenSize;
+        float tableWidth = screenSize.width()/2;
+        float tableHeight = (float)(screenSize.height() / 1.3);
+
+        RectF tableArea = new RectF(0,0,tableWidth, tableHeight);
+
+        table = new Table(
+                new RectF(screenSize.centerX() - tableWidth/2,
+                        screenSize.centerY() - tableHeight/2,
+                        screenSize.centerX() + tableWidth/2,
+                        screenSize.centerY() + tableHeight/2),
+                new Paint(),
+                this.textureTableBody,
+                this.textureTableHead,
+                this.textureTableShow,
+                this.textureTableItem,
+                "Dispositivos pareados"
+        );
+
+        float fontSize = Text.adaptText(new String[]{table.getTextHead().getText()}, table.getAreaHead());
+        table.getTextHead().setTextSize(fontSize);
+
+        int counter = 0;
+        if (pairedDevices.size() > 0){
+
+            for (BluetoothDevice device : pairedDevices){
+                TableItem item = new TableItem(device.getName());
+                item.getText().setTextSize(fontSize);
+                item.setId(counter);
+
+                item.addEventListener(new ClickListener() {
+                    @Override
+                    public boolean pressedPerformed(ClickEvent event) {
+                        return true;
+                    }
+
+                    @Override
+                    public boolean releasedPerformed(ClickEvent event) {
+                        return true;
+                    }
+
+                    @Override
+                    public boolean executePerformed(ClickEvent event) {
+                        BluetoothManager.getInstance().connect(pairedDevices.get(event.id));
+                        logMessages(pairedDevices.get(event.id).getName());
+                        return true;
+                    }
+                });
+
+                this.table.addItem(item);
+                counter++;
+            }
+        }
+
+        add(table);
+
+        return true;
+    }
 }

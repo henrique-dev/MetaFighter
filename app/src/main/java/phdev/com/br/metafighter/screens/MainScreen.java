@@ -5,6 +5,8 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.Log;
 
+import java.util.UUID;
+
 import phdev.com.br.metafighter.GameParameters;
 import phdev.com.br.metafighter.cmp.Entity;
 import phdev.com.br.metafighter.cmp.event.ClickEvent;

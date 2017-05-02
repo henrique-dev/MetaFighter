@@ -128,8 +128,8 @@ public class TableItem extends WindowEntity {
         return true;
     }
 
-    public String getText(){
-        return this.text.getText();
+    public Text getText(){
+        return this.text;
     }
 
     @Override

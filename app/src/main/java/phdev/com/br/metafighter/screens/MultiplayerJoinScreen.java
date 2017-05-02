@@ -1,6 +1,7 @@
 package phdev.com.br.metafighter.screens;
 
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
 import android.graphics.Paint;
 import android.graphics.RectF;
 
@@ -11,7 +12,9 @@ import phdev.com.br.metafighter.BluetoothManager;
 import phdev.com.br.metafighter.GameParameters;
 import phdev.com.br.metafighter.cmp.event.ClickEvent;
 import phdev.com.br.metafighter.cmp.event.ClickListener;
+import phdev.com.br.metafighter.cmp.event.EventListener;
 import phdev.com.br.metafighter.cmp.window.BackGround;
+import phdev.com.br.metafighter.cmp.window.Button;
 import phdev.com.br.metafighter.cmp.window.Screen;
 import phdev.com.br.metafighter.cmp.window.Table;
 import phdev.com.br.metafighter.cmp.window.TableItem;
@@ -24,6 +27,8 @@ import phdev.com.br.metafighter.cmp.window.graphics.Texture;
  */
 public class MultiplayerJoinScreen extends Screen {
 
+    private BluetoothManager manager;
+
     private List<BluetoothDevice> pairedDevices;
 
     private BackGround mainBackGround;
@@ -32,13 +37,17 @@ public class MultiplayerJoinScreen extends Screen {
     private Texture textureTableBody;
     private Texture textureTableShow;
     private Texture textureTableItem;
+    private Texture backButtonTexture;
+
+    private Button backButton;
+
 
     private Table table;
 
-    public MultiplayerJoinScreen(){
-
-        pairedDevices = BluetoothManager.getInstance().getBondedDevices();
-
+    public MultiplayerJoinScreen(EventListener listener, BluetoothManager manager) {
+        super(listener);
+        this.manager = manager;
+        pairedDevices = manager.getBondedDevices();
     }
 
     @Override
@@ -48,6 +57,7 @@ public class MultiplayerJoinScreen extends Screen {
         this.textureTableBody = new Texture("cmp/table/body.png");
         this.textureTableShow = new Texture("cmp/table/show.png");
         this.textureTableItem = new Texture("cmp/table/item.png");
+        this.backButtonTexture = new Texture("images/buttons/button1.png");
 
         return true;
     }
@@ -87,6 +97,32 @@ public class MultiplayerJoinScreen extends Screen {
         float fontSize = Text.adaptText(new String[]{table.getTextHead().getText()}, table.getAreaHead());
         table.getTextHead().setTextSize(fontSize);
 
+        RectF buttonSize = new RectF(0, 0, screenSize.width()/4, screenSize.height()/4);
+        this.backButton = new Button(
+                new RectF(screenSize.right - buttonSize.width(),
+                        screenSize.bottom - buttonSize.height(),
+                        screenSize.right, screenSize.bottom),
+                "Voltar", backButtonTexture);
+        this.backButton.addEventListener(new ClickListener() {
+            @Override
+            public boolean pressedPerformed(ClickEvent event) {
+                return true;
+            }
+
+            @Override
+            public boolean releasedPerformed(ClickEvent event) {
+                return true;
+            }
+
+            @Override
+            public boolean executePerformed(ClickEvent event) {
+                manager.stop();
+                new MultiplayerSelectScreen(listener);
+                return true;
+            }
+        });
+        this.backButton.getText().setTextSize(fontSize);
+
         int counter = 0;
         if (pairedDevices.size() > 0){
 
@@ -108,8 +144,7 @@ public class MultiplayerJoinScreen extends Screen {
 
                     @Override
                     public boolean executePerformed(ClickEvent event) {
-                        BluetoothManager.getInstance().connect(pairedDevices.get(event.id));
-                        logMessages(pairedDevices.get(event.id).getName());
+                        manager.connect(pairedDevices.get(event.id));
                         return true;
                     }
                 });
@@ -120,6 +155,7 @@ public class MultiplayerJoinScreen extends Screen {
         }
 
         add(table);
+        add(backButton);
 
         return true;
     }

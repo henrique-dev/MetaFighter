@@ -5,16 +5,19 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
+import android.os.Looper;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
+import phdev.com.br.metafighter.cmp.event.EventListener;
+import phdev.com.br.metafighter.cmp.event.IntentListener;
+import phdev.com.br.metafighter.cmp.event.MessageListener;
 import phdev.com.br.metafighter.screens.MatchScreen;
 
 /**
@@ -32,17 +35,16 @@ public class BluetoothManager {
     protected ConnectThread connectThread;
     protected ConnectedThread connectedThread;
 
-    protected GameEngine gameEngine;
     private BluetoothAdapter bluetoothAdapter;
 
-    private static final BluetoothManager instance = new BluetoothManager();
+    protected BluetoothManager manager;
 
-    private BluetoothManager(){
-        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-    }
+    protected EventListener listener;
 
-    public static BluetoothManager getInstance(){
-        return instance;
+    public BluetoothManager(EventListener listener){
+        this.listener = listener;
+        this.bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        manager = this;
     }
 
     public boolean isEnabled(){
@@ -59,7 +61,7 @@ public class BluetoothManager {
             if (!bluetoothAdapter.isEnabled()) {
 
                 Intent enableBluetooth = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                this.gameEngine.getContext().startActivity(enableBluetooth);
+                ((IntentListener)listener).sendIntentRequest(enableBluetooth);
 
             }
         }
@@ -74,22 +76,6 @@ public class BluetoothManager {
         }
 
         return lista;
-
-        //return bluetoothAdapter.getBondedDevices();
-        /*
-        List<String> lista = new ArrayList<>();
-
-        Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
-        // If there are paired devices
-        if (pairedDevices.size() > 0) {
-            // Loop through paired devices
-            for (BluetoothDevice device : pairedDevices) {
-                // Add the name and address to an array adapter to show in a ListView
-                lista.add(device.getName() + "\n" + device.getAddress());
-                Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": " + device.getName() + "\n" + device.getAddress());
-            }
-        }
-        */
     }
 
     public synchronized void start(){
@@ -107,6 +93,30 @@ public class BluetoothManager {
             acceptThread = new AcceptThread();
             acceptThread.start();
         }
+    }
+
+    public void stop(){
+        try{
+            if (connectedThread != null){
+                connectedThread.cancel();
+                connectedThread = null;
+            }
+
+            if(connectThread != null){
+                connectThread.cancel();
+                connectThread = null;
+            }
+
+            if (acceptThread != null){
+                acceptThread.cancel();
+                acceptThread = null;
+            }
+        }
+        catch (Exception e){
+            e.getLocalizedMessage();
+        }
+
+
     }
 
     public synchronized void connect(BluetoothDevice device){
@@ -154,7 +164,7 @@ public class BluetoothManager {
         private final BluetoothServerSocket serverSocket;
 
         public AcceptThread(){
-            Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": Thread criada.");
+            log("Thread para esperar conexão criada");
             BluetoothServerSocket tmp = null;
             try{
                 tmp = bluetoothAdapter.listenUsingInsecureRfcommWithServiceRecord(NAME, MY_UUID);
@@ -167,21 +177,22 @@ public class BluetoothManager {
 
         @Override
         public void run(){
+            Looper.prepare();
             BluetoothSocket socket = null;
 
             while (true){
 
                 try{
+                    log("Esperando uma conexão");
                     socket = this.serverSocket.accept();
-                    Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": Esperando.");
                 }
                 catch (Exception e){
+                    log("Não achou uma conexão. " + e.getMessage());
                     break;
                 }
 
                 if (socket != null){
-                    //manageConnectedSocket(socket);
-                    Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": Achou.");
+                    log("Achou uma conexão. Conectando..");
                     connected(socket);
                     try {
                         this.serverSocket.close();
@@ -191,12 +202,14 @@ public class BluetoothManager {
                     break;
                 }
             }
-            Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": Saiu.");
+            Looper.loop();
         }
 
         public void cancel(){
             try {
-                this.serverSocket.close();
+                if (serverSocket != null)
+                    this.serverSocket.close();
+                log("Encerrando thread");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -209,7 +222,9 @@ public class BluetoothManager {
         private final BluetoothDevice device;
 
         public ConnectThread(BluetoothDevice device){
-            Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": Thread criada111111111111.");
+
+            log("Thread para conectar criada");
+
             BluetoothSocket tmp = null;
             this.device = device;
 
@@ -227,25 +242,33 @@ public class BluetoothManager {
             bluetoothAdapter.cancelDiscovery();
 
             try{
+                log("Iniciando de conexão ao dispositivo de mac [" + device.getAddress() + "] e nome [" + device.getName() + "]");
                 this.socket.connect();
             }
             catch (IOException connectException){
                 try{
                     socket.close();
+                    /*
+                    Looper.prepare();
+                    sendMessage("Não conectou. " + connectException.getMessage());
+                    Looper.loop();
+                    */
+                    log("Não conectou. " + connectException.getMessage());
                 }
                 catch (IOException e){
-                    e.printStackTrace();
+                    //log("Não conectou. " + e.getMessage());
                 }
                 return;
             }
-
-            //manageConnectedSocket(socket);
+            log("Conectou!");
             connected(socket);
         }
 
         public void cancel(){
             try {
-                this.socket.close();
+                if (socket != null)
+                    this.socket.close();
+                log("Encerrando thread");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -259,9 +282,8 @@ public class BluetoothManager {
         private final OutputStream out;
 
         public ConnectedThread(BluetoothSocket socket){
-            Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": Thread criada.");
-
-            new MatchScreen();
+            log("Thread criada. Ira tentar iniciar a comunicação entre os dispositivos");
+            new MatchScreen(listener, manager);
 
             this.socket = socket;
             InputStream tmpIn = null;
@@ -271,11 +293,11 @@ public class BluetoothManager {
                 tmpIn = socket.getInputStream();
                 tmpOut = socket.getOutputStream();
             } catch (IOException e) {
-                e.printStackTrace();
+                log("Erro: " + e.getMessage());
             }
 
-            in = tmpIn;
-            out = tmpOut;
+            this.in = tmpIn;
+            this.out = tmpOut;
         }
 
         @Override
@@ -285,7 +307,7 @@ public class BluetoothManager {
 
             while (true){
                 try{
-                    bytes = in.read(buffer);
+                    bytes = this.in.read(buffer);
 
                     if (bytes != -1){
                         data = bytes;
@@ -302,7 +324,7 @@ public class BluetoothManager {
 
         public void write(byte[] bytes){
             try{
-                out.write(bytes);
+                this.out.write(bytes);
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -311,11 +333,24 @@ public class BluetoothManager {
 
         public void cancel(){
             try {
-                this.socket.close();
+                if (socket != null)
+                    this.socket.close();
+                log("Encerrando thread");
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    @Deprecated
+    private void log(String msg){
+        Log.v("GameEngine/Bluetooth", GameParameters.getInstance().logIndex++ + ": " + msg);
+    }
+
+    @Deprecated
+    private void sendMessage(String msg){
+        log(msg);
+        ((MessageListener)listener).sendToast(msg, Toast.LENGTH_LONG);
     }
 
 }

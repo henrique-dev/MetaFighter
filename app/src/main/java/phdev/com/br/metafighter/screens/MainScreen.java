@@ -1,5 +1,6 @@
 package phdev.com.br.metafighter.screens;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
@@ -11,6 +12,8 @@ import phdev.com.br.metafighter.GameParameters;
 import phdev.com.br.metafighter.cmp.Entity;
 import phdev.com.br.metafighter.cmp.event.ClickEvent;
 import phdev.com.br.metafighter.cmp.event.ClickListener;
+import phdev.com.br.metafighter.cmp.event.EventListener;
+import phdev.com.br.metafighter.cmp.event.MessageListener;
 import phdev.com.br.metafighter.cmp.window.BackGround;
 import phdev.com.br.metafighter.cmp.window.Button;
 import phdev.com.br.metafighter.cmp.window.Label;
@@ -35,9 +38,8 @@ public class MainScreen extends Screen {
     private Button multiplayerButton;
     private Button optionsButton;
 
-    public MainScreen(){
-        super();
-
+    public MainScreen(EventListener listener) {
+        super(listener);
     }
 
     @Override
@@ -133,7 +135,7 @@ public class MainScreen extends Screen {
                 case 0:
                     break;
                 case 1:
-                    new MultiplayerSelectScreen();
+                    new MultiplayerSelectScreen(listener);
                     break;
                 case 2:
                     break;

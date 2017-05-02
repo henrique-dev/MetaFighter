@@ -1,5 +1,6 @@
 package phdev.com.br.metafighter.cmp.window;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.RectF;
 import android.util.Log;
@@ -11,6 +12,8 @@ import java.util.List;
 import phdev.com.br.metafighter.GameEngine;
 import phdev.com.br.metafighter.GameParameters;
 import phdev.com.br.metafighter.cmp.Component;
+import phdev.com.br.metafighter.cmp.event.EventListener;
+import phdev.com.br.metafighter.cmp.event.MessageListener;
 
 /**
  * @author Paulo Henrique Gonçalves Bacelar
@@ -18,14 +21,19 @@ import phdev.com.br.metafighter.cmp.Component;
  */
 public abstract class Screen implements Component {
 
-    private List<Component> entities;
-    private ProgressHud progressHud;
+    protected List<Component> entities;
+    protected ProgressHud progressHud;
+    //protected Context context;
+    protected EventListener listener;
 
-    public Screen(){
-        entities = new ArrayList<>();
-        progressHud = new ProgressHud(new RectF());
+    public Screen(EventListener listener){
+        //this.context = context;
+        this.listener = listener;
+        this.entities = new ArrayList<>();
 
-        entities.add(progressHud);
+        this.progressHud = new ProgressHud(new RectF());
+
+        this.entities.add(progressHud);
 
         try{
             this.init();

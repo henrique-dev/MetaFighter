@@ -7,12 +7,20 @@ import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.Toast;
 
 import phdev.com.br.metafighter.cmp.Component;
+import phdev.com.br.metafighter.cmp.event.ActionListener;
+import phdev.com.br.metafighter.cmp.event.Event;
+import phdev.com.br.metafighter.cmp.event.IntentListener;
+import phdev.com.br.metafighter.cmp.event.MessageListener;
 import phdev.com.br.metafighter.screens.MainScreen;
 
 /**
@@ -50,7 +58,10 @@ public class GameEngine extends SurfaceView implements SurfaceHolder.Callback{
         this.thread.setRunning(true);
 
         //screen = new MainScreen();
-        new MainScreen();
+
+        HandlerIntentRequest handler = new HandlerIntentRequest();
+
+        new MainScreen(handler);
 
         Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": Iniciando a thread.");
         this.thread.start();
@@ -212,6 +223,20 @@ public class GameEngine extends SurfaceView implements SurfaceHolder.Callback{
 
         protected int getAverageFPS(){
             return this.averageFPS;
+        }
+    }
+
+    public class HandlerIntentRequest implements IntentListener, MessageListener{
+
+        @Override
+        public void sendIntentRequest(Intent intent) {
+            getContext().startActivity(intent);
+        }
+
+        @Override
+        public void sendToast(final String msg, final int duration) {
+            Toast toast = Toast.makeText(getContext(), msg, duration);
+            toast.show();
         }
     }
 

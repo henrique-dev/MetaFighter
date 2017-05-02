@@ -6,9 +6,12 @@ import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.RectF;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Display;
 import android.view.Window;
 import android.view.WindowManager;
+
+import phdev.com.br.metafighter.cmp.event.MessageListener;
 
 /**
  * @author Paulo Henrique Gonçalves Bacelar
@@ -30,7 +33,7 @@ public class GameActivity extends Activity{
 
         super.setContentView(gameEngine);
 
-        BluetoothManager.getInstance().gameEngine = gameEngine;
+        //BluetoothManager.getInstance().gameEngine = gameEngine;
 
     }
 
@@ -53,7 +56,6 @@ public class GameActivity extends Activity{
         GameParameters.getInstance().screenSize = new RectF(0, 0, size.x, size.y);
         GameParameters.getInstance().screenWidth = size.x;
         GameParameters.getInstance().screenHeight = size.y;
-
 
     }
 

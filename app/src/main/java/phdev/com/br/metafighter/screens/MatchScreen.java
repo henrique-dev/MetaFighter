@@ -1,5 +1,6 @@
 package phdev.com.br.metafighter.screens;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
@@ -9,6 +10,7 @@ import java.util.Random;
 
 import phdev.com.br.metafighter.BluetoothManager;
 import phdev.com.br.metafighter.GameParameters;
+import phdev.com.br.metafighter.cmp.event.EventListener;
 import phdev.com.br.metafighter.cmp.window.BackGround;
 import phdev.com.br.metafighter.cmp.window.Screen;
 import phdev.com.br.metafighter.cmp.window.graphics.Texture;
@@ -19,10 +21,12 @@ import phdev.com.br.metafighter.cmp.window.graphics.Texture;
  */
 public class MatchScreen extends Screen {
 
+    private BluetoothManager manager;
     private BackGround backGround;
 
-    public MatchScreen(){
-        super();
+    public MatchScreen(EventListener listener, BluetoothManager manager) {
+        super(listener);
+        this.manager = manager;
     }
 
     @Override
@@ -54,7 +58,7 @@ public class MatchScreen extends Screen {
 
     @Override
     public void update(){
-        if (BluetoothManager.getInstance().data != -1){
+        if (manager.data != -1){
             Random rand = new Random();
             backGround.getPaint().setColor(Color.rgb( rand.nextInt(254), rand.nextInt(254), rand.nextInt(254) ));
         }
@@ -71,7 +75,7 @@ public class MatchScreen extends Screen {
 
             String teste = "Teste";
 
-            BluetoothManager.getInstance().write(teste.getBytes());
+            manager.write(teste.getBytes());
 
         }
 

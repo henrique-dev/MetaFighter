@@ -1,6 +1,7 @@
 package phdev.com.br.metafighter.screens;
 
 import android.bluetooth.BluetoothAdapter;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.RectF;
@@ -10,6 +11,7 @@ import phdev.com.br.metafighter.BluetoothManager;
 import phdev.com.br.metafighter.GameParameters;
 import phdev.com.br.metafighter.cmp.event.ClickEvent;
 import phdev.com.br.metafighter.cmp.event.ClickListener;
+import phdev.com.br.metafighter.cmp.event.EventListener;
 import phdev.com.br.metafighter.cmp.event.animation.GoAndBack;
 import phdev.com.br.metafighter.cmp.window.BackGround;
 import phdev.com.br.metafighter.cmp.window.Button;
@@ -23,7 +25,7 @@ import phdev.com.br.metafighter.cmp.window.graphics.Texture;
  */
 public class MultiplayerSelectScreen extends Screen {
 
-    private BluetoothManager bluetoothManager;
+    private BluetoothManager manager;
 
     private Texture buttonTexture;
     private Texture mainBackgroundTexture;
@@ -33,12 +35,10 @@ public class MultiplayerSelectScreen extends Screen {
     private Button joinButton;
     private Button backButton;
 
-    public MultiplayerSelectScreen(){
-        super();
-
-        BluetoothManager.getInstance().activate();
-        bluetoothManager = BluetoothManager.getInstance();
-
+    public MultiplayerSelectScreen(EventListener listener) {
+        super(listener);
+        manager = new BluetoothManager(listener);
+        manager.activate();
     }
 
     @Override
@@ -130,22 +130,22 @@ public class MultiplayerSelectScreen extends Screen {
 
             switch (event.id){
                 case 0:
-                    if (!bluetoothManager.isEnabled())
+                    if (!manager.isEnabled())
                         Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": O bluetooth deve estar ativado para proseeguir.");
                     else
-                        new MultiplayerHostScreen();
+                        new MultiplayerHostScreen(listener, manager);
                     break;
                 case 1:
-                    if (!bluetoothManager.isEnabled()) {
+                    if (!manager.isEnabled()) {
                             Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": O bluetooth deve estar ativado para proseeguir.");
                     }
                     else {
-                        new MultiplayerJoinScreen();
+                        new MultiplayerJoinScreen(listener, manager);
                     }
 
                     break;
                 case 2:
-                    new MainScreen();
+                    new MainScreen(listener);
                     break;
             }
 

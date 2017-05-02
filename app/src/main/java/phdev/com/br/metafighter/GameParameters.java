@@ -1,5 +1,6 @@
 package phdev.com.br.metafighter;
 
+import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.RectF;
 import android.util.Log;

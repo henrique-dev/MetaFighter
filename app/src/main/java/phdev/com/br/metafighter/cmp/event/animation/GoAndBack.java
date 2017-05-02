@@ -3,8 +3,7 @@ package phdev.com.br.metafighter.cmp.event.animation;
 import android.graphics.RectF;
 
 import phdev.com.br.metafighter.cmp.Entity;
-import phdev.com.br.metafighter.cmp.event.AnimationListener;
-import phdev.com.br.metafighter.cmp.event.EventListener;
+import phdev.com.br.metafighter.cmp.event.listeners.AnimationListener;
 
 /**
  * @author Paulo Henrique Gonçalves Bacelar

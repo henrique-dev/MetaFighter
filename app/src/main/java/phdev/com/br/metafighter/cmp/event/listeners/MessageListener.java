@@ -1,6 +1,4 @@
-package phdev.com.br.metafighter.cmp.event;
-
-import android.content.Intent;
+package phdev.com.br.metafighter.cmp.event.listeners;
 
 /**
  * @author Paulo Henrique Gonçalves Bacelar
@@ -8,6 +6,6 @@ import android.content.Intent;
  */
 public interface MessageListener extends EventListener {
 
-    void sendToast(String msg, int duration);
+    void sendMessage(String msg, int duration);
 
 }

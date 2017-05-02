@@ -1,25 +1,19 @@
 package phdev.com.br.metafighter.screens;
 
-import android.content.Context;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.RectF;
-import android.util.Log;
-
-import java.util.UUID;
 
 import phdev.com.br.metafighter.GameParameters;
-import phdev.com.br.metafighter.cmp.Entity;
+import phdev.com.br.metafighter.cmp.WindowEntity;
 import phdev.com.br.metafighter.cmp.event.ClickEvent;
-import phdev.com.br.metafighter.cmp.event.ClickListener;
-import phdev.com.br.metafighter.cmp.event.EventListener;
-import phdev.com.br.metafighter.cmp.event.MessageListener;
+import phdev.com.br.metafighter.cmp.event.handlers.AutoDestryableHandler;
+import phdev.com.br.metafighter.cmp.event.listeners.ClickListener;
+import phdev.com.br.metafighter.cmp.event.listeners.EventListener;
+import phdev.com.br.metafighter.cmp.event.listeners.MessageListener;
 import phdev.com.br.metafighter.cmp.window.BackGround;
 import phdev.com.br.metafighter.cmp.window.Button;
-import phdev.com.br.metafighter.cmp.window.Label;
+import phdev.com.br.metafighter.cmp.window.Popup;
 import phdev.com.br.metafighter.cmp.window.Screen;
-import phdev.com.br.metafighter.cmp.window.Table;
-import phdev.com.br.metafighter.cmp.window.TableItem;
 import phdev.com.br.metafighter.cmp.window.Text;
 import phdev.com.br.metafighter.cmp.window.graphics.Texture;
 import phdev.com.br.metafighter.cmp.event.animation.GoAndBack;
@@ -133,6 +127,7 @@ public class MainScreen extends Screen {
 
             switch (event.id){
                 case 0:
+                    ((MessageListener)listener).sendMessage("Ainda não implementado", 5);
                     break;
                 case 1:
                     new MultiplayerSelectScreen(listener);

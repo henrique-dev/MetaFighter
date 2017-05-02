@@ -5,8 +5,8 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 
 import phdev.com.br.metafighter.cmp.WindowEntity;
-import phdev.com.br.metafighter.cmp.event.AnimationListener;
-import phdev.com.br.metafighter.cmp.event.EventListener;
+import phdev.com.br.metafighter.cmp.event.listeners.AnimationListener;
+import phdev.com.br.metafighter.cmp.event.listeners.EventListener;
 import phdev.com.br.metafighter.cmp.window.graphics.Texture;
 
 /**

@@ -3,8 +3,7 @@ package phdev.com.br.metafighter.cmp.window;
 import android.graphics.Canvas;
 import android.graphics.RectF;
 
-import phdev.com.br.metafighter.cmp.event.ClickListener;
-import phdev.com.br.metafighter.cmp.event.EventListener;
+import phdev.com.br.metafighter.cmp.event.listeners.EventListener;
 import phdev.com.br.metafighter.cmp.window.graphics.Texture;
 import phdev.com.br.metafighter.cmp.WindowEntity;
 

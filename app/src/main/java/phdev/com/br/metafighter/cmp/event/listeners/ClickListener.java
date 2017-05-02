@@ -1,4 +1,6 @@
-package phdev.com.br.metafighter.cmp.event;
+package phdev.com.br.metafighter.cmp.event.listeners;
+
+import phdev.com.br.metafighter.cmp.event.ClickEvent;
 
 /**
  * @author Paulo Henrique Gonçalves Bacelar

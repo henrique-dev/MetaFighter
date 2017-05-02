@@ -1,6 +1,5 @@
 package phdev.com.br.metafighter.cmp.window;
 
-import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.RectF;
 import android.util.Log;
@@ -12,8 +11,10 @@ import java.util.List;
 import phdev.com.br.metafighter.GameEngine;
 import phdev.com.br.metafighter.GameParameters;
 import phdev.com.br.metafighter.cmp.Component;
-import phdev.com.br.metafighter.cmp.event.EventListener;
-import phdev.com.br.metafighter.cmp.event.MessageListener;
+import phdev.com.br.metafighter.cmp.WindowEntity;
+import phdev.com.br.metafighter.cmp.event.listeners.AutoDestroyableListener;
+import phdev.com.br.metafighter.cmp.event.listeners.EventListener;
+import phdev.com.br.metafighter.cmp.event.listeners.MessageListener;
 
 /**
  * @author Paulo Henrique Gonçalves Bacelar
@@ -110,6 +111,14 @@ public abstract class Screen implements Component {
         this.entities.remove(cmp);
     }
 
+    public List<Component> getEntities() {
+        return entities;
+    }
+
+    public void setEntities(List<Component> entities) {
+        this.entities = entities;
+    }
+
     @Override
     public void draw(Canvas canvas) {
         for (Component cmp : entities) {
@@ -139,4 +148,14 @@ public abstract class Screen implements Component {
             return;
         GameParameters.getInstance().log(msg);
     }
+
+    /*
+    public class AutoDestroyHandler implements AutoDestroyableListener{
+
+        @Override
+        public void autoDestroy(WindowEntity entity) {
+            entities.remove(entity);
+        }
+    }
+    */
 }

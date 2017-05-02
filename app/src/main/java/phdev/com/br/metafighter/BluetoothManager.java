@@ -15,9 +15,9 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import phdev.com.br.metafighter.cmp.event.EventListener;
-import phdev.com.br.metafighter.cmp.event.IntentListener;
-import phdev.com.br.metafighter.cmp.event.MessageListener;
+import phdev.com.br.metafighter.cmp.event.listeners.EventListener;
+import phdev.com.br.metafighter.cmp.event.listeners.IntentListener;
+import phdev.com.br.metafighter.cmp.event.listeners.MessageListener;
 import phdev.com.br.metafighter.screens.MatchScreen;
 
 /**
@@ -188,6 +188,8 @@ public class BluetoothManager {
                 }
                 catch (Exception e){
                     log("Não achou uma conexão. " + e.getMessage());
+                    ((MessageListener)listener).sendMessage("Não achou uma conexão. \n" + e.getMessage(), 5
+                    );
                     break;
                 }
 
@@ -253,6 +255,7 @@ public class BluetoothManager {
                     sendMessage("Não conectou. " + connectException.getMessage());
                     Looper.loop();
                     */
+                    ((MessageListener)listener).sendMessage("Não conectou. \n" + connectException.getMessage(), 5);
                     log("Não conectou. " + connectException.getMessage());
                 }
                 catch (IOException e){
@@ -350,7 +353,7 @@ public class BluetoothManager {
     @Deprecated
     private void sendMessage(String msg){
         log(msg);
-        ((MessageListener)listener).sendToast(msg, Toast.LENGTH_LONG);
+        ((MessageListener)listener).sendMessage(msg, Toast.LENGTH_LONG);
     }
 
 }

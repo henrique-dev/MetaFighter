@@ -1,15 +1,11 @@
 package phdev.com.br.metafighter;
 
 import android.annotation.SuppressLint;
-import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -17,10 +13,13 @@ import android.view.SurfaceView;
 import android.widget.Toast;
 
 import phdev.com.br.metafighter.cmp.Component;
-import phdev.com.br.metafighter.cmp.event.ActionListener;
-import phdev.com.br.metafighter.cmp.event.Event;
-import phdev.com.br.metafighter.cmp.event.IntentListener;
-import phdev.com.br.metafighter.cmp.event.MessageListener;
+import phdev.com.br.metafighter.cmp.WindowEntity;
+import phdev.com.br.metafighter.cmp.event.handlers.AutoDestryableHandler;
+import phdev.com.br.metafighter.cmp.event.handlers.MessageHandler;
+import phdev.com.br.metafighter.cmp.event.listeners.IntentListener;
+import phdev.com.br.metafighter.cmp.event.listeners.MessageListener;
+import phdev.com.br.metafighter.cmp.window.Popup;
+import phdev.com.br.metafighter.cmp.window.Screen;
 import phdev.com.br.metafighter.screens.MainScreen;
 
 /**
@@ -32,6 +31,7 @@ public class GameEngine extends SurfaceView implements SurfaceHolder.Callback{
     private BluetoothManager bluetoothManager;
     private MainThread thread;
     public static Component screen;
+    private Component message;
     private Paint debugPaint;
 
     public GameEngine(Context context) {
@@ -114,6 +114,9 @@ public class GameEngine extends SurfaceView implements SurfaceHolder.Callback{
 
             this.drawDebug(canvas);
 
+            if(message != null)
+                message.draw(canvas);
+
             canvas.restoreToCount(savedState);
         }
     }
@@ -128,6 +131,8 @@ public class GameEngine extends SurfaceView implements SurfaceHolder.Callback{
 
         if (screen != null)
             screen.update();
+        if (message != null)
+            message.update();
 
     }
 
@@ -226,7 +231,7 @@ public class GameEngine extends SurfaceView implements SurfaceHolder.Callback{
         }
     }
 
-    public class HandlerIntentRequest implements IntentListener, MessageListener{
+    public class HandlerIntentRequest extends MessageHandler implements IntentListener{
 
         @Override
         public void sendIntentRequest(Intent intent) {
@@ -234,9 +239,19 @@ public class GameEngine extends SurfaceView implements SurfaceHolder.Callback{
         }
 
         @Override
-        public void sendToast(final String msg, final int duration) {
-            Toast toast = Toast.makeText(getContext(), msg, duration);
-            toast.show();
+        public void sendMessage(final String msg, final int duration) {
+            message = new Popup(msg, new AutoDestryableHandler() {
+                @Override
+                public void autoDestroy(WindowEntity entity) {
+                    try{
+                        message = null;
+                    }
+                    catch (Exception e){
+
+                    }
+
+                }
+            }, duration);
         }
     }
 

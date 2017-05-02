@@ -1,4 +1,4 @@
-package phdev.com.br.metafighter.cmp.event;
+package phdev.com.br.metafighter.cmp.event.listeners;
 
 import android.content.Intent;
 

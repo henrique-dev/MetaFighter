@@ -1,4 +1,4 @@
-package phdev.com.br.metafighter.cmp.event;
+package phdev.com.br.metafighter.cmp.event.listeners;
 
 /**
  * @author Paulo Henrique Gonçalves Bacelar

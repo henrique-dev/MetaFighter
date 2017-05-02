@@ -1,8 +1,6 @@
 package phdev.com.br.metafighter.screens;
 
-import android.content.Context;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.RectF;
 import android.view.MotionEvent;
 
@@ -10,10 +8,9 @@ import java.util.Random;
 
 import phdev.com.br.metafighter.BluetoothManager;
 import phdev.com.br.metafighter.GameParameters;
-import phdev.com.br.metafighter.cmp.event.EventListener;
+import phdev.com.br.metafighter.cmp.event.listeners.EventListener;
 import phdev.com.br.metafighter.cmp.window.BackGround;
 import phdev.com.br.metafighter.cmp.window.Screen;
-import phdev.com.br.metafighter.cmp.window.graphics.Texture;
 
 /**
  * @author Paulo Henrique Gonçalves Bacelar

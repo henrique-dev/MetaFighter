@@ -8,12 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import phdev.com.br.metafighter.GameParameters;
-import phdev.com.br.metafighter.cmp.event.ActionListener;
-import phdev.com.br.metafighter.cmp.event.AnimationListener;
+import phdev.com.br.metafighter.cmp.event.listeners.ActionListener;
+import phdev.com.br.metafighter.cmp.event.listeners.AnimationListener;
 import phdev.com.br.metafighter.cmp.event.ClickEvent;
-import phdev.com.br.metafighter.cmp.event.ClickListener;
+import phdev.com.br.metafighter.cmp.event.listeners.ClickListener;
 import phdev.com.br.metafighter.cmp.event.Event;
-import phdev.com.br.metafighter.cmp.event.EventListener;
+import phdev.com.br.metafighter.cmp.event.listeners.EventListener;
 import phdev.com.br.metafighter.cmp.event.animation.GoAndBack;
 
 /**

@@ -1,14 +1,13 @@
 package phdev.com.br.metafighter.screens;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.graphics.RectF;
 
 import phdev.com.br.metafighter.BluetoothManager;
 import phdev.com.br.metafighter.GameParameters;
 import phdev.com.br.metafighter.cmp.event.ClickEvent;
-import phdev.com.br.metafighter.cmp.event.ClickListener;
-import phdev.com.br.metafighter.cmp.event.EventListener;
+import phdev.com.br.metafighter.cmp.event.listeners.ClickListener;
+import phdev.com.br.metafighter.cmp.event.listeners.EventListener;
 import phdev.com.br.metafighter.cmp.window.BackGround;
 import phdev.com.br.metafighter.cmp.window.Button;
 import phdev.com.br.metafighter.cmp.window.Screen;

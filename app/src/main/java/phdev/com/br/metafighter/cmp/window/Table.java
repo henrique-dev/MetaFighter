@@ -12,9 +12,10 @@ import java.util.List;
 import phdev.com.br.metafighter.GameParameters;
 import phdev.com.br.metafighter.cmp.WindowEntity;
 import phdev.com.br.metafighter.cmp.event.ClickEvent;
+import phdev.com.br.metafighter.cmp.event.Event;
 import phdev.com.br.metafighter.cmp.event.listeners.ClickListener;
 import phdev.com.br.metafighter.cmp.event.animation.GoAndBack;
-import phdev.com.br.metafighter.cmp.window.graphics.Texture;
+import phdev.com.br.metafighter.cmp.graphics.Texture;
 
 /**
  * @author Paulo Henrique Gonçalves Bacelar
@@ -120,6 +121,11 @@ public class Table extends WindowEntity{
 
         item.addEventListener(new ClickListener() {
             @Override
+            public void actionPerformed(Event event) {
+                Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": executou o " + item.getText());
+            }
+
+            @Override
             public boolean pressedPerformed(ClickEvent event) {
                 Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": Clicou.");
                 return true;
@@ -128,12 +134,6 @@ public class Table extends WindowEntity{
             @Override
             public boolean releasedPerformed(ClickEvent event) {
                 Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": Soltou.");
-                return true;
-            }
-
-            @Override
-            public boolean executePerformed(ClickEvent event) {
-                Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": executou o " + item.getText());
                 return true;
             }
         });

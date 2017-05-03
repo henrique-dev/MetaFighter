@@ -26,8 +26,8 @@ public abstract class Entity implements Component {
     protected AnimationListener animationListener;
     protected List<EventListener> listeners;
     protected RectF area;
-    private boolean active;
-    private boolean clicked = false;
+    protected boolean active;
+    protected boolean clicked = false;
     private float startx = -1;
     private float starty = -1;
 
@@ -64,19 +64,24 @@ public abstract class Entity implements Component {
     protected boolean processListeners(Event event){
 
         for (EventListener listener : listeners){
-            if (listener instanceof ActionListener) {
-                ((ActionListener) listener).actionPerformed(event);
-            }
-            if (listener instanceof ClickListener){
+            if (listener instanceof ClickListener || listener instanceof ActionListener){
 
-                ClickListener ls = (ClickListener)listener;
+                ClickListener ls = null;
+                ActionListener al = null;
+
+                if (listener instanceof ClickListener)
+                    ls = (ClickListener)listener;
+                else
+                    al = (ActionListener)listener;
+
                 ClickEvent clickEvent = (ClickEvent)event;
 
                 switch (clickEvent.action){
                     // Quando a entidade é pressionada
                     case ClickEvent.CLICKED:
-                        // Executa a ação correspondente
-                        ls.pressedPerformed(clickEvent);
+                        if (ls != null)
+                            // Executa a ação correspondente
+                            ls.pressedPerformed(clickEvent);
 
                         // Caso haja uma animação, à executa
                         if (animationListener != null)
@@ -89,8 +94,9 @@ public abstract class Entity implements Component {
                     case ClickEvent.RELEASED:
                         // Caso ela tenha sido pressionada
                         if (clicked) {
-                            // Executa a ação correspondente
-                            ls.releasedPerformed(clickEvent);
+                            if (ls != null)
+                                // Executa a ação correspondente
+                                ls.releasedPerformed(clickEvent);
 
                             // Caso haja uma animação, à executa
                             if (animationListener != null)
@@ -98,9 +104,13 @@ public abstract class Entity implements Component {
                                 ((GoAndBack)animationListener).back();
 
                             // Caso a entidade tenha sido soltada para executar sua função
-                            if (clickEvent.execute)
-                                // Executa a ação correspodente
-                                ls.executePerformed(clickEvent);
+                            if (clickEvent.execute) {
+                                if (ls != null)
+                                    // Executa a ação correspodente
+                                    ls.actionPerformed(clickEvent);
+                                if (al != null)
+                                    al.actionPerformed(clickEvent);
+                            }
 
                             // Define que a entidade foi e não esta mais pressionada.
                             return this.clicked = false;
@@ -181,12 +191,12 @@ public abstract class Entity implements Component {
 
         if (checkCollision(new RectF(x,y,x,y), this.area)){
             if (listeners != null) {
-                return this.processListeners(new ClickEvent(action, x, y, true, this.id));
+                return this.processListeners(new ClickEvent(action, x, y, true, this.id, null));
             }
         }
         else {
             if (clicked)
-                this.processListeners(new ClickEvent(MotionEvent.ACTION_UP, x, y, false, this.id));
+                this.processListeners(new ClickEvent(MotionEvent.ACTION_UP, x, y, false, this.id, null));
         }
 
         return true;

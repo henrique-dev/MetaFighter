@@ -4,22 +4,23 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
 
+import phdev.com.br.metafighter.cmp.graphics.Sprite;
 import phdev.com.br.metafighter.cmp.graphics.Texture;
 
 /**
  * @author Paulo Henrique Gonçalves Bacelar
  * @version 1.0
  */
-public abstract class WindowEntity extends Entity{
+public abstract class GameEntity extends Entity {
 
     protected Paint paint;
-    protected Texture texture;
     protected RectF drawableArea;
+    protected Sprite sprites[];
 
-    public WindowEntity(RectF area, Paint paint, Texture texture) {
+    public GameEntity(RectF area, Paint paint, Sprite sprites[]) {
         super(area);
         this.paint = paint;
-        this.texture = texture;
+        this.sprites = sprites;
         this.drawableArea = new RectF();
     }
 
@@ -31,14 +32,6 @@ public abstract class WindowEntity extends Entity{
         this.paint = paint;
     }
 
-    public Texture getTexture() {
-        return texture;
-    }
-
-    public void setTexture(Texture texture) {
-        this.texture = texture;
-    }
-
     public RectF getDrawableArea() {
         return drawableArea;
     }
@@ -47,14 +40,11 @@ public abstract class WindowEntity extends Entity{
         this.drawableArea = drawableArea;
     }
 
-    @Override
-    public void draw(Canvas canvas){
-        super.draw(canvas);
+    public Sprite[] getSprites() {
+        return sprites;
+    }
 
-        if (this.texture != null){
-            canvas.drawBitmap(this.texture.getImage(), super.getX(), super.getY(), this.paint);
-        }
-        else
-            canvas.drawRect(super.getArea(), this.paint);
+    public void setSprites(Sprite[] sprites) {
+        this.sprites = sprites;
     }
 }

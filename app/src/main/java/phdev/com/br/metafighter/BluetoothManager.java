@@ -47,6 +47,10 @@ public class BluetoothManager {
         manager = this;
     }
 
+    public boolean haveBluetooth(){
+        return bluetoothAdapter == null;
+    }
+
     public boolean isEnabled(){
         return bluetoothAdapter.isEnabled();
     }
@@ -187,9 +191,7 @@ public class BluetoothManager {
                     socket = this.serverSocket.accept();
                 }
                 catch (Exception e){
-                    log("Não achou uma conexão. " + e.getMessage());
-                    ((MessageListener)listener).sendMessage("Não achou uma conexão. \n" + e.getMessage(), 5
-                    );
+                    sendMessageToScreen("Não achou uma conexão. \n" + e.getMessage());
                     break;
                 }
 
@@ -250,13 +252,7 @@ public class BluetoothManager {
             catch (IOException connectException){
                 try{
                     socket.close();
-                    /*
-                    Looper.prepare();
-                    sendMessage("Não conectou. " + connectException.getMessage());
-                    Looper.loop();
-                    */
-                    ((MessageListener)listener).sendMessage("Não conectou. \n" + connectException.getMessage(), 5);
-                    log("Não conectou. " + connectException.getMessage());
+                    sendMessageToScreen("Não conectou. \n" + connectException.getMessage());
                 }
                 catch (IOException e){
                     //log("Não conectou. " + e.getMessage());
@@ -351,9 +347,9 @@ public class BluetoothManager {
     }
 
     @Deprecated
-    private void sendMessage(String msg){
+    private void sendMessageToScreen(String msg){
         log(msg);
-        ((MessageListener)listener).sendMessage(msg, Toast.LENGTH_LONG);
+        ((MessageListener)listener).sendMessage(msg, 5);
     }
 
 }

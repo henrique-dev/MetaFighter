@@ -9,6 +9,7 @@ import java.util.List;
 import phdev.com.br.metafighter.BluetoothManager;
 import phdev.com.br.metafighter.GameParameters;
 import phdev.com.br.metafighter.cmp.event.ClickEvent;
+import phdev.com.br.metafighter.cmp.event.Event;
 import phdev.com.br.metafighter.cmp.event.listeners.ClickListener;
 import phdev.com.br.metafighter.cmp.event.listeners.EventListener;
 import phdev.com.br.metafighter.cmp.window.BackGround;
@@ -17,7 +18,7 @@ import phdev.com.br.metafighter.cmp.window.Screen;
 import phdev.com.br.metafighter.cmp.window.Table;
 import phdev.com.br.metafighter.cmp.window.TableItem;
 import phdev.com.br.metafighter.cmp.window.Text;
-import phdev.com.br.metafighter.cmp.window.graphics.Texture;
+import phdev.com.br.metafighter.cmp.graphics.Texture;
 
 /**
  * @author Paulo Henrique Gonçalves Bacelar
@@ -103,19 +104,18 @@ public class MultiplayerJoinScreen extends Screen {
                 "Voltar", backButtonTexture);
         this.backButton.addEventListener(new ClickListener() {
             @Override
+            public void actionPerformed(Event event) {
+                manager.stop();
+                new MultiplayerSelectScreen(listener);
+            }
+
+            @Override
             public boolean pressedPerformed(ClickEvent event) {
                 return true;
             }
 
             @Override
             public boolean releasedPerformed(ClickEvent event) {
-                return true;
-            }
-
-            @Override
-            public boolean executePerformed(ClickEvent event) {
-                manager.stop();
-                new MultiplayerSelectScreen(listener);
                 return true;
             }
         });
@@ -131,18 +131,17 @@ public class MultiplayerJoinScreen extends Screen {
 
                 item.addEventListener(new ClickListener() {
                     @Override
+                    public void actionPerformed(Event event) {
+                        manager.connect(pairedDevices.get(((ClickEvent)event).id));
+                    }
+
+                    @Override
                     public boolean pressedPerformed(ClickEvent event) {
                         return true;
                     }
 
                     @Override
                     public boolean releasedPerformed(ClickEvent event) {
-                        return true;
-                    }
-
-                    @Override
-                    public boolean executePerformed(ClickEvent event) {
-                        manager.connect(pairedDevices.get(event.id));
                         return true;
                     }
                 });

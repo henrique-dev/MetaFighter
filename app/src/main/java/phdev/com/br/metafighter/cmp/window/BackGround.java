@@ -1,10 +1,9 @@
 package phdev.com.br.metafighter.cmp.window;
 
-import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
 
-import phdev.com.br.metafighter.cmp.window.graphics.Texture;
+import phdev.com.br.metafighter.cmp.graphics.Texture;
 import phdev.com.br.metafighter.cmp.WindowEntity;
 
 /**

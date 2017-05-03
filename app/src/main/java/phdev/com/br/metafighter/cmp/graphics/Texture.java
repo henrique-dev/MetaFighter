@@ -1,4 +1,4 @@
-package phdev.com.br.metafighter.cmp.window.graphics;
+package phdev.com.br.metafighter.cmp.graphics;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

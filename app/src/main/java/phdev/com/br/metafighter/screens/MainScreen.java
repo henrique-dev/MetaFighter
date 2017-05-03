@@ -4,18 +4,15 @@ import android.graphics.Color;
 import android.graphics.RectF;
 
 import phdev.com.br.metafighter.GameParameters;
-import phdev.com.br.metafighter.cmp.WindowEntity;
 import phdev.com.br.metafighter.cmp.event.ClickEvent;
-import phdev.com.br.metafighter.cmp.event.handlers.AutoDestryableHandler;
-import phdev.com.br.metafighter.cmp.event.listeners.ClickListener;
+import phdev.com.br.metafighter.cmp.event.Event;
+import phdev.com.br.metafighter.cmp.event.listeners.ActionListener;
 import phdev.com.br.metafighter.cmp.event.listeners.EventListener;
-import phdev.com.br.metafighter.cmp.event.listeners.MessageListener;
 import phdev.com.br.metafighter.cmp.window.BackGround;
 import phdev.com.br.metafighter.cmp.window.Button;
-import phdev.com.br.metafighter.cmp.window.Popup;
 import phdev.com.br.metafighter.cmp.window.Screen;
 import phdev.com.br.metafighter.cmp.window.Text;
-import phdev.com.br.metafighter.cmp.window.graphics.Texture;
+import phdev.com.br.metafighter.cmp.graphics.Texture;
 import phdev.com.br.metafighter.cmp.event.animation.GoAndBack;
 
 /**
@@ -110,33 +107,21 @@ public class MainScreen extends Screen {
         return true;
     }
 
-    public class ButtonHandler implements ClickListener{
+    public class ButtonHandler implements ActionListener{
 
         @Override
-        public boolean pressedPerformed(ClickEvent event) {
-            return true;
-        }
-
-        @Override
-        public boolean releasedPerformed(ClickEvent event) {
-            return true;
-        }
-
-        @Override
-        public boolean executePerformed(ClickEvent event) {
-
-            switch (event.id){
+        public void actionPerformed(Event event) {
+            switch (((ClickEvent)event).id){
                 case 0:
-                    ((MessageListener)listener).sendMessage("Ainda não implementado", 5);
+                    new SelectCharacterScreen(listener);
                     break;
                 case 1:
                     new MultiplayerSelectScreen(listener);
                     break;
                 case 2:
+                    sendMessageToScreen("Ainda não implementado");
                     break;
             }
-
-            return true;
         }
     }
 }

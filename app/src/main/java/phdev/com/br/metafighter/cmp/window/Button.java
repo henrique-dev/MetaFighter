@@ -5,9 +5,10 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 
 import phdev.com.br.metafighter.cmp.WindowEntity;
+import phdev.com.br.metafighter.cmp.event.animation.GoAndBack;
 import phdev.com.br.metafighter.cmp.event.listeners.AnimationListener;
 import phdev.com.br.metafighter.cmp.event.listeners.EventListener;
-import phdev.com.br.metafighter.cmp.window.graphics.Texture;
+import phdev.com.br.metafighter.cmp.graphics.Texture;
 
 /**
  * @author Paulo Henrique Gonçalves Bacelar
@@ -22,6 +23,7 @@ public class Button extends WindowEntity {
         super.texture.scaleImage((int)super.getArea().width(), (int)super.getArea().height());
         this.text = new Text(text);
         this.text.setDrawableArea(super.getArea());
+        addAnimationListener(new GoAndBack(this));
         //this.text.adaptText();
     }
 

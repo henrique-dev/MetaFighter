@@ -143,10 +143,17 @@ public abstract class Screen implements Component {
     }
 
     @Deprecated
-    protected static void logMessages(String msg){
+    protected static void log(String msg){
         if(!GameParameters.getInstance().debug)
             return;
         GameParameters.getInstance().log(msg);
+    }
+
+    @Deprecated
+    protected void sendMessageToScreen(String msg){
+        log(msg);
+        if (listener != null)
+            ((MessageListener)listener).sendMessage(msg, 5);
     }
 
     /*

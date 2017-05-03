@@ -10,16 +10,13 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.widget.Toast;
 
 import phdev.com.br.metafighter.cmp.Component;
 import phdev.com.br.metafighter.cmp.WindowEntity;
-import phdev.com.br.metafighter.cmp.event.handlers.AutoDestryableHandler;
+import phdev.com.br.metafighter.cmp.event.handlers.AutoDestroyableHandler;
 import phdev.com.br.metafighter.cmp.event.handlers.MessageHandler;
 import phdev.com.br.metafighter.cmp.event.listeners.IntentListener;
-import phdev.com.br.metafighter.cmp.event.listeners.MessageListener;
 import phdev.com.br.metafighter.cmp.window.Popup;
-import phdev.com.br.metafighter.cmp.window.Screen;
 import phdev.com.br.metafighter.screens.MainScreen;
 
 /**
@@ -59,7 +56,7 @@ public class GameEngine extends SurfaceView implements SurfaceHolder.Callback{
 
         //screen = new MainScreen();
 
-        HandlerIntentRequest handler = new HandlerIntentRequest();
+        HandlerScreen handler = new HandlerScreen();
 
         new MainScreen(handler);
 
@@ -129,8 +126,9 @@ public class GameEngine extends SurfaceView implements SurfaceHolder.Callback{
 
     public void update(){
 
-        if (screen != null)
+        if (screen != null && message == null)
             screen.update();
+
         if (message != null)
             message.update();
 
@@ -139,7 +137,7 @@ public class GameEngine extends SurfaceView implements SurfaceHolder.Callback{
     @Override
     public boolean onTouchEvent(MotionEvent event){
 
-        if (screen != null)
+        if (screen != null && message == null)
             screen.onTouchEvent(event);
 
         return true;
@@ -231,7 +229,7 @@ public class GameEngine extends SurfaceView implements SurfaceHolder.Callback{
         }
     }
 
-    public class HandlerIntentRequest extends MessageHandler implements IntentListener{
+    public class HandlerScreen extends MessageHandler implements IntentListener{
 
         @Override
         public void sendIntentRequest(Intent intent) {
@@ -240,7 +238,7 @@ public class GameEngine extends SurfaceView implements SurfaceHolder.Callback{
 
         @Override
         public void sendMessage(final String msg, final int duration) {
-            message = new Popup(msg, new AutoDestryableHandler() {
+            message = new Popup(msg, new AutoDestroyableHandler() {
                 @Override
                 public void autoDestroy(WindowEntity entity) {
                     try{

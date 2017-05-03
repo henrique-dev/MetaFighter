@@ -17,13 +17,15 @@ public class ClickEvent extends Event {
     public float y;
     public boolean execute;
     public int id;
+    public Object parameter;
 
-    public ClickEvent(int action, float x, float y, boolean execute, int id){
+    public ClickEvent(int action, float x, float y, boolean execute, int id, Object parameter){
         this.action = action;
         this.x = x;
         this.y = y;
         this.execute = execute;
         this.id = id;
+        this.parameter = parameter;
     }
 
 

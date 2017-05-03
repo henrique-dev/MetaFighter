@@ -7,6 +7,7 @@ import android.util.Log;
 import phdev.com.br.metafighter.BluetoothManager;
 import phdev.com.br.metafighter.GameParameters;
 import phdev.com.br.metafighter.cmp.event.ClickEvent;
+import phdev.com.br.metafighter.cmp.event.Event;
 import phdev.com.br.metafighter.cmp.event.listeners.ClickListener;
 import phdev.com.br.metafighter.cmp.event.listeners.EventListener;
 import phdev.com.br.metafighter.cmp.event.animation.GoAndBack;
@@ -14,7 +15,7 @@ import phdev.com.br.metafighter.cmp.window.BackGround;
 import phdev.com.br.metafighter.cmp.window.Button;
 import phdev.com.br.metafighter.cmp.window.Screen;
 import phdev.com.br.metafighter.cmp.window.Text;
-import phdev.com.br.metafighter.cmp.window.graphics.Texture;
+import phdev.com.br.metafighter.cmp.graphics.Texture;
 
 /**
  * @author Paulo Henrique Gonçalves Bacelar
@@ -123,30 +124,30 @@ public class MultiplayerSelectScreen extends Screen {
         }
 
         @Override
-        public boolean executePerformed(ClickEvent event) {
-
-            switch (event.id){
+        public void actionPerformed(Event event) {
+            switch (((ClickEvent)event).id){
                 case 0:
+                    if (manager.haveBluetooth())
+                        sendMessageToScreen("O bluetooth não foi ativado ou\n este dispositivo não é compatível");
+                    else
                     if (!manager.isEnabled())
                         Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": O bluetooth deve estar ativado para proseeguir.");
                     else
                         new MultiplayerHostScreen(listener, manager);
                     break;
                 case 1:
-                    if (!manager.isEnabled()) {
-                            Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": O bluetooth deve estar ativado para proseeguir.");
-                    }
-                    else {
+                    if (manager.haveBluetooth())
+                        sendMessageToScreen("O bluetooth não foi ativado ou\n este dispositivo não é compatível");
+                    else
+                    if (!manager.isEnabled())
+                        sendMessageToScreen(": O bluetooth deve estar ativado para proseeguir.");
+                    else
                         new MultiplayerJoinScreen(listener, manager);
-                    }
-
                     break;
                 case 2:
                     new MainScreen(listener);
                     break;
             }
-
-            return true;
         }
     }
 }

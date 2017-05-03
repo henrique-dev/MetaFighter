@@ -26,7 +26,7 @@ public class Popup extends WindowEntity {
         addEventListener(listener);
         //this.listener = listener;
 
-        super.paint.setAlpha(150);
+        super.paint.setAlpha(190);
 
         this.text = new Text(text);
 

@@ -66,19 +66,24 @@ public class TableItem extends WindowEntity {
     @Override
     public boolean processListeners(Event event){
         for (EventListener listener : listeners){
-            if (listener instanceof ActionListener) {
-                ((ActionListener) listener).actionPerformed(event);
-            }
-            if (listener instanceof ClickListener){
+            if (listener instanceof ClickListener || listener instanceof ActionListener){
 
-                ClickListener ls = (ClickListener)listener;
+                ClickListener ls = null;
+                ActionListener al = null;
+
+                if (listener instanceof ClickListener)
+                    ls = (ClickListener)listener;
+                else
+                    al = (ActionListener)listener;
+
                 ClickEvent clickEvent = (ClickEvent)event;
 
                 switch (clickEvent.action){
                     // Quando a entidade é pressionada
                     case ClickEvent.CLICKED:
-                        // Executa a ação correspondente
-                        ls.pressedPerformed(clickEvent);
+                        if (ls != null)
+                            // Executa a ação correspondente
+                            ls.pressedPerformed(clickEvent);
 
                         // Define que a entidade foi pressionada
                         this.clicked = true;
@@ -87,8 +92,9 @@ public class TableItem extends WindowEntity {
                     case ClickEvent.RELEASED:
                         // Caso ela tenha sido pressionada
                         if (clicked) {
-                            // Executa a ação correspondente
-                            ls.releasedPerformed(clickEvent);
+                            if (ls != null)
+                                // Executa a ação correspondente
+                                ls.releasedPerformed(clickEvent);
 
                                 /*
                                 // Caso haja uma animação, à executa
@@ -107,8 +113,10 @@ public class TableItem extends WindowEntity {
                                     ((GoAndBack) animationListener).setOriginalArea(new RectF(super.getArea()));
                                     ((GoAndBack) animationListener).goAndBack();
                                 }
-
-                                ls.executePerformed(clickEvent);
+                                if (ls != null)
+                                    ls.actionPerformed(clickEvent);
+                                if (al != null)
+                                    al.actionPerformed(clickEvent);
                             }
 
                             this.moving = false;
@@ -153,12 +161,12 @@ public class TableItem extends WindowEntity {
 
         if (checkCollision(new RectF(x,y,x,y), this.area)){
             if (super.listeners != null) {
-                return this.processListeners(new ClickEvent(action, x, y, true, super.id));
+                return this.processListeners(new ClickEvent(action, x, y, true, super.id, null));
             }
         }
         else {
             if (clicked)
-                this.processListeners(new ClickEvent(MotionEvent.ACTION_UP, x, y, false, super.id));
+                this.processListeners(new ClickEvent(MotionEvent.ACTION_UP, x, y, false, super.id, null));
         }
 
         return true;

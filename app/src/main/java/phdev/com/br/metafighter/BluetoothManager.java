@@ -24,7 +24,7 @@ import phdev.com.br.metafighter.screens.MatchScreen;
  * @author Paulo Henrique Gonçalves Bacelar
  * @version 1.0
  */
-public class BluetoothManager {
+public final class BluetoothManager {
 
     public int data = -1;
 

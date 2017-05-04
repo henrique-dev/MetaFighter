@@ -7,6 +7,7 @@ import android.view.MotionEvent;
 
 import phdev.com.br.metafighter.cmp.GameEntity;
 import phdev.com.br.metafighter.cmp.event.ClickEvent;
+import phdev.com.br.metafighter.cmp.event.listeners.AnimationListener;
 import phdev.com.br.metafighter.cmp.event.listeners.EventListener;
 import phdev.com.br.metafighter.cmp.window.Label;
 import phdev.com.br.metafighter.cmp.window.Text;
@@ -68,6 +69,21 @@ public class GameLabel extends GameEntity {
     @Override
     public void removeEventListener(EventListener listener){
         super.removeEventListener(listener);
+    }
+
+    @Override
+    public void addAnimationListener(AnimationListener listener){
+        super.addAnimationListener(listener);
+    }
+
+    @Override
+    public void addAnimationListener(){
+        super.addAnimationListener();
+    }
+
+    @Override
+    public void removeAnimationListener(){
+        super.removeAnimationListener();
     }
 
     @Override

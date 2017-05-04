@@ -18,7 +18,10 @@ public class Label extends WindowEntity {
 
     public Label(RectF area, String text, Texture texture){
         super(area, new Paint(), texture);
-        super.texture.scaleImage((int)super.getArea().width(), (int)super.getArea().height());
+
+        if (texture != null)
+            super.texture.scaleImage((int)super.getArea().width(), (int)super.getArea().height());
+
         if (text != null){
             this.text = new Text(text);
             this.text.setDrawableArea(super.getArea());

@@ -12,12 +12,14 @@ import phdev.com.br.metafighter.cmp.graphics.Texture;
  */
 public abstract class WindowEntity extends Entity{
 
+    protected boolean visible;
     protected Paint paint;
     protected Texture texture;
     protected RectF drawableArea;
 
     public WindowEntity(RectF area, Paint paint, Texture texture) {
         super(area);
+        this.visible = true;
         this.paint = paint;
         this.texture = texture;
         this.drawableArea = new RectF();
@@ -45,6 +47,14 @@ public abstract class WindowEntity extends Entity{
 
     public void setDrawableArea(RectF drawableArea) {
         this.drawableArea = drawableArea;
+    }
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
     }
 
     @Override

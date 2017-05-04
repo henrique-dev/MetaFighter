@@ -1,20 +1,18 @@
 package phdev.com.br.metafighter.cmp.window;
 
 import android.graphics.Canvas;
-import android.graphics.RectF;
 import android.util.Log;
 import android.view.MotionEvent;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import phdev.com.br.metafighter.GameEngine;
 import phdev.com.br.metafighter.GameParameters;
 import phdev.com.br.metafighter.cmp.Component;
-import phdev.com.br.metafighter.cmp.WindowEntity;
-import phdev.com.br.metafighter.cmp.event.listeners.AutoDestroyableListener;
 import phdev.com.br.metafighter.cmp.event.listeners.EventListener;
 import phdev.com.br.metafighter.cmp.event.listeners.MessageListener;
+import phdev.com.br.metafighter.cmp.event.listeners.ProgressListener;
+import phdev.com.br.metafighter.cmp.event.listeners.ScreenUpdateListener;
 
 /**
  * @author Paulo Henrique Gonçalves Bacelar
@@ -23,18 +21,16 @@ import phdev.com.br.metafighter.cmp.event.listeners.MessageListener;
 public abstract class Screen implements Component {
 
     protected List<Component> entities;
-    protected ProgressHud progressHud;
-    //protected Context context;
     protected EventListener listener;
 
+    private ScreenUpdateListener screenUpdateListener;
+    private ProgressListener progressListener;
+
     public Screen(EventListener listener){
-        //this.context = context;
         this.listener = listener;
+        this.screenUpdateListener = (ScreenUpdateListener)listener;
+        this.progressListener = (ProgressListener)listener;
         this.entities = new ArrayList<>();
-
-        this.progressHud = new ProgressHud(new RectF());
-
-        this.entities.add(progressHud);
 
         try{
             this.init();
@@ -43,12 +39,13 @@ public abstract class Screen implements Component {
             Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": ERROR: " + ex.getMessage());
         }
 
-        GameEngine.screen = this;
+        screenUpdateListener.screenUpdate(this);
 
     }
 
     private void init(){
 
+        progressListener.progressPrepare();
 
         new Thread(
                 new Runnable(){
@@ -56,17 +53,13 @@ public abstract class Screen implements Component {
                     public void run() {
                         try{
                             if (loadTextures()) {
-                                //Thread.sleep(500);
-                                progressHud.setProgress(25);
+                                progressListener.progressUpdate(25);
                                 if (loadFonts()) {
-                                    //Thread.sleep(500);
-                                    progressHud.setProgress(50);
+                                    progressListener.progressUpdate(50);
                                     if (loadSounds()) {
-                                        //Thread.sleep(500);
-                                        progressHud.setProgress(75);
+                                        progressListener.progressUpdate(75);
                                         if (loadComponents()){
-                                            //Thread.sleep(500);
-                                            progressHud.setProgress(100);
+                                            progressListener.progressUpdate(100);
                                         }
                                     }
                                 }
@@ -75,6 +68,7 @@ public abstract class Screen implements Component {
                         catch (Exception ex){
                             ex.printStackTrace();
                         }
+                        progressListener.progressFinalize();
                     }
             }
         ).start();
@@ -123,7 +117,7 @@ public abstract class Screen implements Component {
     public void draw(Canvas canvas) {
         for (Component cmp : entities) {
             cmp.draw(canvas);
-            canvas.clipRect(GameParameters.getInstance().screenSize);
+            //canvas.clipRect(GameParameters.getInstance().screenSize);
         }
 
     }
@@ -155,14 +149,4 @@ public abstract class Screen implements Component {
         if (listener != null)
             ((MessageListener)listener).sendMessage(msg, 5);
     }
-
-    /*
-    public class AutoDestroyHandler implements AutoDestroyableListener{
-
-        @Override
-        public void autoDestroy(WindowEntity entity) {
-            entities.remove(entity);
-        }
-    }
-    */
 }

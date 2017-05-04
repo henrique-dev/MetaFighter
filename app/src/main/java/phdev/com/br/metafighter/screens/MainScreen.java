@@ -36,7 +36,8 @@ public class MainScreen extends Screen {
     @Override
     protected boolean loadTextures() {
 
-        this.buttonTexture = new Texture("images/buttons/button1.png");
+        this.buttonTexture = new Texture("images/buttons/button2.png");
+        this.mainBackgroundTexture = new Texture("images/backgrounds/background7.png");
 
         return true;
     }
@@ -58,7 +59,7 @@ public class MainScreen extends Screen {
         float marginX = (screenSize.width()/4)/8;
         float marginY = (screenSize.height()/8)/2;
 
-        this.mainBackGround = new BackGround(screenSize, Color.rgb(0, 153, 0));
+        this.mainBackGround = new BackGround(screenSize, mainBackgroundTexture);
 
         RectF buttonSize = new RectF(0, 0, screenSize.width()/4, screenSize.height()/4);
 
@@ -119,7 +120,7 @@ public class MainScreen extends Screen {
                     new MultiplayerSelectScreen(listener);
                     break;
                 case 2:
-                    sendMessageToScreen("Ainda não implementado");
+                    new MatchScreen(listener, null);
                     break;
             }
         }

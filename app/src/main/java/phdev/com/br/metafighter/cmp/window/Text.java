@@ -17,11 +17,11 @@ import phdev.com.br.metafighter.cmp.WindowEntity;
  */
 public class Text extends WindowEntity {
 
-    public final int TOP = 0;
-    public final int CENTER = 1;
-    public final int BOTTON = 2;
-    public final int LEFT = 0;
-    public final int RIGHT = 2;
+    public static final int TOP = 0;
+    public static final int CENTER = 1;
+    public static final int BOTTON = 2;
+    public static final int LEFT = 0;
+    public static final int RIGHT = 2;
 
     private boolean autosize = false;
     public static boolean fontsPers;

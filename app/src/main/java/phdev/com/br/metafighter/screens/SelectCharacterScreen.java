@@ -52,6 +52,7 @@ public class SelectCharacterScreen extends Screen {
     private Texture backButtonTexture;
     private Texture gameLabelPlayerTexture;
     private Texture gameLabelCharTexture;
+    private Texture mainBackgroundTexture;
 
     GameLabel gameLabelPlayer1;
     GameLabel gameLabelPlayer2;
@@ -65,10 +66,12 @@ public class SelectCharacterScreen extends Screen {
     @Override
     protected boolean loadTextures() {
 
-        this.backButtonTexture = new Texture("images/buttons/button1.png");
+        this.backButtonTexture = new Texture("images/buttons/button2.png");
 
         this.gameLabelPlayerTexture = new Texture("images/labels/label3.png");
         this.gameLabelCharTexture = new Texture("images/labels/label4.png");
+
+        this.mainBackgroundTexture = new Texture("images/backgrounds/background7.png");
 
         return true;
     }
@@ -115,7 +118,7 @@ public class SelectCharacterScreen extends Screen {
         });
         this.backButton.getText().setTextSize(fontSize);
 
-        this.mainBackground = new BackGround(screenSize, Color.rgb(255,51,126));
+        this.mainBackground = new BackGround(screenSize, mainBackgroundTexture);
 
         RectF gameLabelPlayerArea = new RectF(0,0, (screenSize.width()/16)*3, (screenSize.height()/8)*4);
 
@@ -155,6 +158,7 @@ public class SelectCharacterScreen extends Screen {
                 this.gameLabelCharTexture, null, "Luiz Carlos");
         gameLabelLuiz.setSprites(new Sprite[]{new Sprite(new Texture("images/players/luiz.png"))});
         gameLabelLuiz.setId(LUIZ);
+        gameLabelLuiz.addAnimationListener();
         gameLabelLuiz.addEventListener(handler);
 
         gameLabelQuele = new GameLabel(
@@ -165,6 +169,7 @@ public class SelectCharacterScreen extends Screen {
                 this.gameLabelCharTexture, null, "Quele");
         gameLabelQuele.setSprites(new Sprite[]{new Sprite(new Texture("images/players/quele.png"))});
         gameLabelQuele.setId(QUELE);
+        gameLabelQuele.addAnimationListener();
         gameLabelQuele.addEventListener(handler);
 
         gameLabelRomulo = new GameLabel(
@@ -175,6 +180,7 @@ public class SelectCharacterScreen extends Screen {
                 this.gameLabelCharTexture, null, "Romulo");
         gameLabelRomulo.setSprites(new Sprite[]{new Sprite(new Texture("images/players/romulo.png"))});
         gameLabelRomulo.setId(ROMULO);
+        gameLabelRomulo.addAnimationListener();
         gameLabelRomulo.addEventListener(handler);
 
         gameLabelPatricia = new GameLabel(
@@ -185,6 +191,7 @@ public class SelectCharacterScreen extends Screen {
                 this.gameLabelCharTexture, null, "Patricia");
         gameLabelPatricia.setSprites(new Sprite[]{new Sprite(new Texture("images/players/patricia.png"))});
         gameLabelPatricia.setId(PATRICIA);
+        gameLabelPatricia.addAnimationListener();
         gameLabelPatricia.addEventListener(handler);
 
         gameLabelKaila = new GameLabel(
@@ -195,6 +202,7 @@ public class SelectCharacterScreen extends Screen {
                 this.gameLabelCharTexture, null, "Kaila");
         gameLabelKaila.setSprites(new Sprite[]{new Sprite(new Texture("images/players/kaila.png"))});
         gameLabelKaila.setId(KAILA);
+        gameLabelKaila.addAnimationListener();
         gameLabelKaila.addEventListener(handler);
 
         gameLabelGuedes = new GameLabel(
@@ -205,6 +213,7 @@ public class SelectCharacterScreen extends Screen {
                 this.gameLabelCharTexture, null, "Carlos Guedes");
         gameLabelGuedes.setSprites(new Sprite[]{new Sprite(new Texture("images/players/guedes.png"))});
         gameLabelGuedes.setId(GUEDES);
+        gameLabelGuedes.addAnimationListener();
         gameLabelGuedes.addEventListener(handler);
 
         add(mainBackground);

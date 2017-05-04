@@ -28,8 +28,6 @@ public abstract class Entity implements Component {
     protected RectF area;
     protected boolean active;
     protected boolean clicked = false;
-    private float startx = -1;
-    private float starty = -1;
 
     public Entity(RectF area){
         this.area = area;
@@ -43,6 +41,10 @@ public abstract class Entity implements Component {
 
     protected void addAnimationListener(AnimationListener listener){
         this.animationListener = listener;
+    }
+
+    protected void addAnimationListener(){
+        this.animationListener = new GoAndBack(this);
     }
 
     protected void removeAnimationListener(){

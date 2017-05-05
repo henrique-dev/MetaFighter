@@ -31,9 +31,9 @@ public class Popup extends WindowEntity {
         this.text = new Text(text);
 
         RectF screenSize = GameParameters.getInstance().screenSize;
-        RectF popupSize = new RectF(0,0,screenSize.width()/2, screenSize.height()/2);
 
         super.setArea(new RectF(screenSize));
+        super.setDrawableArea(area);
 
         float fontSize = Text.adaptText(new String[]{text}, screenSize);
 
@@ -70,7 +70,7 @@ public class Popup extends WindowEntity {
 
     @Override
     public void draw(Canvas canvas){
-        canvas.drawRect(super.getArea(), this.paint);
+        canvas.drawRect(GameParameters.getInstance().screenSize, this.paint);
         this.text.draw(canvas);
     }
 }

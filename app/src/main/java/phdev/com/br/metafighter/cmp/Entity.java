@@ -212,6 +212,13 @@ public abstract class Entity implements Component {
     }
 
     @Deprecated
+    protected static void log(String msg){
+        if(!GameParameters.getInstance().debug)
+            return;
+        GameParameters.getInstance().log(msg);
+    }
+
+    @Deprecated
     protected static boolean checkCollision(RectF A, RectF B){
         if(((A.left >= B.left && A.left <= B.right) && (A.right >= B.left && A.right <= B.right)) &&
                 ((A.top >= B.top && A.top <= B.bottom) && (A.bottom >= B.top && A.bottom <= B.bottom)))

@@ -20,13 +20,11 @@ import phdev.com.br.metafighter.cmp.graphics.Texture;
  */
 public class GameLabel extends GameEntity {
 
-    private String name;
     private Texture texture;
     private Text text;
 
-    public GameLabel(RectF area, Texture texture, Sprite sprites[], String name) {
+    public GameLabel(RectF area, Texture texture, Sprite sprites[]) {
         super(area, new Paint(), sprites);
-        this.name = name;
         this.texture = texture;
         this.texture.scaleImage((int)area.width(), (int)area.height());
     }
@@ -122,12 +120,12 @@ public class GameLabel extends GameEntity {
 
         if (checkCollision(new RectF(x,y,x,y), this.area)){
             if (listeners != null) {
-                return this.processListeners(new ClickEvent(action, x, y, true, this.id, this.name));
+                return this.processListeners(new ClickEvent(action, x, y, true, this.id, this));
             }
         }
         else {
             if (clicked)
-                this.processListeners(new ClickEvent(MotionEvent.ACTION_UP, x, y, false, this.id, this.name));
+                this.processListeners(new ClickEvent(MotionEvent.ACTION_UP, x, y, false, this.id, this));
         }
 
         return true;

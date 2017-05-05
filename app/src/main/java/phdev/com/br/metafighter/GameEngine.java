@@ -150,8 +150,9 @@ public class GameEngine extends SurfaceView implements SurfaceHolder.Callback{
 
     public void update(){
 
-        if (screen != null && message == null)
+        if (screen != null)
             screen.update();
+
 
         if (message != null)
             message.update();

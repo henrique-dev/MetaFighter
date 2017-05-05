@@ -22,7 +22,7 @@ public abstract class WindowEntity extends Entity{
         this.visible = true;
         this.paint = paint;
         this.texture = texture;
-        this.drawableArea = new RectF();
+        this.drawableArea = new RectF(area);
     }
 
     public Paint getPaint() {

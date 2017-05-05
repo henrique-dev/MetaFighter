@@ -20,7 +20,8 @@ import phdev.com.br.metafighter.cmp.event.listeners.ScreenUpdateListener;
  */
 public abstract class Screen implements Component {
 
-    protected List<Component> entities;
+    protected Scene currentScene;
+
     protected EventListener listener;
 
     private ScreenUpdateListener screenUpdateListener;
@@ -30,7 +31,8 @@ public abstract class Screen implements Component {
         this.listener = listener;
         this.screenUpdateListener = (ScreenUpdateListener)listener;
         this.progressListener = (ProgressListener)listener;
-        this.entities = new ArrayList<>();
+        //this.entities = new ArrayList<>();
+        currentScene = new Scene();
 
         try{
             this.init();
@@ -97,6 +99,7 @@ public abstract class Screen implements Component {
 
     protected abstract boolean loadComponents();
 
+    /*
     protected void add(Component cmp){
         this.entities.add(cmp);
     }
@@ -112,27 +115,44 @@ public abstract class Screen implements Component {
     public void setEntities(List<Component> entities) {
         this.entities = entities;
     }
+    */
 
     @Override
     public void draw(Canvas canvas) {
+        /*
         for (Component cmp : entities) {
             cmp.draw(canvas);
             //canvas.clipRect(GameParameters.getInstance().screenSize);
         }
+        */
+        if (currentScene != null)
+            currentScene.draw(canvas);
+
 
     }
 
     @Override
     public void update() {
+        /*
         for (Component cmp : entities)
             cmp.update();
         //Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": Progresso: " + progressHud.getProgress());
+        */
+        if (currentScene != null)
+            currentScene.update();
+
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent evt) {
+        /*
         for (Component cmp : entities)
             cmp.onTouchEvent(evt);
+            */
+        if (currentScene != null)
+            currentScene.onTouchEvent(evt);
+
+
         return true;
     }
 

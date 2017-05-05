@@ -21,8 +21,10 @@ public class Button extends WindowEntity {
     public Button(RectF area, String text, Texture texture) {
         super(area, new Paint(), texture);
         super.texture.scaleImage((int)super.getArea().width(), (int)super.getArea().height());
-        this.text = new Text(text);
-        this.text.setDrawableArea(super.getArea());
+        if (text != null){
+            this.text = new Text(text);
+            this.text.setDrawableArea(super.getArea());
+        }
         addAnimationListener(new GoAndBack(this));
         //this.text.adaptText();
     }
@@ -58,13 +60,15 @@ public class Button extends WindowEntity {
     @Override
     public void setX(float x){
         super.setX(x);
-        this.text.setDrawableArea(super.getArea());
+        if (text != null)
+            this.text.setDrawableArea(super.getArea());
     }
 
     @Override
     public void setY(float y){
         super.setY(y);
-        this.text.setDrawableArea(super.getArea());
+        if (text != null)
+            this.text.setDrawableArea(super.getArea());
     }
 
     @Override

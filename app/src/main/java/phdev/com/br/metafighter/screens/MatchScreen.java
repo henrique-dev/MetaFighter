@@ -4,17 +4,17 @@ import android.graphics.Color;
 import android.graphics.RectF;
 import android.view.MotionEvent;
 
-import java.util.Random;
-
 import phdev.com.br.metafighter.BluetoothManager;
 import phdev.com.br.metafighter.GameParameters;
 import phdev.com.br.metafighter.cmp.event.listeners.EventListener;
-import phdev.com.br.metafighter.cmp.game.GameLabel;
+import phdev.com.br.metafighter.cmp.game.Player;
+import phdev.com.br.metafighter.cmp.misc.Controller;
 import phdev.com.br.metafighter.cmp.game.LifeHud;
 import phdev.com.br.metafighter.cmp.graphics.Texture;
 import phdev.com.br.metafighter.cmp.misc.Timer;
 import phdev.com.br.metafighter.cmp.window.BackGround;
 import phdev.com.br.metafighter.cmp.window.Label;
+import phdev.com.br.metafighter.cmp.window.Scene;
 import phdev.com.br.metafighter.cmp.window.Screen;
 import phdev.com.br.metafighter.cmp.window.Text;
 
@@ -23,6 +23,8 @@ import phdev.com.br.metafighter.cmp.window.Text;
  * @version 1.0
  */
 public class MatchScreen extends Screen {
+
+    private Scene mainScene;
 
     private BluetoothManager manager;
 
@@ -38,6 +40,13 @@ public class MatchScreen extends Screen {
 
     private Texture backgroundTexture;
     private Texture lifeHudTexture;
+    private Texture controllerDirTexture;
+    private Texture controllerButTexture;
+
+    private Player player1;
+    private Player player2;
+
+    private Controller controller;
 
     public MatchScreen(EventListener listener, BluetoothManager manager) {
         super(listener);
@@ -50,8 +59,9 @@ public class MatchScreen extends Screen {
     @Override
     protected boolean loadTextures() {
 
-        this.backgroundTexture = new Texture("images/backgrounds/background4.png");
-        this.lifeHudTexture = new Texture("images/labels/label5.png");
+        backgroundTexture = new Texture("images/backgrounds/background9.png");
+        lifeHudTexture = new Texture("images/labels/label5.png");
+        controllerDirTexture = new Texture("cmp/controller/directionalBase.png");
 
         return true;
     }
@@ -95,10 +105,30 @@ public class MatchScreen extends Screen {
         timerLabel.getText().getPaint().setColor(Color.WHITE);
         timerLabel.getPaint().setAlpha(0);
 
-        add(backGround);
-        add(lifeHudPlayer1);
-        add(lifeHudPlayer2);
-        add(timerLabel);
+        RectF areaController = new RectF(0,0, 120, 120);
+
+        controller = new Controller(
+                new RectF(10, screenSize.bottom - 10 - areaController.height(), 10 + areaController.width(),screenSize.bottom-10 )
+                , controllerDirTexture, null, null, new Player(null, null, null, null, null));
+
+
+
+
+        mainScene = new Scene();
+        mainScene.add(backGround);
+        mainScene.add(lifeHudPlayer1);
+        mainScene.add(lifeHudPlayer2);
+        mainScene.add(timerLabel);
+        mainScene.add(controller);
+
+
+
+        currentScene = mainScene;
+
+        //add(backGround);
+        //add(lifeHudPlayer1);
+        //add(lifeHudPlayer2);
+        //add(timerLabel);
 
         return true;
     }
@@ -106,23 +136,21 @@ public class MatchScreen extends Screen {
     @Override
     public void update(){
 
-        if (currentTime > 100)
+        if (currentTime > 99)
             new MainScreen(listener);
 
         int tempTime = (int)(matchTimer.getTicks()/1000000000);
         if (tempTime != currentTime) {
             timerLabel.getText().setText((99 - tempTime) + "");
             currentTime = tempTime;
-            log(currentTime + "");
         }
 
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event){
+        super.onTouchEvent(event);
 
-        if (event.getActionMasked() == MotionEvent.ACTION_DOWN)
-            new MainScreen(listener);
         return true;
     }
 }

@@ -14,12 +14,16 @@ public class BackGround extends WindowEntity {
 
     public BackGround(RectF rect, int color){
         super(rect, new Paint(), null);
-        this.paint.setColor(color);
+        paint.setColor(color);
     }
 
     public BackGround(RectF rect, Texture texture){
         super(rect, new Paint(), texture);
         super.texture.scaleImage((int)rect.width(), (int)rect.height());
+    }
+
+    protected BackGround(BackGround backGround){
+        super(backGround.getArea(), backGround.getPaint(), backGround.getTexture());
     }
 
 }

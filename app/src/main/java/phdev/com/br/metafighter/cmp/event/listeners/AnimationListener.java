@@ -6,4 +6,7 @@ package phdev.com.br.metafighter.cmp.event.listeners;
  */
 public interface AnimationListener {
 
+    int GO_AND_BACK = 0;
+    int SELECTED = 1;
+
 }

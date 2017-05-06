@@ -2,6 +2,7 @@ package phdev.com.br.metafighter.screens;
 
 import android.graphics.Color;
 import android.graphics.RectF;
+import android.util.Log;
 import android.view.MotionEvent;
 
 import phdev.com.br.metafighter.BluetoothManager;
@@ -39,6 +40,10 @@ public class MatchScreen extends Screen {
     private LifeHud lifeHudPlayer2;
 
     private Texture backgroundTexture;
+    private Texture background2;
+    private Texture background3;
+
+
     private Texture lifeHudTexture;
     private Texture controllerDirTexture;
     private Texture controllerButTexture;
@@ -46,11 +51,16 @@ public class MatchScreen extends Screen {
     private Player player1;
     private Player player2;
 
+    private int contador = 0;
+
     private Controller controller;
 
-    public MatchScreen(EventListener listener, BluetoothManager manager) {
+    public MatchScreen(EventListener listener, BluetoothManager manager, Player player1, Player player2) {
         super(listener);
         this.manager = manager;
+
+        this.player1 = player1;
+        this.player2 = player2;
 
         matchTimer = new Timer();
         matchTimer.start();
@@ -60,6 +70,9 @@ public class MatchScreen extends Screen {
     protected boolean loadTextures() {
 
         backgroundTexture = new Texture("images/backgrounds/background9.png");
+        background2 = new Texture("images/backgrounds/background2.png");
+        background3 = new Texture("images/backgrounds/background3.png");
+
         lifeHudTexture = new Texture("images/labels/label5.png");
         controllerDirTexture = new Texture("cmp/controller/directionalBase.png");
 
@@ -136,6 +149,22 @@ public class MatchScreen extends Screen {
     @Override
     public void update(){
 
+
+        if (manager != null){
+            if (manager.data != -1) {
+                contador++;
+            }
+        }
+
+        if (contador > 1) {
+            backGround.setTexture(new Texture(background2));
+        }
+        if (contador == 2){
+            backgroundTexture = new Texture(background3);
+        }
+
+
+
         if (currentTime > 99)
             new MainScreen(listener);
 
@@ -145,11 +174,23 @@ public class MatchScreen extends Screen {
             currentTime = tempTime;
         }
 
+
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event){
         super.onTouchEvent(event);
+
+
+
+        if (manager != null){
+            if (event.getActionMasked() == MotionEvent.ACTION_DOWN){
+                String data = "0";
+                manager.write(data.getBytes());
+            }
+        }
+
+
 
         return true;
     }

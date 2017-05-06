@@ -14,6 +14,7 @@ import android.view.SurfaceView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import phdev.com.br.metafighter.cmp.Component;
 import phdev.com.br.metafighter.cmp.WindowEntity;
@@ -166,7 +167,6 @@ public class GameEngine extends SurfaceView implements SurfaceHolder.Callback{
         if (screen != null && message == null)
             screen.onTouchEvent(event);
 
-
         return true;
     }
 
@@ -215,7 +215,7 @@ public class GameEngine extends SurfaceView implements SurfaceHolder.Callback{
                     }
                 }
                 catch(Exception e){
-                    Log.e("GameEngine", e.getLocalizedMessage());
+                    Log.e("GameEngine", e.getLocalizedMessage() == null ? "" : e.getLocalizedMessage());
                     //Log.e("GameEngine", e.getCause().toString());
                     e.printStackTrace();
                 }
@@ -267,7 +267,7 @@ public class GameEngine extends SurfaceView implements SurfaceHolder.Callback{
         public void sendMessage(final String msg, final int duration) {
             message = new Popup(msg, new AutoDestroyableHandler() {
                 @Override
-                public void autoDestroy(WindowEntity entity) {
+                public void autoDestroy(Object entity) {
                     try{
                         message = null;
                     }

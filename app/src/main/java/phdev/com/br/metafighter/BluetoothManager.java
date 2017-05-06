@@ -134,6 +134,8 @@ public final class BluetoothManager {
     }
 
     public synchronized void connected(BluetoothSocket socket){
+
+
         if (connectThread != null){
             connectThread.cancel();
             connectThread = null;
@@ -148,6 +150,7 @@ public final class BluetoothManager {
             acceptThread.cancel();
             acceptThread = null;
         }
+
 
         connectedThread = new ConnectedThread(socket);
         connectedThread.start();
@@ -181,7 +184,6 @@ public final class BluetoothManager {
 
         @Override
         public void run(){
-            Looper.prepare();
             BluetoothSocket socket = null;
 
             while (true){
@@ -197,23 +199,33 @@ public final class BluetoothManager {
 
                 if (socket != null){
                     log("Achou uma conexão. Conectando..");
-                    connected(socket);
+
+                    synchronized (BluetoothManager.this){
+                        connected(socket);
+                    }
+
+
+
+                    /*
                     try {
                         this.serverSocket.close();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                    */
+
+
                     break;
                 }
             }
-            Looper.loop();
+
         }
 
         public void cancel(){
             try {
                 if (serverSocket != null)
                     this.serverSocket.close();
-                log("Encerrando thread");
+                //log("Encerrando thread");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -260,6 +272,14 @@ public final class BluetoothManager {
                 return;
             }
             log("Conectou!");
+
+            synchronized (BluetoothManager.this) {
+                connectThread = null;
+            }
+
+            if (!socket.isConnected())
+                log("Thread Conectar: o socket não esta conectado");
+
             connected(socket);
         }
 
@@ -267,7 +287,7 @@ public final class BluetoothManager {
             try {
                 if (socket != null)
                     this.socket.close();
-                log("Encerrando thread");
+                //log("Encerrando thread");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -282,9 +302,15 @@ public final class BluetoothManager {
 
         public ConnectedThread(BluetoothSocket socket){
             log("Thread criada. Ira tentar iniciar a comunicação entre os dispositivos");
-            new MatchScreen(listener, manager);
 
             this.socket = socket;
+
+            if (!socket.isConnected())
+                log("Thread Conectado: O soquete não esta conectado");
+
+            new MatchScreen(listener, manager, null, null);
+
+
             InputStream tmpIn = null;
             OutputStream tmpOut = null;
 
@@ -295,8 +321,8 @@ public final class BluetoothManager {
                 log("Erro: " + e.getMessage());
             }
 
-            this.in = tmpIn;
-            this.out = tmpOut;
+            in = tmpIn;
+            out = tmpOut;
         }
 
         @Override
@@ -304,9 +330,14 @@ public final class BluetoothManager {
             byte[] buffer = new byte[1024];
             int bytes;
 
+
             while (true){
                 try{
+
                     bytes = this.in.read(buffer);
+
+                    buffer = new byte[1024];
+
 
                     if (bytes != -1){
                         data = bytes;
@@ -314,19 +345,22 @@ public final class BluetoothManager {
                     else
                         data = -1;
 
-                } catch (IOException e) {
-                    e.printStackTrace();
+                } catch (Exception e) {
+                    //e.printStackTrace();
+                    log(e.getMessage());
                     break;
                 }
             }
+            log("Conexão encerrada");
         }
 
         public void write(byte[] bytes){
+
             try{
                 this.out.write(bytes);
 
             } catch (IOException e) {
-                e.printStackTrace();
+                log(e.getMessage());
             }
         }
 

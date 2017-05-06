@@ -59,11 +59,6 @@ public class TableItem extends WindowEntity {
     }
 
     @Override
-    public void removeAnimationListener(){
-        super.removeAnimationListener();
-    }
-
-    @Override
     public boolean processListeners(Event event){
         for (EventListener listener : listeners){
             if (listener instanceof ClickListener || listener instanceof ActionListener){

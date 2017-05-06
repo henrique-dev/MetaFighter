@@ -45,7 +45,7 @@ public abstract class Screen implements Component {
 
     }
 
-    private void init(){
+    protected void init(){
 
         progressListener.progressPrepare();
 
@@ -158,8 +158,8 @@ public abstract class Screen implements Component {
 
     @Deprecated
     protected static void log(String msg){
-        if(!GameParameters.getInstance().debug)
-            return;
+        //if(!GameParameters.getInstance().debug)
+          //  return;
         GameParameters.getInstance().log(msg);
     }
 

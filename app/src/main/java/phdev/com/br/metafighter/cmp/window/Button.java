@@ -6,6 +6,7 @@ import android.graphics.RectF;
 
 import phdev.com.br.metafighter.cmp.WindowEntity;
 import phdev.com.br.metafighter.cmp.event.animation.GoAndBack;
+import phdev.com.br.metafighter.cmp.event.animation.Selected;
 import phdev.com.br.metafighter.cmp.event.listeners.AnimationListener;
 import phdev.com.br.metafighter.cmp.event.listeners.EventListener;
 import phdev.com.br.metafighter.cmp.graphics.Texture;
@@ -25,7 +26,7 @@ public class Button extends WindowEntity {
             this.text = new Text(text);
             this.text.setDrawableArea(super.getArea());
         }
-        addAnimationListener(new GoAndBack(this));
+        this.goAndBackAnimationListener = new GoAndBack(this);
         //this.text.adaptText();
     }
 
@@ -50,11 +51,6 @@ public class Button extends WindowEntity {
     @Override
     public void addAnimationListener(AnimationListener listener){
         super.addAnimationListener(listener);
-    }
-
-    @Override
-    public void removeAnimationListener(){
-        super.removeAnimationListener();
     }
 
     @Override

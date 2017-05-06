@@ -18,6 +18,7 @@ import phdev.com.br.metafighter.cmp.graphics.Texture;
 public class Player implements ControllerListener {
 
     private String name;
+    private int charID;
     private Sprite[] view;
 
     public Player() {
@@ -37,6 +38,14 @@ public class Player implements ControllerListener {
 
     public void setView(Sprite[] view) {
         this.view = view;
+    }
+
+    public int getCharID() {
+        return charID;
+    }
+
+    public void setCharID(int charID) {
+        this.charID = charID;
     }
 
     @Override

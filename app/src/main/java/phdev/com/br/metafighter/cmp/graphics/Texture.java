@@ -23,23 +23,27 @@ public class Texture {
 
     public Texture(String path){
         this.image = openImage(path, -1, -1);
-        GameParameters.getInstance().log("          Textura criada: Tamanho usado para alocar: " + this.sizeOf()/1000 + "kB");
+        if (GameParameters.getInstance().debug)
+            GameParameters.getInstance().log("          Textura criada: Tamanho usado para alocar: " + this.sizeOf()/1000 + "kB");
     }
 
     public Texture(String path, int recWidth, int recHeight){
         this.image = openImage(path, recWidth, recHeight);
-        GameParameters.getInstance().log("          Textura criada: Tamanho usado para alocar: " + this.sizeOf()/1000 + "kB");
+        if (GameParameters.getInstance().debug)
+            GameParameters.getInstance().log("          Textura criada: Tamanho usado para alocar: " + this.sizeOf()/1000 + "kB");
     }
 
     public Texture(Bitmap image){
         //this.image = Bitmap.createBitmap(image);
         this.image = image;
-        GameParameters.getInstance().log("          Textura criada: Tamanho usado para alocar: " + this.sizeOf()/1000 + "kB");
+        if (GameParameters.getInstance().debug)
+            GameParameters.getInstance().log("          Textura criada: Tamanho usado para alocar: " + this.sizeOf()/1000 + "kB");
     }
 
     public Texture(Texture texture){
         this.image = Bitmap.createBitmap(texture.getImage());
-        GameParameters.getInstance().log("          Textura criada. Tamanho usado para alocar: " + this.sizeOf()/1000 + "kB / Usado construtor de cópia.");
+        if (GameParameters.getInstance().debug)
+            GameParameters.getInstance().log("          Textura criada. Tamanho usado para alocar: " + this.sizeOf()/1000 + "kB / Usado construtor de cópia.");
     }
 
     public Bitmap getImage() {

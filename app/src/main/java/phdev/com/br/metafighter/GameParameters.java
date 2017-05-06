@@ -13,7 +13,7 @@ public class GameParameters {
 
     public int logIndex = 0;
 
-    public boolean debug = true;
+    public boolean debug = false;
 
     public int orientation;
 

@@ -369,6 +369,9 @@ public class MainScreen extends Screen {
             if (pairedDevices.size() > 0){
 
                 for (BluetoothDevice device : pairedDevices){
+
+                    log("Inserindo elementos");
+
                     TableItem item = new TableItem(device.getName());
                     item.getText().setTextSize(20);
                     item.setId(counter);
@@ -376,6 +379,7 @@ public class MainScreen extends Screen {
                     item.addEventListener(new ActionListener() {
                         @Override
                         public void actionPerformed(Event event) {
+                            log("Clicou");
                             manager.connect(pairedDevices.get(((ClickEvent)event).id));
                         }
                     });

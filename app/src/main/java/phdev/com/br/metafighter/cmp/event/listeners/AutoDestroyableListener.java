@@ -7,5 +7,5 @@ import phdev.com.br.metafighter.cmp.WindowEntity;
  * @version 1.0
  */
 public interface AutoDestroyableListener extends EventListener{
-    void autoDestroy(WindowEntity entity);
+    void autoDestroy(Object entity);
 }

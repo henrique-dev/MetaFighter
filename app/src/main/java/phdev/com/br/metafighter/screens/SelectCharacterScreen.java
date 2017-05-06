@@ -6,9 +6,11 @@ import android.graphics.RectF;
 import phdev.com.br.metafighter.GameParameters;
 import phdev.com.br.metafighter.cmp.event.ClickEvent;
 import phdev.com.br.metafighter.cmp.event.Event;
+import phdev.com.br.metafighter.cmp.event.animation.Selected;
 import phdev.com.br.metafighter.cmp.event.listeners.ActionListener;
 import phdev.com.br.metafighter.cmp.event.listeners.ClickListener;
 import phdev.com.br.metafighter.cmp.event.listeners.EventListener;
+import phdev.com.br.metafighter.cmp.game.Character;
 import phdev.com.br.metafighter.cmp.game.GameLabel;
 import phdev.com.br.metafighter.cmp.game.Player;
 import phdev.com.br.metafighter.cmp.graphics.Sprite;
@@ -41,7 +43,14 @@ public class SelectCharacterScreen extends Screen {
     private GameLabel gameLabelKaila;
     private GameLabel gameLabelGuedes;
 
-    private Player[] characters;
+    private Character[] characters;
+
+    private Sprite[] spriteViewKaila;
+    private Sprite[] spriteViewGuedes;
+    private Sprite[] spriteViewQuele;
+    private Sprite[] spriteViewRomulo;
+    private Sprite[] spriteViewPatricia;
+    private Sprite[] spriteViewLuiz;
 
     private BackGround mainBackground;
 
@@ -69,6 +78,13 @@ public class SelectCharacterScreen extends Screen {
 
         this.mainBackgroundTexture = new Texture("images/backgrounds/background7.png");
 
+        spriteViewKaila = Sprite.getSpriteFromTexture(new Texture("images/characters/kaila/view.png"), 1, 1);
+        spriteViewGuedes = Sprite.getSpriteFromTexture(new Texture("images/characters/guedes/view.png"), 1, 1);
+        spriteViewPatricia = Sprite.getSpriteFromTexture(new Texture("images/characters/patricia/view.png"), 1, 1);
+        spriteViewLuiz = Sprite.getSpriteFromTexture(new Texture("images/characters/luiz/view.png"), 1, 1);
+        spriteViewQuele = Sprite.getSpriteFromTexture(new Texture("images/characters/quele/view.png"), 1, 1);
+        spriteViewRomulo = Sprite.getSpriteFromTexture(new Texture("images/characters/romulo/view.png"), 1, 1);
+
         return true;
     }
 
@@ -88,6 +104,15 @@ public class SelectCharacterScreen extends Screen {
 
         RectF screenSize = GameParameters.getInstance().screenSize;
 
+        characters = new Character[6];
+
+        characters[KAILA] = new Character(null, null, null, spriteViewKaila, "Kaila");
+        characters[GUEDES] = new Character(null, null, null, spriteViewGuedes, "Carlos Guedes");
+        characters[LUIZ] = new Character(null, null, null, spriteViewLuiz, "Luiz Silva");
+        characters[PATRICIA] = new Character(null, null, null, spriteViewPatricia, "Patricia");
+        characters[QUELE] = new Character(null, null, null, spriteViewQuele, "Quele");
+        characters[ROMULO] = new Character(null, null, null, spriteViewRomulo, "Romulo");
+
         RectF buttonSize = new RectF(0, 0, screenSize.width()/4, screenSize.height()/4);
         float fontSize = Text.adaptText(new String[]{"Voltar"}, buttonSize);
         this.backButton = new Button(
@@ -96,20 +121,10 @@ public class SelectCharacterScreen extends Screen {
                         screenSize.centerX() + buttonSize.width()/2,
                         screenSize.bottom),
                 "Voltar", backButtonTexture);
-        this.backButton.addEventListener(new ClickListener() {
+        this.backButton.addEventListener(new ActionListener() {
             @Override
             public void actionPerformed(Event event) {
                 new MainScreen(listener);
-            }
-
-            @Override
-            public boolean pressedPerformed(ClickEvent event) {
-                return true;
-            }
-
-            @Override
-            public boolean releasedPerformed(ClickEvent event) {
-                return true;
             }
         });
         this.backButton.getText().setTextSize(fontSize);
@@ -152,14 +167,16 @@ public class SelectCharacterScreen extends Screen {
                         gameLabelPlayer1.getArea().right + marginX + gameLabelCharArea.width(),
                         marginY + gameLabelCharArea.height()),
                 this.gameLabelCharTexture, null);
-        gameLabelLuiz.setSprites(new Sprite[]{new Sprite(new Texture("images/players/luiz.png"))});
+        gameLabelLuiz.setSprites(characters[LUIZ].getView());
         gameLabelLuiz.setId(LUIZ);
         gameLabelLuiz.addAnimationListener();
+        gameLabelLuiz.addAnimationListener(new Selected(gameLabelLuiz));
         //gameLabelLuiz.addEventListener(handler);
         gameLabelLuiz.addEventListener(new ActionListener() {
             @Override
             public void actionPerformed(Event event) {
-                changeLabelPlayer("Luiz Silva");
+                changeLabelPlayer(characters[LUIZ]);
+                gameLabelLuiz.select();
             }
         });
 
@@ -169,14 +186,14 @@ public class SelectCharacterScreen extends Screen {
                         gameLabelLuiz.getArea().right + marginX + gameLabelCharArea.width(),
                         marginY + gameLabelCharArea.height()),
                 this.gameLabelCharTexture, null);
-        gameLabelQuele.setSprites(new Sprite[]{new Sprite(new Texture("images/players/quele.png"))});
+        gameLabelQuele.setSprites(characters[QUELE].getView());
         gameLabelQuele.setId(QUELE);
         gameLabelQuele.addAnimationListener();
         //gameLabelQuele.addEventListener(handler);
         gameLabelQuele.addEventListener(new ActionListener() {
             @Override
             public void actionPerformed(Event event) {
-                changeLabelPlayer("Quele");
+                changeLabelPlayer(characters[QUELE]);
             }
         });
 
@@ -186,14 +203,14 @@ public class SelectCharacterScreen extends Screen {
                         gameLabelQuele.getArea().right + marginX + gameLabelCharArea.width(),
                         marginY + gameLabelCharArea.height()),
                 this.gameLabelCharTexture, null);
-        gameLabelRomulo.setSprites(new Sprite[]{new Sprite(new Texture("images/players/romulo.png"))});
+        gameLabelRomulo.setSprites(characters[ROMULO].getView());
         gameLabelRomulo.setId(ROMULO);
         gameLabelRomulo.addAnimationListener();
         //gameLabelRomulo.addEventListener(handler);
         gameLabelRomulo.addEventListener(new ActionListener() {
             @Override
             public void actionPerformed(Event event) {
-                changeLabelPlayer("Romulo");
+                changeLabelPlayer(characters[ROMULO]);
             }
         });
 
@@ -203,14 +220,14 @@ public class SelectCharacterScreen extends Screen {
                         gameLabelPlayer1.getArea().right + marginX + gameLabelCharArea.width(),
                         marginY*2 + gameLabelCharArea.height() + gameLabelCharArea.height()),
                 this.gameLabelCharTexture, null);
-        gameLabelPatricia.setSprites(new Sprite[]{new Sprite(new Texture("images/players/patricia.png"))});
+        gameLabelPatricia.setSprites(characters[PATRICIA].getView());
         gameLabelPatricia.setId(PATRICIA);
         gameLabelPatricia.addAnimationListener();
         //gameLabelPatricia.addEventListener(handler);
         gameLabelPatricia.addEventListener(new ActionListener() {
             @Override
             public void actionPerformed(Event event) {
-                changeLabelPlayer("Patricia");
+                changeLabelPlayer(characters[PATRICIA]);
             }
         });
 
@@ -220,14 +237,14 @@ public class SelectCharacterScreen extends Screen {
                         gameLabelPatricia.getArea().right + marginX + gameLabelCharArea.width(),
                         marginY*2 + gameLabelCharArea.height() + gameLabelCharArea.height()),
                 this.gameLabelCharTexture, null);
-        gameLabelKaila.setSprites(new Sprite[]{new Sprite(new Texture("images/players/kaila.png"))});
+        gameLabelKaila.setSprites(characters[KAILA].getView());
         gameLabelKaila.setId(KAILA);
         gameLabelKaila.addAnimationListener();
         //gameLabelKaila.addEventListener(handler);
         gameLabelKaila.addEventListener(new ActionListener() {
             @Override
             public void actionPerformed(Event event) {
-                changeLabelPlayer("Kaila");
+                changeLabelPlayer(characters[KAILA]);
             }
         });
 
@@ -237,14 +254,14 @@ public class SelectCharacterScreen extends Screen {
                         gameLabelKaila.getArea().right + marginX + gameLabelCharArea.width(),
                         marginY*2 + gameLabelCharArea.height() + gameLabelCharArea.height()),
                 this.gameLabelCharTexture, null);
-        gameLabelGuedes.setSprites(new Sprite[]{new Sprite(new Texture("images/players/guedes.png"))});
+        gameLabelGuedes.setSprites(characters[GUEDES].getView());
         gameLabelGuedes.setId(GUEDES);
         gameLabelGuedes.addAnimationListener();
         //gameLabelGuedes.addEventListener(handler);
         gameLabelGuedes.addEventListener(new ActionListener() {
             @Override
             public void actionPerformed(Event event) {
-                changeLabelPlayer("Carlos Guedes");
+                changeLabelPlayer(characters[GUEDES]);
             }
         });
 
@@ -268,16 +285,8 @@ public class SelectCharacterScreen extends Screen {
         return true;
     }
 
-    private void changeLabelPlayer(String name){
-        gameLabelPlayer1.getText().setText(name);
-    }
-
-    public class HandlerChoiceCharacter implements ActionListener{
-
-        @Override
-        public void actionPerformed(Event event) {
-            String name = ((GameLabel)((ClickEvent)event).parameter).getText().getText();
-            gameLabelPlayer1.getText().setText(name);
-        }
+    private void changeLabelPlayer(Character character){
+        gameLabelPlayer1.getText().setText(character.getName());
+        gameLabelPlayer1.setSprites(character.getSprites());
     }
 }

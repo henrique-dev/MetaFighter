@@ -109,7 +109,7 @@ public class MatchScreen extends Screen {
 
         controller = new Controller(
                 new RectF(10, screenSize.bottom - 10 - areaController.height(), 10 + areaController.width(),screenSize.bottom-10 )
-                , controllerDirTexture, null, null, new Player(null, null, null, null, null));
+                , controllerDirTexture, null, null, new Player());
 
 
 

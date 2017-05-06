@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import phdev.com.br.metafighter.GameParameters;
+import phdev.com.br.metafighter.cmp.event.animation.Selected;
 import phdev.com.br.metafighter.cmp.event.listeners.ActionListener;
 import phdev.com.br.metafighter.cmp.event.listeners.AnimationListener;
 import phdev.com.br.metafighter.cmp.event.ClickEvent;
@@ -23,11 +24,14 @@ import phdev.com.br.metafighter.cmp.event.animation.GoAndBack;
 public abstract class Entity implements Component {
 
     protected int id;
-    protected AnimationListener animationListener;
+    protected Selected selectedAnimationListener;
+    protected GoAndBack goAndBackAnimationListener;
     protected List<EventListener> listeners;
     protected RectF area;
     protected boolean active;
     protected boolean clicked = false;
+
+    protected boolean selected;
 
     public Entity(RectF area){
         this.area = area;
@@ -40,15 +44,22 @@ public abstract class Entity implements Component {
     }
 
     protected void addAnimationListener(AnimationListener listener){
-        this.animationListener = listener;
+        if (listener instanceof Selected) {
+            selectedAnimationListener = (Selected)listener;
+            return;
+        }
+        if (listener instanceof GoAndBack) {
+            goAndBackAnimationListener = (GoAndBack)listener;
+            return;
+        }
     }
 
     protected void addAnimationListener(){
-        this.animationListener = new GoAndBack(this);
+        this.goAndBackAnimationListener = new GoAndBack(this);
     }
 
     protected void removeAnimationListener(){
-        this.animationListener = null;
+        this.goAndBackAnimationListener = null;
     }
 
     protected void addEventListener(EventListener listener) {
@@ -61,6 +72,14 @@ public abstract class Entity implements Component {
         if (listeners == null)
             return;
         this.listeners.remove(listener);
+    }
+
+    public void select(){
+        selected = true;
+    }
+
+    public void disselect(){
+        selected = false;
     }
 
     protected boolean processListeners(Event event){
@@ -86,9 +105,9 @@ public abstract class Entity implements Component {
                             ls.pressedPerformed(clickEvent);
 
                         // Caso haja uma animação, à executa
-                        if (animationListener != null)
+                        if (goAndBackAnimationListener != null)
                             // Executa a animação de ir e voltar
-                            ((GoAndBack)animationListener).go();
+                            ((GoAndBack) goAndBackAnimationListener).go();
                         // Define que a entidade foi pressionada
                         this.clicked = true;
                         break;
@@ -101,9 +120,9 @@ public abstract class Entity implements Component {
                                 ls.releasedPerformed(clickEvent);
 
                             // Caso haja uma animação, à executa
-                            if (animationListener != null)
+                            if (goAndBackAnimationListener != null)
                                 // Executa a animação de ir e voltar
-                                ((GoAndBack)animationListener).back();
+                                ((GoAndBack) goAndBackAnimationListener).back();
 
                             // Caso a entidade tenha sido soltada para executar sua função
                             if (clickEvent.execute) {

@@ -98,10 +98,10 @@ public class TableItem extends WindowEntity {
 
                                 /*
                                 // Caso haja uma animação, à executa
-                                if (animationListener != null)
+                                if (goAndBackAnimationListener != null)
                                     // Executa a animação de ir e voltar
                                     if (clickEvent.execute && !moving)
-                                        ((GoAndBack)animationListener).back();
+                                        ((GoAndBack)goAndBackAnimationListener).back();
                                         */
 
                             // Caso a entidade tenha sido soltada para executar sua função
@@ -109,9 +109,9 @@ public class TableItem extends WindowEntity {
                                 // Executa a ação correspodente
 
                                 // Caso haja uma animação, à executa
-                                if (animationListener != null) {
-                                    ((GoAndBack) animationListener).setOriginalArea(new RectF(super.getArea()));
-                                    ((GoAndBack) animationListener).goAndBack();
+                                if (goAndBackAnimationListener != null) {
+                                    ((GoAndBack) goAndBackAnimationListener).setOriginalArea(new RectF(super.getArea()));
+                                    ((GoAndBack) goAndBackAnimationListener).goAndBack();
                                 }
                                 if (ls != null)
                                     ls.actionPerformed(clickEvent);

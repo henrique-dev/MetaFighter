@@ -17,11 +17,6 @@ import phdev.com.br.metafighter.cmp.graphics.Texture;
  */
 public class Player implements ControllerListener {
 
-    public static final int ANDAR_FRENTE = 0;
-    public static final int ANDAR_TRAS = 1;
-    public static final int PULAR = 3;
-    public static final int ACTION1 = 4;
-
     private String name;
     private Sprite[] view;
 

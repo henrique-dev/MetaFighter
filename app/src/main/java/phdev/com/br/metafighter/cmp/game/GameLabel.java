@@ -45,10 +45,12 @@ public class GameLabel extends GameEntity {
     }
 
     public void setSprites(Sprite[] sprites) {
-        for (int i = 0; i < sprites.length; i++){
-            sprites[i].getTexture().scaleImage((int)area.width(), (int)area.height());
+        if (sprites!= null){
+            for (int i = 0; i < sprites.length; i++){
+                sprites[i].getTexture().scaleImage((int)area.width(), (int)area.height());
+            }
+            this.sprites = sprites;
         }
-        this.sprites = sprites;
     }
 
     public Texture getTexture() {
@@ -110,6 +112,8 @@ public class GameLabel extends GameEntity {
         if (this.text != null){
             this.text.draw(canvas);
         }
+        if (selected)
+            selectedAnimationListener.draw(canvas);
     }
 
     @Override

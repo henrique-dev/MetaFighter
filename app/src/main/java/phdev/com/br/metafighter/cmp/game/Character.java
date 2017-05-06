@@ -20,4 +20,20 @@ public class Character extends GameEntity {
         this.name = name;
         this.view = view;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Sprite[] getView() {
+        return view;
+    }
+
+    public void setView(Sprite[] view) {
+        this.view = view;
+    }
 }

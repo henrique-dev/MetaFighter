@@ -32,7 +32,8 @@ public class Texture {
     }
 
     public Texture(Bitmap image){
-        this.image = Bitmap.createBitmap(image);
+        //this.image = Bitmap.createBitmap(image);
+        this.image = image;
         GameParameters.getInstance().log("          Textura criada: Tamanho usado para alocar: " + this.sizeOf()/1000 + "kB");
     }
 
@@ -99,6 +100,18 @@ public class Texture {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public void clipMe(int x, int y, int width, int height){
+        Bitmap imageClip = this.image;
+        try{
+            this.image = Bitmap.createBitmap(imageClip, x, y, width, height);
+        }
+        catch (Exception e){
+            Log.e("GameEngine", e.getMessage());
+            Log.e("GameEngine", e.getCause().toString());
+            e.printStackTrace();
+        }
     }
 
     public void scaleImage(int width, int height){

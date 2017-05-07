@@ -31,21 +31,21 @@ public abstract class Screen implements Component {
         this.listener = listener;
         this.screenUpdateListener = (ScreenUpdateListener)listener;
         this.progressListener = (ProgressListener)listener;
-        //this.entities = new ArrayList<>();
         currentScene = new Scene();
 
-        try{
+        /*
+        try {
             this.init();
-        }
-        catch (Exception ex){
+        } catch (Exception ex) {
             Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": ERROR: " + ex.getMessage());
         }
+        */
 
         screenUpdateListener.screenUpdate(this);
 
     }
 
-    protected void init(){
+    protected final void init(){
 
         progressListener.progressPrepare();
 

@@ -15,10 +15,13 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import phdev.com.br.metafighter.cmp.event.listeners.ConnectionListener;
 import phdev.com.br.metafighter.cmp.event.listeners.EventListener;
 import phdev.com.br.metafighter.cmp.event.listeners.IntentListener;
 import phdev.com.br.metafighter.cmp.event.listeners.MessageListener;
 import phdev.com.br.metafighter.screens.MatchScreen;
+import phdev.com.br.metafighter.screens.SelectCharacterScreen;
+import phdev.com.br.metafighter.screens.TesteScreen;
 
 /**
  * @author Paulo Henrique Gonçalves Bacelar
@@ -37,14 +40,20 @@ public final class BluetoothManager {
 
     private BluetoothAdapter bluetoothAdapter;
 
-    protected BluetoothManager manager;
+    //protected BluetoothManager manager;
+
+    private ConnectionListener connectionListener;
 
     protected EventListener listener;
 
     public BluetoothManager(EventListener listener){
         this.listener = listener;
         this.bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        manager = this;
+        //manager = this;
+    }
+
+    public void setConnectionListener(ConnectionListener listener){
+        this.connectionListener = listener;
     }
 
     public boolean haveBluetooth(){
@@ -308,7 +317,10 @@ public final class BluetoothManager {
             if (!socket.isConnected())
                 log("Thread Conectado: O soquete não esta conectado");
 
-            new MatchScreen(listener, manager, null, null);
+            //new MatchScreen(listener, BluetoothManager.this, null, null);
+            //new SelectCharacterScreen(listener, BluetoothManager.this, null);
+
+            new TesteScreen(listener, BluetoothManager.this);
 
 
             InputStream tmpIn = null;
@@ -341,6 +353,7 @@ public final class BluetoothManager {
 
                     if (bytes != -1){
                         data = bytes;
+                        connectionListener.read(buffer);
                     }
                     else
                         data = -1;
@@ -357,7 +370,8 @@ public final class BluetoothManager {
         public void write(byte[] bytes){
 
             try{
-                this.out.write(bytes);
+                //this.out.write(bytes);
+                this.out.write(connectionListener.write());
 
             } catch (IOException e) {
                 log(e.getMessage());

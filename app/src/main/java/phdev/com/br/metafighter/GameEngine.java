@@ -29,6 +29,7 @@ import phdev.com.br.metafighter.cmp.window.LoadingScreen;
 import phdev.com.br.metafighter.cmp.window.Popup;
 import phdev.com.br.metafighter.cmp.window.ProgressHud;
 import phdev.com.br.metafighter.cmp.window.Screen;
+import phdev.com.br.metafighter.connections.packets.Packet;
 import phdev.com.br.metafighter.screens.MainScreen;
 
 /**
@@ -158,7 +159,10 @@ public class GameEngine extends SurfaceView implements SurfaceHolder.Callback{
         if (message != null)
             message.update();
 
+    }
 
+    public void receivePacket(Packet packet){
+        
     }
 
     @Override

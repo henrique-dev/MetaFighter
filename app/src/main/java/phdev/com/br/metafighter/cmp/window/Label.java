@@ -56,13 +56,15 @@ public class Label extends WindowEntity {
     @Override
     public void setX(float x){
         super.setX(x);
-        this.text.setDrawableArea(super.getArea());
+        if (text != null)
+            this.text.setDrawableArea(super.getArea());
     }
 
     @Override
     public void setY(float y){
         super.setY(y);
-        this.text.setDrawableArea(super.getArea());
+        if (text != null)
+            this.text.setDrawableArea(super.getArea());
     }
 
     @Override

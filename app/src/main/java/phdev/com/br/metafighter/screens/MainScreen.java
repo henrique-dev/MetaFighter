@@ -16,6 +16,7 @@ import phdev.com.br.metafighter.cmp.event.listeners.EventListener;
 import phdev.com.br.metafighter.cmp.game.AnimatedBackground;
 import phdev.com.br.metafighter.cmp.window.BackGround;
 import phdev.com.br.metafighter.cmp.window.Button;
+import phdev.com.br.metafighter.cmp.window.Label;
 import phdev.com.br.metafighter.cmp.window.Scene;
 import phdev.com.br.metafighter.cmp.window.Screen;
 import phdev.com.br.metafighter.cmp.window.Table;
@@ -23,6 +24,7 @@ import phdev.com.br.metafighter.cmp.window.TableItem;
 import phdev.com.br.metafighter.cmp.window.Text;
 import phdev.com.br.metafighter.cmp.graphics.Texture;
 import phdev.com.br.metafighter.cmp.event.animation.GoAndBack;
+import phdev.com.br.metafighter.connections.Server;
 
 /**
  * @author Paulo Henrique Gonçalves Bacelar
@@ -66,6 +68,7 @@ public class MainScreen extends Screen {
 
     public MainScreen(EventListener listener) {
         super(listener);
+        init();
     }
 
     @Override
@@ -342,7 +345,8 @@ public class MainScreen extends Screen {
 
     private void optionsButtonAction(Event evt){
         //new MatchScreen(listener, null);
-        currentScene = optionsScene;
+        //currentScene = optionsScene;
+        new TesteScreen(listener, null);
     }
 
     private void hostButtonAction(Event evt){

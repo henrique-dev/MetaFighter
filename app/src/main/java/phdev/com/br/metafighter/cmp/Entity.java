@@ -16,6 +16,7 @@ import phdev.com.br.metafighter.cmp.event.listeners.ClickListener;
 import phdev.com.br.metafighter.cmp.event.Event;
 import phdev.com.br.metafighter.cmp.event.listeners.EventListener;
 import phdev.com.br.metafighter.cmp.event.animation.GoAndBack;
+import phdev.com.br.metafighter.connections.packets.Move;
 
 /**
  * @author Paulo Henrique Gonçalves Bacelar
@@ -50,42 +51,6 @@ public abstract class Entity implements Component {
             return;
         this.listeners.remove(listener);
     }
-
-    /*
-    private void fireEvents(Class tmp, Event evt){
-        for (EventListener listener : listeners){
-            if (listener.getClass() == tmp){
-
-            }
-        }
-    }
-
-    protected void processListeners(int action, Object[] evt){
-
-        for (EventListener listener : listeners) {
-            switch (action) {
-                case EventListener.ACTION:
-                    ActionListener acl = (ActionListener)listener;
-                    acl.actionPerformed((Event)evt[0]);
-                    break;
-                case EventListener.ANIMATION_GB_GO:
-                    ((GoAndBack)listener).go();
-                    break;
-                case EventListener.ANIMATION_GB_BACK:
-                    ((GoAndBack)listener).back();
-                    break;
-                case EventListener.ANIMATION_GB_GO_AND_BACK:
-                    ((GoAndBack)listener).goAndBack();
-                    break;
-                case EventListener.ANIMATION_SL_SELECT:
-                    ((Selected)listener).draw((Canvas)evt[0]);
-                    break;
-                case EventListener.ANIMATION_SL_DISSELECT:
-
-            }
-        }
-    }
-    */
 
     public RectF getArea() {
         return area;
@@ -129,6 +94,13 @@ public abstract class Entity implements Component {
 
     protected float getY(){
         return this.area.top;
+    }
+
+    public void processPacket(Move move){
+        if (this.id == move.getSendtoid()){
+            this.setX(move.getX());
+            this.setY(move.getY());
+        }
     }
 
     public void move(float x, float y){

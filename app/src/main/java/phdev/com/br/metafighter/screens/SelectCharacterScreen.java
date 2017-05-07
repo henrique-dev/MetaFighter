@@ -84,6 +84,8 @@ public class SelectCharacterScreen extends Screen {
 
     public SelectCharacterScreen(EventListener listener) {
         super(listener);
+
+        init();
     }
 
     @Override
@@ -435,11 +437,11 @@ public class SelectCharacterScreen extends Screen {
 
     }
 
-        private class DisableFlashHandler implements AutoDestroyableListener{
+    private class DisableFlashHandler implements AutoDestroyableListener{
 
-            @Override
-            public void autoDestroy(Object entity) {
-                flash = null;
-            }
+        @Override
+        public void autoDestroy(Object entity) {
+            flash = null;
         }
+    }
 }

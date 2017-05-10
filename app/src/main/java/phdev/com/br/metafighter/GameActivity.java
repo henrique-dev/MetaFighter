@@ -12,11 +12,10 @@ import android.view.WindowManager;
  * @author Paulo Henrique Gonçalves Bacelar
  * @version 1.0
  */
-public class GameActivity extends Activity{
+public final class GameActivity extends Activity{
 
     private final int LANDSCAPE = 0;
     private final int PORTRAIT = 1;
-    private GameEngine gameEngine;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -24,24 +23,17 @@ public class GameActivity extends Activity{
 
         this.setupParameters();
 
-        gameEngine = new GameEngine(this);
-
-        super.setContentView(gameEngine);
-
-        //BluetoothManager.getInstance().gameEngine = gameEngine;
+        super.setContentView(new GameEngine(this));
 
     }
 
     private void setupParameters() {
 
         GameParameters.getInstance().orientation = LANDSCAPE;
-
         GameParameters.getInstance().assetManager = getAssets();
 
         this.setRequestedOrientation(GameParameters.getInstance().orientation);
-
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         Display display = getWindowManager().getDefaultDisplay();
@@ -51,6 +43,8 @@ public class GameActivity extends Activity{
         GameParameters.getInstance().screenSize = new RectF(0, 0, size.x, size.y);
         GameParameters.getInstance().screenWidth = size.x;
         GameParameters.getInstance().screenHeight = size.y;
+
+        GameParameters.getInstance().fontSizeButton = 20;
 
     }
 

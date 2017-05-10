@@ -12,11 +12,19 @@ import phdev.com.br.metafighter.cmp.graphics.Sprite;
  */
 public class Character extends GameEntity {
 
+    public static final int TESTE = -1;
+    public static final int GUEDES = 0;
+    public static final int KAILA = 1;
+    public static final int LUIZ = 2;
+    public static final int PATRICIA = 3;
+    public static final int QUELE = 4;
+    public static final int ROMULO = 5;
+
     private String name;
     private Sprite[] view;
 
-    public Character(RectF area, Paint paint, Sprite[] sprites, Sprite[] view, String name) {
-        super(area, paint, sprites);
+    public Character(Sprite[] sprites, Sprite[] view, String name) {
+        super(null, null, sprites);
         this.name = name;
         this.view = view;
     }

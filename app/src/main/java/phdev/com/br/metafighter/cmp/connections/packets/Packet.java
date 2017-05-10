@@ -1,4 +1,4 @@
-package phdev.com.br.metafighter.connections.packets;
+package phdev.com.br.metafighter.cmp.connections.packets;
 
 /**
  * @author Paulo Henrique Gonçalves Bacelar

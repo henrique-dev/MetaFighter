@@ -12,39 +12,39 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
 import phdev.com.br.metafighter.cmp.Component;
-import phdev.com.br.metafighter.cmp.WindowEntity;
 import phdev.com.br.metafighter.cmp.event.handlers.AutoDestroyableHandler;
-import phdev.com.br.metafighter.cmp.event.handlers.MessageHandler;
-import phdev.com.br.metafighter.cmp.event.listeners.IntentListener;
-import phdev.com.br.metafighter.cmp.event.listeners.ProgressListener;
-import phdev.com.br.metafighter.cmp.event.listeners.ScreenUpdateListener;
+import phdev.com.br.metafighter.cmp.game.Character;
 import phdev.com.br.metafighter.cmp.graphics.Texture;
+import phdev.com.br.metafighter.cmp.misc.GameContext;
 import phdev.com.br.metafighter.cmp.window.BackGround;
 import phdev.com.br.metafighter.cmp.window.LoadingScreen;
 import phdev.com.br.metafighter.cmp.window.Popup;
 import phdev.com.br.metafighter.cmp.window.ProgressHud;
 import phdev.com.br.metafighter.cmp.window.Screen;
-import phdev.com.br.metafighter.connections.packets.Packet;
+import phdev.com.br.metafighter.cmp.connections.packets.Packet;
 import phdev.com.br.metafighter.screens.MainScreen;
+import phdev.com.br.metafighter.screens.MatchScreen;
 
 /**
  * @author Paulo Henrique Gonçalves Bacelar
  * @version 1.0
  */
-public class GameEngine extends SurfaceView implements SurfaceHolder.Callback{
+public final class GameEngine extends SurfaceView implements SurfaceHolder.Callback{
 
     private MainThread thread;
 
+    protected ConnectionManager connectionManager;
+
+    private SoundManager soundManager;
+
     private LoadingScreen loadingScreen;
-    private Component screen;
+    private Screen screen;
     private Component message;
 
     private Paint debugPaint;
+
+    private BluetoothManager bluetoothManager;
 
     public GameEngine(Context context) {
         super(context);
@@ -54,10 +54,6 @@ public class GameEngine extends SurfaceView implements SurfaceHolder.Callback{
         this.thread = new MainThread(getHolder(), this);
 
         setFocusable(true);
-    }
-
-    public void showIntent(Intent intent){
-        getContext().startActivity(intent);
     }
 
     @Override
@@ -121,9 +117,10 @@ public class GameEngine extends SurfaceView implements SurfaceHolder.Callback{
 
         this.loadingScreen = new LoadingScreen(new BackGround(screenSize, new Texture("images/backgrounds/background7.png")), progressHud);
 
-        new MainScreen(new HandlerScreen());
+        connectionManager = new ConnectionManager(gameContext);
 
-        //components.add()
+        new MainScreen(gameContext);
+        //new MatchScreen(gameContext, null, Character.TESTE, -1);
     }
 
     @SuppressLint("MissingSuperCall")
@@ -161,8 +158,12 @@ public class GameEngine extends SurfaceView implements SurfaceHolder.Callback{
 
     }
 
-    public void receivePacket(Packet packet){
-        
+    public void processPackets(Packet packet){
+        if (packet == null) {
+            //Log.d("GameEngine", "processPackets: NULL");
+            return;
+        }
+        screen.processPackets(packet);
     }
 
     @Override
@@ -216,12 +217,17 @@ public class GameEngine extends SurfaceView implements SurfaceHolder.Callback{
                     synchronized (surfaceHolder){
                         this.gameEngine.update();
                         this.gameEngine.draw(canvas);
+
+                        if (connectionManager.isActive()) {
+                            connectionManager.sendPackets();
+                            processPackets(connectionManager.receivePackets());
+                        }
                     }
                 }
                 catch(Exception e){
-                    Log.e("GameEngine", e.getLocalizedMessage() == null ? "" : e.getLocalizedMessage());
+                    Log.e("GameEngine", "ERRO: " + " - " + (e.getMessage() == null ? "" : e.getMessage()));
                     //Log.e("GameEngine", e.getCause().toString());
-                    e.printStackTrace();
+                    //e.printStackTrace();
                 }
                 finally {
                     if(canvas != null){
@@ -260,7 +266,7 @@ public class GameEngine extends SurfaceView implements SurfaceHolder.Callback{
         }
     }
 
-    public class HandlerScreen extends MessageHandler implements IntentListener, ProgressListener, ScreenUpdateListener{
+    public final GameContext gameContext = new GameContext() {
 
         @Override
         public void sendIntentRequest(Intent intent) {
@@ -284,26 +290,25 @@ public class GameEngine extends SurfaceView implements SurfaceHolder.Callback{
         }
 
         @Override
-        public void progressUpdate(int value) {
-            loadingScreen.increaseProgress(value);
-        }
-
-        @Override
-        public void progressPrepare() {
-            loadingScreen.setVisible(true);
-        }
-
-        @Override
-        public void progressFinalize() {
-            loadingScreen.setVisible(false);
-            loadingScreen.resetProgress();
+        public LoadingScreen getProgressCmp(){
+            return loadingScreen;
         }
 
         @Override
         public void screenUpdate(Screen sc) {
             screen = sc;
         }
-    }
+
+        @Override
+        public ConnectionManager getConnectionType() {
+            return connectionManager;
+        }
+
+        @Override
+        public SoundManager getSoundManager(){
+            return soundManager;
+        }
+    };
 
 
 

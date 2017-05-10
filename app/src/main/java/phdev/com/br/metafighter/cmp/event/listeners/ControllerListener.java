@@ -6,15 +6,56 @@ import phdev.com.br.metafighter.cmp.event.Event;
  * @author Paulo Henrique Gonçalves Bacelar
  * @version 1.0
  */
-public interface ControllerListener extends EventListener{
+public abstract class ControllerListener implements EventListener{
 
-    void upPerformed(Event evt);
-    void downPerformed(Event evt);
-    void leftPerformed(Event evt);
-    void rightPerformed(Event evt);
-    void action1Performed(Event evt);
-    void action2Performed(Event evt);
-    void action3Performed(Event evt);
-    void action4Performed(Event evt);
+    public void arrowUpPerformed(){
+
+    }
+    public void arrowDownPerformed(){
+
+    }
+    public void arrowLeftPerformed(){
+
+    }
+    public void arrowRightPerformed(){
+
+    }
+    public void arrowUpPressed(){
+
+    }
+    public void arrowUpReleased(){
+
+    }
+    public void arrowDownPressed(){
+
+    }
+    public void arrowDownReleased(){
+
+    }
+    public void arrowRightPressed(){
+
+    }
+    public void arrowRightReleased(){
+
+    }
+    public void arrowLeftPressed(){
+
+    }
+    public void arrowLeftReleased(){
+
+    }
+
+    public void action1Performed(){
+
+    }
+    public void action2Performed(){
+
+    }
+    public void action3Performed(){
+
+    }
+    public void action4Performed(){
+
+    }
 
 }

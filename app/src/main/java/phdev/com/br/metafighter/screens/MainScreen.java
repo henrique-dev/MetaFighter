@@ -1,6 +1,8 @@
 package phdev.com.br.metafighter.screens;
 
 import android.bluetooth.BluetoothDevice;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.Log;
@@ -12,11 +14,12 @@ import phdev.com.br.metafighter.GameParameters;
 import phdev.com.br.metafighter.cmp.event.ClickEvent;
 import phdev.com.br.metafighter.cmp.event.Event;
 import phdev.com.br.metafighter.cmp.event.listeners.ActionListener;
-import phdev.com.br.metafighter.cmp.event.listeners.EventListener;
 import phdev.com.br.metafighter.cmp.game.AnimatedBackground;
+import phdev.com.br.metafighter.cmp.game.Collision;
+import phdev.com.br.metafighter.cmp.misc.Constant;
+import phdev.com.br.metafighter.cmp.misc.GameContext;
 import phdev.com.br.metafighter.cmp.window.BackGround;
 import phdev.com.br.metafighter.cmp.window.Button;
-import phdev.com.br.metafighter.cmp.window.Label;
 import phdev.com.br.metafighter.cmp.window.Scene;
 import phdev.com.br.metafighter.cmp.window.Screen;
 import phdev.com.br.metafighter.cmp.window.Table;
@@ -24,7 +27,6 @@ import phdev.com.br.metafighter.cmp.window.TableItem;
 import phdev.com.br.metafighter.cmp.window.Text;
 import phdev.com.br.metafighter.cmp.graphics.Texture;
 import phdev.com.br.metafighter.cmp.event.animation.GoAndBack;
-import phdev.com.br.metafighter.connections.Server;
 
 /**
  * @author Paulo Henrique Gonçalves Bacelar
@@ -32,7 +34,8 @@ import phdev.com.br.metafighter.connections.Server;
  */
 public class MainScreen extends Screen {
 
-    private BluetoothManager manager;
+    private BluetoothManager bluetoothManager;
+
     private List<BluetoothDevice> pairedDevices;
 
     private Scene mainMenuScene;
@@ -66,9 +69,14 @@ public class MainScreen extends Screen {
 
     private Table table;
 
-    public MainScreen(EventListener listener) {
-        super(listener);
+
+    // Para testes*****************************************
+
+
+    public MainScreen(GameContext context) {
+        super(context);
         init();
+        this.bluetoothManager = context.getConnectionType().getBluetoothManager();
     }
 
     @Override
@@ -80,7 +88,6 @@ public class MainScreen extends Screen {
         this.textureTableBody = new Texture("cmp/table/body.png");
         this.textureTableShow = new Texture("cmp/table/show.png");
         this.textureTableItem = new Texture("cmp/table/item.png");
-        //this.backButtonTexture = new Texture("images/buttons/button1.png");
 
         return true;
     }
@@ -100,7 +107,8 @@ public class MainScreen extends Screen {
 
         RectF screenSize = GameParameters.getInstance().screenSize;
         mainBackGround = new BackGround(new RectF(screenSize), mainBackgroundTexture);
-        //mainBackGround = new AnimatedBackground(mainBackGround, 4, AnimatedBackground.LEFT, AnimatedBackground.NO_MOVEMENT, true, true);
+
+        float fontSizeButton = GameParameters.getInstance().fontSizeButton;
 
         //**********************************************************************************************
         //**********************************************************************************************
@@ -176,7 +184,7 @@ public class MainScreen extends Screen {
 
             RectF buttonSize = new RectF(0, 0, screenSize.width()/4, screenSize.height()/4);
 
-            float fontSize = Text.adaptText(new String[]{"Entrar em uma partida"}, buttonSize);
+            float fontSize = Text.adaptText(new String[]{"Criar partida"}, buttonSize);
 
             //ButtonHandlerMultiplayer buttonHandler = new ButtonHandlerMultiplayer();
 
@@ -201,7 +209,7 @@ public class MainScreen extends Screen {
                             screenSize.centerY() - buttonSize.height()/2,
                             screenSize.centerX() + buttonSize.width()/2,
                             screenSize.centerY() + buttonSize.height()/2),
-                    "Entrar em uma partida", buttonTexture);
+                    "Entrar em\numa partida", buttonTexture);
             joinButton.getText().setTextSize(fontSize);
             joinButton.addEventListener(new ActionListener() {
                 @Override
@@ -334,41 +342,39 @@ public class MainScreen extends Screen {
 
 
     private void singleplayerButtonAction(Event evt){
-        new SelectCharacterScreen(listener);
+        new SelectCharacterScreen(context);
     }
 
     private void multiplayerButtonAction(Event evt){
-        manager = new BluetoothManager(listener);
-        manager.activate();
+        bluetoothManager.activate();
         currentScene = multiplayerSelectScene;
     }
 
     private void optionsButtonAction(Event evt){
         //new MatchScreen(listener, null);
-        //currentScene = optionsScene;
-        new TesteScreen(listener, null);
+        currentScene = optionsScene;
     }
 
     private void hostButtonAction(Event evt){
-        if (manager.haveBluetooth())
+        if (bluetoothManager.haveBluetooth())
             sendMessageToScreen("O bluetooth não foi ativado ou\n este dispositivo não é compatível");
         else
-        if (!manager.isEnabled())
-            Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": O bluetooth deve estar ativado para proseeguir.");
+        if (!bluetoothManager.isEnabled())
+            sendMessageToScreen(": O bluetooth deve estar ativado para proseeguir.");
         else {
-            manager.start();
+            bluetoothManager.start();
             currentScene = multiplayerHostScene;
         }
     }
 
     private void joinButtonAction(Event evt){
-        if (manager.haveBluetooth())
+        if (bluetoothManager.haveBluetooth())
             sendMessageToScreen("O bluetooth não foi ativado ou\n este dispositivo não é compatível");
         else
-        if (!manager.isEnabled())
+        if (!bluetoothManager.isEnabled())
             sendMessageToScreen(": O bluetooth deve estar ativado para proseeguir.");
         else {
-            pairedDevices = manager.getBondedDevices();
+            pairedDevices = bluetoothManager.getBondedDevices();
             int counter = 0;
             if (pairedDevices.size() > 0){
 
@@ -384,7 +390,7 @@ public class MainScreen extends Screen {
                         @Override
                         public void actionPerformed(Event event) {
                             log("Clicou");
-                            manager.connect(pairedDevices.get(((ClickEvent)event).id));
+                            bluetoothManager.connect(pairedDevices.get(((ClickEvent)event).id));
                         }
                     });
 
@@ -398,17 +404,16 @@ public class MainScreen extends Screen {
     }
 
     private void backToMainFromMultiSelectButtonAction(Event evt){
-        manager = null;
         currentScene = mainMenuScene;
     }
 
     private void backToMultiSelectFromHostButtonAction(Event evt){
-        manager.stop();
+        bluetoothManager.stop();
         currentScene = multiplayerSelectScene;
     }
 
     private void backToMultiSelectFromJoinButtonAction(Event evt){
-        manager.stop();
+        bluetoothManager.stop();
         currentScene = multiplayerSelectScene;
     }
 

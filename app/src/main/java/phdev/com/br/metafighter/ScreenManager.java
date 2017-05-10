@@ -9,7 +9,7 @@ import phdev.com.br.metafighter.cmp.Component;
  * @author Paulo Henrique Gonçalves Bacelar
  * @version 1.0
  */
-public class ScreenManager {
+public final class ScreenManager {
 
     private static final ScreenManager instance = new ScreenManager();
     private List<Component> screens;

@@ -1,18 +1,21 @@
 package phdev.com.br.metafighter.cmp.misc;
 
 import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.graphics.RectF;
+import android.util.Log;
 import android.view.MotionEvent;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import phdev.com.br.metafighter.cmp.Component;
+import phdev.com.br.metafighter.cmp.event.ClickEvent;
 import phdev.com.br.metafighter.cmp.event.Event;
 import phdev.com.br.metafighter.cmp.event.animation.GoAndBack;
 import phdev.com.br.metafighter.cmp.event.listeners.ActionListener;
+import phdev.com.br.metafighter.cmp.event.listeners.ClickListener;
 import phdev.com.br.metafighter.cmp.event.listeners.ControllerListener;
+import phdev.com.br.metafighter.cmp.event.listeners.PressingListener;
 import phdev.com.br.metafighter.cmp.graphics.Texture;
 import phdev.com.br.metafighter.cmp.window.Button;
 
@@ -22,14 +25,23 @@ import phdev.com.br.metafighter.cmp.window.Button;
  */
 public class Controller implements Component {
 
-    public static final int DIREC_UP = 0;
-    public static final int DIREC_DOWN = 1;
-    public static final int DIREC_LEFT = 2;
-    public static final int DIREC_RIGHT = 3;
-    public static final int ACTION_1 = 4;
-    public static final int ACTION_2 = 5;
-    public static final int ACTION_3 = 6;
-    public static final int ACTION_4 = 7;
+    public static final int ARROW_UP_PRESSED = 4;
+    public static final int ARROW_DOWN_PRESSED = 5;
+    public static final int ARROW_LEFT_PRESSED = 6;
+    public static final int ARROW_RIGHT_PRESSED = 7;
+    public static final int ARROW_UP_RELEASED = 8;
+    public static final int ARROW_DOWN_RELEASED = 9;
+    public static final int ARROW_LEFT_RELEASED = 10;
+    public static final int ARROW_RIGHT_RELEASED = 11;
+    public static final int ARROW_UP_ACTION = 12;
+    public static final int ARROW_DOWN_ACTION = 13;
+    public static final int ARROW_LEFT_ACTION = 14;
+    public static final int ARROW_RIGHT_ACTION = 15;
+
+    public static final int ACTION_1 = 16;
+    public static final int ACTION_2 = 17;
+    public static final int ACTION_3 = 18;
+    public static final int ACTION_4 = 19;
 
     private Texture directionalTexture;
     private Texture buttonTexture;
@@ -40,6 +52,11 @@ public class Controller implements Component {
     private Button direcDownButton;
     private Button direcLeftButton;
     private Button direcRightButton;
+
+    private Button action1Button;
+    private Button action2Button;
+    private Button action3Button;
+    private Button action4Button;
 
     private RectF directionalArea;
     private RectF buttonsArea;
@@ -62,10 +79,21 @@ public class Controller implements Component {
                 directionalArea.top + divy),
                 null, this.directionalTexture);
         direcUpButton.getPaint().setAlpha(170);
-        direcUpButton.addEventListener(new ActionListener() {
+        direcUpButton.addEventListener(new ClickListener() {
+
+            @Override
+            public void pressedPerformed(ClickEvent event) {
+                fireAction(ARROW_UP_PRESSED);
+            }
+
+            @Override
+            public void releasedPerformed(ClickEvent event) {
+                fireAction(ARROW_UP_RELEASED);
+            }
+
             @Override
             public void actionPerformed(Event event) {
-                fireAction(DIREC_UP);
+                fireAction(ARROW_UP_ACTION);
             }
         });
         direcUpButton.addAnimationListener(new GoAndBack(direcUpButton));
@@ -78,10 +106,21 @@ public class Controller implements Component {
                 directionalArea.bottom ),
                 null, this.directionalTexture);
         direcDownButton.getPaint().setAlpha(170);
-        direcDownButton.addEventListener(new ActionListener() {
+        direcDownButton.addEventListener(new ClickListener() {
+
+            @Override
+            public void pressedPerformed(ClickEvent event) {
+                fireAction(ARROW_DOWN_PRESSED);
+            }
+
+            @Override
+            public void releasedPerformed(ClickEvent event) {
+                fireAction(ARROW_DOWN_RELEASED);
+            }
+
             @Override
             public void actionPerformed(Event event) {
-                fireAction(DIREC_DOWN);
+                fireAction(ARROW_DOWN_ACTION);
             }
         });
         direcDownButton.addAnimationListener(new GoAndBack(direcDownButton));
@@ -94,10 +133,20 @@ public class Controller implements Component {
                 directionalArea.top + divy*2 ),
                 null, this.directionalTexture);
         direcLeftButton.getPaint().setAlpha(170);
-        direcLeftButton.addEventListener(new ActionListener() {
+        direcLeftButton.addEventListener(new ClickListener() {
+            @Override
+            public void pressedPerformed(ClickEvent event) {
+                fireAction(ARROW_LEFT_PRESSED);
+            }
+
+            @Override
+            public void releasedPerformed(ClickEvent event) {
+                fireAction(ARROW_LEFT_RELEASED);
+            }
+
             @Override
             public void actionPerformed(Event event) {
-                fireAction(DIREC_LEFT);
+                fireAction(ARROW_LEFT_ACTION);
             }
         });
         direcLeftButton.addAnimationListener(new GoAndBack(direcLeftButton));
@@ -110,10 +159,20 @@ public class Controller implements Component {
                 directionalArea.top + divy*2 ),
                 null, this.directionalTexture);
         direcRightButton.getPaint().setAlpha(170);
-        direcRightButton.addEventListener(new ActionListener() {
+        direcRightButton.addEventListener(new ClickListener() {
+            @Override
+            public void pressedPerformed(ClickEvent event) {
+                fireAction(ARROW_RIGHT_PRESSED);
+            }
+
+            @Override
+            public void releasedPerformed(ClickEvent event) {
+                fireAction(ARROW_RIGHT_RELEASED);
+            }
+
             @Override
             public void actionPerformed(Event event) {
-                fireAction(DIREC_RIGHT);
+                fireAction(ARROW_RIGHT_ACTION);
             }
         });
         direcRightButton.addAnimationListener(new GoAndBack(direcRightButton));
@@ -127,38 +186,133 @@ public class Controller implements Component {
         noAction.getPaint().setAlpha(170);
 
 
+
+        action1Button = new Button(new RectF(
+                buttonsArea.left + divx,
+                buttonsArea.top,
+                buttonsArea.left + divx*2,
+                buttonsArea.top + divy),
+                null, this.directionalTexture);
+        action1Button.getPaint().setAlpha(170);
+        action1Button.addEventListener(new ActionListener() {
+            @Override
+            public void actionPerformed(Event event) {
+                fireAction(ACTION_1);
+            }
+        });
+        action1Button.addAnimationListener(new GoAndBack(action1Button));
+
+
+        action2Button = new Button(new RectF(
+                buttonsArea.left + divx,
+                buttonsArea.top + divy*2,
+                buttonsArea.left + divx*2,
+                buttonsArea.bottom ),
+                null, this.directionalTexture);
+        action2Button.getPaint().setAlpha(170);
+        action2Button.addEventListener(new ActionListener() {
+            @Override
+            public void actionPerformed(Event event) {
+                fireAction(ACTION_2);
+            }
+        });
+        action2Button.addAnimationListener(new GoAndBack(action2Button));
+
+
+        action3Button = new Button(new RectF(
+                buttonsArea.left,
+                buttonsArea.top + divy,
+                buttonsArea.left + divx,
+                buttonsArea.top + divy*2 ),
+                null, this.directionalTexture);
+        action3Button.getPaint().setAlpha(170);
+        action3Button.addEventListener(new ActionListener() {
+            @Override
+            public void actionPerformed(Event event) {
+                fireAction(ACTION_3);
+            }
+        });
+        action3Button.addAnimationListener(new GoAndBack(action3Button));
+
+
+        action4Button = new Button(new RectF(
+                buttonsArea.left + divx*2,
+                buttonsArea.top + divy,
+                buttonsArea.right,
+                buttonsArea.top + divy*2 ),
+                null, this.directionalTexture);
+        action4Button.getPaint().setAlpha(170);
+        action4Button.addEventListener(new ActionListener() {
+            @Override
+            public void actionPerformed(Event event) {
+                fireAction(ACTION_4);
+            }
+        });
+        action4Button.addAnimationListener(new GoAndBack(action4Button));
+
+
+
         buttons.add(direcUpButton);
         buttons.add(direcDownButton);
         buttons.add(direcLeftButton);
         buttons.add(direcRightButton);
         buttons.add(noAction);
+
+        buttons.add(action1Button);
+        buttons.add(action2Button);
+        buttons.add(action3Button);
+        buttons.add(action4Button);
     }
 
     public void fireAction(int action){
         switch (action){
-            case DIREC_UP:
-                listener.upPerformed(new Event());
+            case ARROW_UP_ACTION:
+                listener.arrowUpPerformed();
                 break;
-            case DIREC_DOWN:
-                listener.downPerformed(new Event());
+            case ARROW_UP_PRESSED:
+                listener.arrowUpPressed();
                 break;
-            case DIREC_LEFT:
-                listener.leftPerformed(new Event());
+            case ARROW_UP_RELEASED:
+                listener.arrowUpReleased();
                 break;
-            case DIREC_RIGHT:
-                listener.rightPerformed(new Event());
+            case ARROW_DOWN_ACTION:
+                listener.arrowDownPerformed();
+                break;
+            case ARROW_DOWN_PRESSED:
+                listener.arrowDownPressed();
+                break;
+            case ARROW_DOWN_RELEASED:
+                listener.arrowDownReleased();
+                break;
+            case ARROW_LEFT_ACTION:
+                listener.arrowLeftPerformed();
+                break;
+            case ARROW_LEFT_PRESSED:
+                listener.arrowLeftPressed();
+                break;
+            case ARROW_LEFT_RELEASED:
+                listener.arrowLeftReleased();
+                break;
+            case ARROW_RIGHT_ACTION:
+                listener.arrowRightPerformed();
+                break;
+            case ARROW_RIGHT_PRESSED:
+                listener.arrowRightPressed();
+                break;
+            case ARROW_RIGHT_RELEASED:
+                listener.arrowRightReleased();
                 break;
             case ACTION_1:
-                listener.action1Performed(new Event());
+                listener.action1Performed();
                 break;
             case ACTION_2:
-                listener.action2Performed(new Event());
+                listener.action2Performed();
                 break;
             case ACTION_3:
-                listener.action3Performed(new Event());
+                listener.action3Performed();
                 break;
             case ACTION_4:
-                listener.action4Performed(new Event());
+                listener.action4Performed();
                 break;
         }
     }

@@ -126,15 +126,13 @@ public class Table extends WindowEntity{
             }
 
             @Override
-            public boolean pressedPerformed(ClickEvent event) {
+            public void pressedPerformed(ClickEvent event) {
                 Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": Clicou.");
-                return true;
             }
 
             @Override
-            public boolean releasedPerformed(ClickEvent event) {
+            public void releasedPerformed(ClickEvent event) {
                 Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": Soltou.");
-                return true;
             }
         });
         item.addAnimationListener(new GoAndBack(item));

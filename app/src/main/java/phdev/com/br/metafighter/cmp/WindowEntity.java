@@ -13,6 +13,7 @@ import phdev.com.br.metafighter.cmp.event.listeners.ActionListener;
 import phdev.com.br.metafighter.cmp.event.listeners.AnimationListener;
 import phdev.com.br.metafighter.cmp.event.listeners.ClickListener;
 import phdev.com.br.metafighter.cmp.event.listeners.EventListener;
+import phdev.com.br.metafighter.cmp.event.listeners.PressingListener;
 import phdev.com.br.metafighter.cmp.graphics.Texture;
 
 /**
@@ -87,7 +88,10 @@ public abstract class WindowEntity extends Entity{
 
                 ClickListener ls = null;
                 ActionListener al = null;
+                PressingListener pl = null;
 
+                if (listener instanceof PressingListener)
+                    pl = (PressingListener) listener;
                 if (listener instanceof ClickListener)
                     ls = (ClickListener)listener;
                 else
@@ -134,6 +138,14 @@ public abstract class WindowEntity extends Entity{
                             // Define que a entidade foi e não esta mais pressionada.
                             return this.clicked = false;
                         }
+                        if (pl != null){
+                            ls.releasedPerformed(clickEvent);
+                            return false;
+                        }
+                        break;
+                    case ClickEvent.MOVE:
+                        if (pl != null)
+                            ls.pressedPerformed(clickEvent);
                         break;
                 }
             }

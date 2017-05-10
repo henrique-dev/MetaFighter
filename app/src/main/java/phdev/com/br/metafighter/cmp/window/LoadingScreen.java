@@ -29,12 +29,17 @@ public class LoadingScreen implements Component {
         this.visible = visible;
     }
 
-    public void increaseProgress(int value){
+    public void increase(int value){
         this.progressHud.increase(value);
     }
 
-    public void resetProgress(){
-        this.progressHud.reset();
+    public void start(){
+        visible = true;
+    }
+
+    public void stop(){
+        visible = false;
+        progressHud.reset();
     }
 
     @Override

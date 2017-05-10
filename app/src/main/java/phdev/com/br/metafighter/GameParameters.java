@@ -9,21 +9,23 @@ import android.util.Log;
  * @author Paulo Henrique Gonçalves Bacelar
  * @version 1.0
  */
-public class GameParameters {
+public final class GameParameters {
 
     public int logIndex = 0;
 
     public boolean debug = true;
 
+    public int maxPlayers = 2;
+
     public int orientation;
 
+    public RectF screenSize;
     public int screenWidth;
-
     public int screenHeight;
 
-    public AssetManager assetManager;
+    public float fontSizeButton;
 
-    public RectF screenSize;
+    public AssetManager assetManager;
 
     private static final GameParameters ourInstance = new GameParameters();
 

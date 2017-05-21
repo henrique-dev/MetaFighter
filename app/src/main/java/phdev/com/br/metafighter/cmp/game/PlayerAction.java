@@ -19,16 +19,19 @@ public class PlayerAction {
     private int counter;
     private int totalSprites;
 
-    public PlayerAction(Sprite[] sprites){
+    private int divFrame;
+
+    public PlayerAction(Sprite[] sprites, int divFrame){
         this.sprites = sprites;
         counter = 0;
         currentSprite = 0;
+        this.divFrame = divFrame;
         totalSprites = sprites.length-1;
 
         collisions = new Collision[sprites.length];
 
         for (int i=0; i<=totalSprites; i++){
-            collisions[i] = new Collision(Collision.detectCollisionFromTexture(sprites[i].getTexture(), 10, 10, 30));
+            collisions[i] = new Collision(Collision.detectCollisionFromTexture(sprites[i].getTexture(), 60, 60, 50));
         }
     }
 
@@ -48,7 +51,7 @@ public class PlayerAction {
 
     public Sprite getSprite(){
 
-        currentSprite = counter / 8;
+        currentSprite = counter / divFrame;
 
         if (currentSprite > totalSprites) {
             counter = 0;

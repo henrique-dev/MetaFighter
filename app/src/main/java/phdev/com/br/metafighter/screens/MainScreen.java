@@ -105,320 +105,329 @@ public class MainScreen extends Screen {
     @Override
     protected boolean loadComponents() {
 
-        RectF screenSize = GameParameters.getInstance().screenSize;
+        final RectF screenSize = GameParameters.getInstance().screenSize;
         mainBackGround = new BackGround(new RectF(screenSize), mainBackgroundTexture);
 
         float fontSizeButton = GameParameters.getInstance().fontSizeButton;
 
-        //**********************************************************************************************
-        //**********************************************************************************************
+
         // Carrega os componentes do menu principal
-        {
-            float divx = (screenSize.width()/4)/8;
-            float divy = (screenSize.height()/8)/2;
+        mainMenuScene = new Scene(){
 
-            RectF buttonSize = new RectF(0, 0, screenSize.width()/4, screenSize.height()/4);
+            @Override
+            public void init() {
 
-            float fontSize = Text.adaptText(new String[]{"Multijogador"}, buttonSize);
+                float divx = (screenSize.width()/4)/8;
+                float divy = (screenSize.height()/8)/2;
 
-            singleplayerButton = new Button(
-                    new RectF( screenSize.centerX() - divx - buttonSize.width(),
-                            screenSize.centerY() - divy - buttonSize.height(),
-                            screenSize.centerX() - divx,
-                            screenSize.centerY() - divy),
-                    "Um jogador", this.buttonTexture);
-            singleplayerButton.getText().setTextSize(fontSize);
-            singleplayerButton.addEventListener(new ActionListener() {
-                @Override
-                public void actionPerformed(Event event) {
-                    singleplayerButtonAction(event);
-                }
-            });
-            singleplayerButton.addAnimationListener(new GoAndBack(singleplayerButton));
-            singleplayerButton.setId(0);
+                RectF buttonSize = new RectF(0, 0, screenSize.width()/4, screenSize.height()/4);
 
-            multiplayerButton = new Button(
-                    new RectF( screenSize.centerX() + divx,
-                            screenSize.centerY() - divy - buttonSize.height(),
-                            screenSize.centerX() + divx + buttonSize.width(),
-                            screenSize.centerY() - divy),
-                    "Multijogador", this.buttonTexture);
-            multiplayerButton.getText().setTextSize(fontSize);
-            multiplayerButton.addEventListener(new ActionListener() {
-                @Override
-                public void actionPerformed(Event event) {
-                    multiplayerButtonAction(event);
-                }
-            });
-            multiplayerButton.addAnimationListener(new GoAndBack(multiplayerButton));
-            multiplayerButton.setId(1);
+                float fontSize = Text.adaptText(new String[]{"Multijogador"}, buttonSize);
 
-            this.optionsButton = new Button(
-                    new RectF( screenSize.centerX() - (buttonSize.width()/2),
-                            screenSize.centerY() + divy,
-                            screenSize.centerX() + (buttonSize.width()/2),
-                            screenSize.centerY() + divy + buttonSize.height()),
-                    "Opções", this.buttonTexture);
-            optionsButton.getText().setTextSize(fontSize);
-            optionsButton.addEventListener(new ActionListener() {
-                @Override
-                public void actionPerformed(Event event) {
-                    optionsButtonAction(event);
-                }
-            });
-            optionsButton.addAnimationListener(new GoAndBack(optionsButton));
-            optionsButton.setId(2);
+                singleplayerButton = new Button(
+                        new RectF( screenSize.centerX() - divx - buttonSize.width(),
+                                screenSize.centerY() - divy - buttonSize.height(),
+                                screenSize.centerX() - divx,
+                                screenSize.centerY() - divy),
+                        "Um jogador", buttonTexture);
+                singleplayerButton.getText().setTextSize(fontSize);
+                singleplayerButton.addEventListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(Event event) {
+                        singleplayerButtonAction(event);
+                    }
+                });
+                singleplayerButton.addAnimationListener(new GoAndBack(singleplayerButton));
+                singleplayerButton.setId(0);
 
-            mainMenuScene = new Scene();
-            mainMenuScene.add(mainBackGround);
-            mainMenuScene.add(singleplayerButton);
-            mainMenuScene.add(multiplayerButton);
-            mainMenuScene.add(optionsButton);
-        }
+                multiplayerButton = new Button(
+                        new RectF( screenSize.centerX() + divx,
+                                screenSize.centerY() - divy - buttonSize.height(),
+                                screenSize.centerX() + divx + buttonSize.width(),
+                                screenSize.centerY() - divy),
+                        "Multijogador", buttonTexture);
+                multiplayerButton.getText().setTextSize(fontSize);
+                multiplayerButton.addEventListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(Event event) {
+                        multiplayerButtonAction(event);
+                    }
+                });
+                multiplayerButton.addAnimationListener(new GoAndBack(multiplayerButton));
+                multiplayerButton.setId(1);
 
-        //******************************************************************************************
+                optionsButton = new Button(
+                        new RectF( screenSize.centerX() - (buttonSize.width()/2),
+                                screenSize.centerY() + divy,
+                                screenSize.centerX() + (buttonSize.width()/2),
+                                screenSize.centerY() + divy + buttonSize.height()),
+                        "Opções", buttonTexture);
+                optionsButton.getText().setTextSize(fontSize);
+                optionsButton.addEventListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(Event event) {
+                        optionsButtonAction(event);
+                    }
+                });
+                optionsButton.addAnimationListener(new GoAndBack(optionsButton));
+                optionsButton.setId(2);
+
+
+                super.add(mainBackGround);
+                super.add(singleplayerButton);
+                super.add(multiplayerButton);
+                super.add(optionsButton);
+            }
+
+            private void optionsButtonAction(Event evt){
+                //new MatchScreen(listener, null);
+                currentScene = optionsScene;
+            }
+
+            private void multiplayerButtonAction(Event evt){
+                bluetoothManager.activate();
+                currentScene = multiplayerSelectScene;
+            }
+
+            private void singleplayerButtonAction(Event evt){
+                new SelectCharacterScreen(context);
+            }
+        };
+
         // Carrega os componentes do menu de escolha multiplayer
+        multiplayerSelectScene = new Scene() {
+            @Override
+            public void init() {
 
-        {
-            float divy = (screenSize.height()/8)/2;
+                float divy = (screenSize.height()/8)/2;
 
-            RectF buttonSize = new RectF(0, 0, screenSize.width()/4, screenSize.height()/4);
+                RectF buttonSize = new RectF(0, 0, screenSize.width()/4, screenSize.height()/4);
 
-            float fontSize = Text.adaptText(new String[]{"Criar partida"}, buttonSize);
+                float fontSize = Text.adaptText(new String[]{"Criar partida"}, buttonSize);
 
-            //ButtonHandlerMultiplayer buttonHandler = new ButtonHandlerMultiplayer();
+                hostButton = new Button(
+                        new RectF( screenSize.centerX() - buttonSize.width()/2,
+                                screenSize.centerY() - buttonSize.height()/2 - divy - buttonSize.height(),
+                                screenSize.centerX() + buttonSize.width()/2,
+                                screenSize.centerY() - buttonSize.height()/2 - divy),
+                        "Criar partida", buttonTexture);
+                hostButton.getText().setTextSize(fontSize);
+                hostButton.addEventListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(Event event) {
+                        hostButtonAction(event);
+                    }
+                });
+                hostButton.addAnimationListener(new GoAndBack(hostButton));
+                hostButton.setId(0);
 
-            hostButton = new Button(
-                    new RectF( screenSize.centerX() - buttonSize.width()/2,
-                            screenSize.centerY() - buttonSize.height()/2 - divy - buttonSize.height(),
-                            screenSize.centerX() + buttonSize.width()/2,
-                            screenSize.centerY() - buttonSize.height()/2 - divy),
-                    "Criar partida", buttonTexture);
-            hostButton.getText().setTextSize(fontSize);
-            hostButton.addEventListener(new ActionListener() {
-                @Override
-                public void actionPerformed(Event event) {
-                    hostButtonAction(event);
+                joinButton = new Button(
+                        new RectF( screenSize.centerX() - buttonSize.width()/2,
+                                screenSize.centerY() - buttonSize.height()/2,
+                                screenSize.centerX() + buttonSize.width()/2,
+                                screenSize.centerY() + buttonSize.height()/2),
+                        "Entrar em\numa partida", buttonTexture);
+                joinButton.getText().setTextSize(fontSize);
+                joinButton.addEventListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(Event event) {
+                        joinButtonAction(event);
+                    }
+                });
+                joinButton.addAnimationListener(new GoAndBack(joinButton));
+                joinButton.setId(1);
+
+                backToMainFromMultiSelectButton = new Button(
+                        new RectF( screenSize.centerX() - buttonSize.width()/2,
+                                screenSize.centerY() + buttonSize.height()/2 + divy,
+                                screenSize.centerX() + buttonSize.width()/2,
+                                screenSize.centerY() + buttonSize.height()/2 + divy + buttonSize.height()),
+                        "Voltar", buttonTexture);
+                backToMainFromMultiSelectButton.getText().setTextSize(fontSize);
+                backToMainFromMultiSelectButton.addEventListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(Event event) {
+                        backToMainFromMultiSelectButtonAction(event);
+                    }
+                });
+                backToMainFromMultiSelectButton.addAnimationListener(new GoAndBack(backToMainFromMultiSelectButton));
+                backToMainFromMultiSelectButton.setId(2);
+
+
+                super.add(mainBackGround);
+                super.add(hostButton);
+                super.add(joinButton);
+                super.add(backToMainFromMultiSelectButton);
+            }
+
+            private void backToMainFromMultiSelectButtonAction(Event evt){
+                currentScene = mainMenuScene;
+            }
+
+            private void joinButtonAction(Event evt){
+                if (bluetoothManager.haveBluetooth())
+                    sendMessageToScreen("O bluetooth não foi ativado ou\n este dispositivo não é compatível");
+                else
+                if (!bluetoothManager.isEnabled())
+                    sendMessageToScreen(": O bluetooth deve estar ativado para proseeguir.");
+                else {
+                    pairedDevices = bluetoothManager.getBondedDevices();
+                    int counter = 0;
+                    if (pairedDevices.size() > 0){
+
+                        for (BluetoothDevice device : pairedDevices){
+
+                            log("Inserindo elementos");
+
+                            TableItem item = new TableItem(device.getName());
+                            item.getText().setTextSize(20);
+                            item.setId(counter);
+
+                            item.addEventListener(new ActionListener() {
+                                @Override
+                                public void actionPerformed(Event event) {
+                                    log("Clicou");
+                                    bluetoothManager.connect(pairedDevices.get(((ClickEvent)event).id));
+                                }
+                            });
+
+                            table.addItem(item);
+                            counter++;
+                        }
+                    }
+                    currentScene = multiplayerJoinScene;
+
                 }
-            });
-            hostButton.addAnimationListener(new GoAndBack(hostButton));
-            hostButton.setId(0);
+            }
 
-            joinButton = new Button(
-                    new RectF( screenSize.centerX() - buttonSize.width()/2,
-                            screenSize.centerY() - buttonSize.height()/2,
-                            screenSize.centerX() + buttonSize.width()/2,
-                            screenSize.centerY() + buttonSize.height()/2),
-                    "Entrar em\numa partida", buttonTexture);
-            joinButton.getText().setTextSize(fontSize);
-            joinButton.addEventListener(new ActionListener() {
-                @Override
-                public void actionPerformed(Event event) {
-                    joinButtonAction(event);
+            private void hostButtonAction(Event evt){
+                if (bluetoothManager.haveBluetooth())
+                    sendMessageToScreen("O bluetooth não foi ativado ou\n este dispositivo não é compatível");
+                else
+                if (!bluetoothManager.isEnabled())
+                    sendMessageToScreen(": O bluetooth deve estar ativado para proseeguir.");
+                else {
+                    bluetoothManager.start();
+                    currentScene = multiplayerHostScene;
                 }
-            });
-            joinButton.addAnimationListener(new GoAndBack(joinButton));
-            joinButton.setId(1);
+            }
+        };
 
-            backToMainFromMultiSelectButton = new Button(
-                    new RectF( screenSize.centerX() - buttonSize.width()/2,
-                            screenSize.centerY() + buttonSize.height()/2 + divy,
-                            screenSize.centerX() + buttonSize.width()/2,
-                            screenSize.centerY() + buttonSize.height()/2 + divy + buttonSize.height()),
-                    "Voltar", buttonTexture);
-            backToMainFromMultiSelectButton.getText().setTextSize(fontSize);
-            backToMainFromMultiSelectButton.addEventListener(new ActionListener() {
-                @Override
-                public void actionPerformed(Event event) {
-                    backToMainFromMultiSelectButtonAction(event);
-                }
-            });
-            backToMainFromMultiSelectButton.addAnimationListener(new GoAndBack(backToMainFromMultiSelectButton));
-            backToMainFromMultiSelectButton.setId(2);
-
-            multiplayerSelectScene = new Scene();
-            multiplayerSelectScene.add(mainBackGround);
-            multiplayerSelectScene.add(hostButton);
-            multiplayerSelectScene.add(joinButton);
-            multiplayerSelectScene.add(backToMainFromMultiSelectButton);
-        }
-
-        //*******************************************************************************************
         // Carrega os componentes do menu multiplayer host
-        {
-            RectF buttonSize = new RectF(0, 0, screenSize.width()/4, screenSize.height()/4);
+        multiplayerHostScene = new Scene() {
+            @Override
+            public void init() {
 
-            float fontSize = Text.adaptText(new String[]{"Voltar"}, buttonSize);
+                RectF buttonSize = new RectF(0, 0, screenSize.width()/4, screenSize.height()/4);
 
-            backToMultiSelectFromHostButton = new Button(
-                    new RectF(screenSize.right - buttonSize.width(),
-                            screenSize.bottom - buttonSize.height(),
-                            screenSize.right, screenSize.bottom),
-                    "Voltar", buttonTexture);
-            backToMultiSelectFromHostButton.addEventListener(new ActionListener() {
-                @Override
-                public void actionPerformed(Event event) {
-                    backToMultiSelectFromHostButtonAction(event);
-                }
-            });
-            backToMultiSelectFromHostButton.getText().setTextSize(fontSize);
+                float fontSize = Text.adaptText(new String[]{"Voltar"}, buttonSize);
 
-            multiplayerHostScene = new Scene();
-            multiplayerHostScene.add(mainBackGround);
-            multiplayerHostScene.add(backToMultiSelectFromHostButton);
-        }
-        //**************************************************************************************
+                backToMultiSelectFromHostButton = new Button(
+                        new RectF(screenSize.right - buttonSize.width(),
+                                screenSize.bottom - buttonSize.height(),
+                                screenSize.right, screenSize.bottom),
+                        "Voltar", buttonTexture);
+                backToMultiSelectFromHostButton.addEventListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(Event event) {
+                        backToMultiSelectFromHostButtonAction(event);
+                    }
+                });
+                backToMultiSelectFromHostButton.getText().setTextSize(fontSize);
+
+
+                super.add(mainBackGround);
+                super.add(backToMultiSelectFromHostButton);
+            }
+
+            private void backToMultiSelectFromHostButtonAction(Event evt){
+                bluetoothManager.stop();
+                currentScene = multiplayerSelectScene;
+            }
+        };
+
         // Carrega os componentes do menu multiplayer join
-        {
-            float tableWidth = screenSize.width()/2;
-            float tableHeight = (float)(screenSize.height() / 1.3);
+        multiplayerJoinScene = new Scene() {
+            @Override
+            public void init() {
+                float tableWidth = screenSize.width() / 2;
+                float tableHeight = (float) (screenSize.height() / 1.3);
 
-            //RectF tableArea = new RectF(0,0,tableWidth, tableHeight);
+                table = new Table(
+                        new RectF(screenSize.centerX() - tableWidth / 2,
+                                screenSize.centerY() - tableHeight / 2,
+                                screenSize.centerX() + tableWidth / 2,
+                                screenSize.centerY() + tableHeight / 2),
+                        new Paint(),
+                        textureTableBody,
+                        textureTableHead,
+                        textureTableShow,
+                        textureTableItem,
+                        "Dispositivos pareados"
+                );
 
-            table = new Table(
-                    new RectF(screenSize.centerX() - tableWidth/2,
-                            screenSize.centerY() - tableHeight/2,
-                            screenSize.centerX() + tableWidth/2,
-                            screenSize.centerY() + tableHeight/2),
-                    new Paint(),
-                    this.textureTableBody,
-                    this.textureTableHead,
-                    this.textureTableShow,
-                    this.textureTableItem,
-                    "Dispositivos pareados"
-            );
+                float fontSize = Text.adaptText(new String[]{table.getTextHead().getText()}, table.getAreaHead());
+                table.getTextHead().setTextSize(fontSize);
 
-            float fontSize = Text.adaptText(new String[]{table.getTextHead().getText()}, table.getAreaHead());
-            table.getTextHead().setTextSize(fontSize);
+                RectF buttonSize = new RectF(0, 0, screenSize.width() / 4, screenSize.height() / 4);
+                backToMultiSelectFromJoinButton = new Button(
+                        new RectF(screenSize.right - buttonSize.width(),
+                                screenSize.bottom - buttonSize.height(),
+                                screenSize.right, screenSize.bottom),
+                        "Voltar", buttonTexture);
+                backToMultiSelectFromJoinButton.addEventListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(Event event) {
+                        backToMultiSelectFromJoinButtonAction(event);
+                    }
+                });
+                backToMultiSelectFromJoinButton.getText().setTextSize(fontSize);
 
-            RectF buttonSize = new RectF(0, 0, screenSize.width()/4, screenSize.height()/4);
-            this.backToMultiSelectFromJoinButton = new Button(
-                    new RectF(screenSize.right - buttonSize.width(),
-                            screenSize.bottom - buttonSize.height(),
-                            screenSize.right, screenSize.bottom),
-                    "Voltar", buttonTexture);
-            this.backToMultiSelectFromJoinButton.addEventListener(new ActionListener() {
-                @Override
-                public void actionPerformed(Event event) {
-                    backToMultiSelectFromJoinButtonAction(event);
-                }
-            });
-            this.backToMultiSelectFromJoinButton.getText().setTextSize(fontSize);
 
-            multiplayerJoinScene = new Scene();
-            multiplayerJoinScene.add(mainBackGround);
-            multiplayerJoinScene.add(table);
-            multiplayerJoinScene.add(backToMultiSelectFromJoinButton);
+                super.add(mainBackGround);
+                super.add(table);
+                super.add(backToMultiSelectFromJoinButton);
+            }
 
-        }
+            private void backToMultiSelectFromJoinButtonAction(Event evt){
+                bluetoothManager.stop();
+                currentScene = multiplayerSelectScene;
+            }
+        };
 
-        //**************************************************************************************
         // Carrega os componentes do menu opções
-        {
-            RectF buttonSize = new RectF(0, 0, screenSize.width()/4, screenSize.height()/4);
-            float fontSize = Text.adaptText(new String[]{"Voltar"}, buttonSize);
-            this.backToMainFromOptionsButton = new Button(
-                    new RectF(screenSize.right - buttonSize.width(),
-                            screenSize.bottom - buttonSize.height(),
-                            screenSize.right, screenSize.bottom),
-                    "Voltar", buttonTexture);
-            this.backToMainFromOptionsButton.addEventListener(new ActionListener() {
-                @Override
-                public void actionPerformed(Event event) {
-                    backToMainFromOptionsButtonAction(event);
-                }
-            });
-            this.backToMainFromOptionsButton.getText().setTextSize(fontSize);
+        optionsScene = new Scene() {
+            @Override
+            public void init() {
 
-            optionsScene = new Scene();
-            optionsScene.add(mainBackGround);
-            optionsScene.add(backToMainFromOptionsButton);
-        }
+                RectF buttonSize = new RectF(0, 0, screenSize.width()/4, screenSize.height()/4);
+                float fontSize = Text.adaptText(new String[]{"Voltar"}, buttonSize);
+                backToMainFromOptionsButton = new Button(
+                        new RectF(screenSize.right - buttonSize.width(),
+                                screenSize.bottom - buttonSize.height(),
+                                screenSize.right, screenSize.bottom),
+                        "Voltar", buttonTexture);
+                backToMainFromOptionsButton.addEventListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(Event event) {
+                        backToMainFromOptionsButtonAction(event);
+                    }
+                });
+                backToMainFromOptionsButton.getText().setTextSize(fontSize);
+
+
+                super.add(mainBackGround);
+                super.add(backToMainFromOptionsButton);
+            }
+
+            private void backToMainFromOptionsButtonAction(Event evt){
+                currentScene = mainMenuScene;
+            }
+        };
 
         currentScene = mainMenuScene;
 
         return true;
-    }
-
-
-    private void singleplayerButtonAction(Event evt){
-        new SelectCharacterScreen(context);
-    }
-
-    private void multiplayerButtonAction(Event evt){
-        bluetoothManager.activate();
-        currentScene = multiplayerSelectScene;
-    }
-
-    private void optionsButtonAction(Event evt){
-        //new MatchScreen(listener, null);
-        currentScene = optionsScene;
-    }
-
-    private void hostButtonAction(Event evt){
-        if (bluetoothManager.haveBluetooth())
-            sendMessageToScreen("O bluetooth não foi ativado ou\n este dispositivo não é compatível");
-        else
-        if (!bluetoothManager.isEnabled())
-            sendMessageToScreen(": O bluetooth deve estar ativado para proseeguir.");
-        else {
-            bluetoothManager.start();
-            currentScene = multiplayerHostScene;
-        }
-    }
-
-    private void joinButtonAction(Event evt){
-        if (bluetoothManager.haveBluetooth())
-            sendMessageToScreen("O bluetooth não foi ativado ou\n este dispositivo não é compatível");
-        else
-        if (!bluetoothManager.isEnabled())
-            sendMessageToScreen(": O bluetooth deve estar ativado para proseeguir.");
-        else {
-            pairedDevices = bluetoothManager.getBondedDevices();
-            int counter = 0;
-            if (pairedDevices.size() > 0){
-
-                for (BluetoothDevice device : pairedDevices){
-
-                    log("Inserindo elementos");
-
-                    TableItem item = new TableItem(device.getName());
-                    item.getText().setTextSize(20);
-                    item.setId(counter);
-
-                    item.addEventListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(Event event) {
-                            log("Clicou");
-                            bluetoothManager.connect(pairedDevices.get(((ClickEvent)event).id));
-                        }
-                    });
-
-                    this.table.addItem(item);
-                    counter++;
-                }
-            }
-            currentScene = multiplayerJoinScene;
-
-        }
-    }
-
-    private void backToMainFromMultiSelectButtonAction(Event evt){
-        currentScene = mainMenuScene;
-    }
-
-    private void backToMultiSelectFromHostButtonAction(Event evt){
-        bluetoothManager.stop();
-        currentScene = multiplayerSelectScene;
-    }
-
-    private void backToMultiSelectFromJoinButtonAction(Event evt){
-        bluetoothManager.stop();
-        currentScene = multiplayerSelectScene;
-    }
-
-    private void backToMainFromOptionsButtonAction(Event evt){
-        currentScene = mainMenuScene;
     }
 
 }

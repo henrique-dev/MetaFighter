@@ -294,20 +294,34 @@ public class SelectCharacterScreen extends Screen {
             }
         });
 
-        mainScene = new Scene();
+        mainScene = new Scene() {
+            @Override
+            public void init() {
+                super.add(mainBackground);
+                super.add(gameLabelPlayer1);
+                super.add(gameLabelPlayer2);
+                super.add(gameLabelGuedes);
+                super.add(gameLabelKaila);
+                super.add(gameLabelLuiz);
+                super.add(gameLabelPatricia);
+                super.add(gameLabelRomulo);
+                super.add(gameLabelQuele);
+                super.add(backButton);
+            }
+        };
 
-        mainScene.add(mainBackground);
+        //mainScene.add(mainBackground);
 
-        mainScene.add(gameLabelPlayer1);
-        mainScene.add(gameLabelPlayer2);
+        //mainScene.add(gameLabelPlayer1);
+        //mainScene.add(gameLabelPlayer2);
 
-        mainScene.add(gameLabelGuedes);
-        mainScene.add(gameLabelKaila);
-        mainScene.add(gameLabelLuiz);
-        mainScene.add(gameLabelPatricia);
-        mainScene.add(gameLabelRomulo);
-        mainScene.add(gameLabelQuele);
-        mainScene.add(backButton);
+        //mainScene.add(gameLabelGuedes);
+        //mainScene.add(gameLabelKaila);
+        //mainScene.add(gameLabelLuiz);
+        //mainScene.add(gameLabelPatricia);
+        //mainScene.add(gameLabelRomulo);
+        //mainScene.add(gameLabelQuele);
+        //mainScene.add(backButton);
 
         currentScene = mainScene;
 

@@ -28,7 +28,7 @@ public abstract class Screen implements Component {
 
         packets = new ArrayList<>();
 
-        currentScene = new Scene();
+        //currentScene = new Scene();
 
         /*
         try {

@@ -20,7 +20,7 @@ public class Timer {
         this.started = false;
     }
 
-    public void start(){
+    public Timer start(){
         // Inicia o timer.
         this.started = true;
         // Despausa o timer.
@@ -28,6 +28,7 @@ public class Timer {
         // Pega a hora atual.
         this.startTicks = System.nanoTime();
         this.pausedTicks = 0;
+        return this;
     }
 
     public void stop(){

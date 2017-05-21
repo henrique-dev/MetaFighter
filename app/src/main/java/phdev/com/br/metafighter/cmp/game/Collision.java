@@ -95,7 +95,7 @@ public class Collision {
             }
         }
 
-        Log.d("GameEngine", "detectCollisionFromTexture: " + counter);
+        //Log.d("GameEngine", "detectCollisionFromTexture: " + counter);
 
         RectF[] copyBoxs = new RectF[counter];
         System.arraycopy(boxs, 0, copyBoxs, 0, counter);

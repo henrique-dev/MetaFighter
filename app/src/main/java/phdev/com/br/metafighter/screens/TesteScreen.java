@@ -116,10 +116,17 @@ public class TesteScreen extends Screen {
             player2.addUser(myID);
         }
 
-        mainscene = new Scene();
-        mainscene.add(backGround);
-        mainscene.add(player1);
-        mainscene.add(player2);
+        mainscene = new Scene() {
+            @Override
+            public void init() {
+                super.add(backGround);
+                super.add(player1);
+                super.add(player2);
+            }
+        };
+        //mainscene.add(backGround);
+        //mainscene.add(player1);
+        //mainscene.add(player2);
 
         currentScene = mainscene;
 

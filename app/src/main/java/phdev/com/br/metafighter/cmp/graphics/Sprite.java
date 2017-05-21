@@ -47,13 +47,26 @@ public class Sprite {
         return sprites;
     }
 
-    public static Sprite[] getSpritesFromSprites(Sprite[] sprites, int indexBegin, int indexEnd){
-        Sprite cSprite[] = new Sprite[(indexEnd+1)-indexBegin];
-        int tCounter = 0;
-        for (int i=indexBegin; i<=indexEnd; i++){
-            cSprite[tCounter] = sprites[i];
-            tCounter++;
-        }
+    public static Sprite[] getSpritesFromSprites(Sprite[] sprites, int indexBegin, int indexEnd, boolean reverse){
+        Sprite cSprite[] = null;
+
+            cSprite = new Sprite[(indexEnd+1)-indexBegin];
+            int tCounter = 0;
+            for (int i=indexBegin; i<=indexEnd; i++){
+
+                if (!reverse){
+                    cSprite[tCounter] = sprites[i];
+                }
+                else {
+                    cSprite[cSprite.length-1 - tCounter] = sprites[i];
+                }
+
+
+
+                tCounter++;
+            }
+
+
         return cSprite;
     }
 }

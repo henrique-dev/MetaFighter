@@ -15,12 +15,20 @@ import phdev.com.br.metafighter.cmp.connections.packets.Packet;
  * @author Paulo Henrique Gonçalves Bacelar
  * @version 1.0
  */
-public class Scene implements Component {
+public abstract class Scene implements Component {
 
     private List<Component> components;
 
     public Scene(){
         components = new ArrayList<>();
+        init();
+    }
+
+    public abstract void init();
+
+    public Scene start(){
+
+        return this;
     }
 
     public void add(Component cmp){

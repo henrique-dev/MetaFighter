@@ -120,7 +120,7 @@ public final class GameEngine extends SurfaceView implements SurfaceHolder.Callb
         connectionManager = new ConnectionManager(gameContext);
 
         //new MainScreen(gameContext);
-        new MatchScreen(gameContext, null, Character.TESTE, -1);
+        new MatchScreen(gameContext, null, Character.LUIZ, Character.GUEDES);
     }
 
     @SuppressLint("MissingSuperCall")

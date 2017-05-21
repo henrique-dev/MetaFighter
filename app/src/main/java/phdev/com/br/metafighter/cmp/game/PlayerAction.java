@@ -31,7 +31,7 @@ public class PlayerAction {
         collisions = new Collision[sprites.length];
 
         for (int i=0; i<=totalSprites; i++){
-            collisions[i] = new Collision(Collision.detectCollisionFromTexture(sprites[i].getTexture(), 60, 60, 50));
+            collisions[i] = new Collision(Collision.detectCollisionFromTexture(sprites[i].getTexture(), 20, 20, 25));
         }
     }
 

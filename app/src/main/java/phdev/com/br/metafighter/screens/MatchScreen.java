@@ -18,6 +18,7 @@ import phdev.com.br.metafighter.cmp.Component;
 import phdev.com.br.metafighter.cmp.Entity;
 import phdev.com.br.metafighter.cmp.event.listeners.EventListener;
 import phdev.com.br.metafighter.cmp.game.Character;
+import phdev.com.br.metafighter.cmp.game.Collision;
 import phdev.com.br.metafighter.cmp.game.Player;
 import phdev.com.br.metafighter.cmp.graphics.Sprite;
 import phdev.com.br.metafighter.cmp.misc.Controller;
@@ -152,7 +153,7 @@ public class MatchScreen extends Screen {
                 controller = new Controller(
                         new RectF(10, screenSize.bottom - 10 - areaController.height(), 10 + areaController.width(), screenSize.bottom-10 ) , controllerDirTexture,
                         new RectF(screenSize.right - 10 - areaController.width(), screenSize.bottom - 10 - areaController.height(),
-                                screenSize.right - 10, screenSize.bottom-10), controllerDirTexture, player2.getControllerListener());
+                                screenSize.right - 10, screenSize.bottom-10), controllerDirTexture, player1.getControllerListener());
 
 
                 super.add(backGround);
@@ -321,19 +322,103 @@ public class MatchScreen extends Screen {
     public void draw(Canvas canvas){
         super.draw(canvas);
 
-        RectF[] currentCollision = player2.getCurrentCollision();
 
+
+        RectF[][] player1Collision = null;
+        RectF[][] player2Collision = null;
+
+        player2Collision = player2.getCurrentCollision();
+        player1Collision = player1.getCurrentCollision();
+
+        /*
         for (int i=0; i<currentCollision.length; i++){
             canvas.drawRect(currentCollision[i].left+ player2.getX(), currentCollision[i].top + player2.getY(), currentCollision[i].right+player2.getX(), currentCollision[i].bottom+player2.getY(), new Paint());
+        }*/
+
+
+
+
+        for (RectF[] aCurrentCollision : player2Collision)
+            for (RectF bCurrentCollision : aCurrentCollision)
+                if (bCurrentCollision != null) {
+                    canvas.drawRect(bCurrentCollision.left + player2.getX(), bCurrentCollision.top + player2.getY(), bCurrentCollision.right + player2.getX(), bCurrentCollision.bottom + player2.getY(), new Paint());
+                }
+
+        for (RectF[] aCurrentCollision : player1Collision)
+            for (RectF bCurrentCollision : aCurrentCollision)
+                if (bCurrentCollision != null) {
+                    canvas.drawRect(bCurrentCollision.left + player1.getX(), bCurrentCollision.top + player1.getY(), bCurrentCollision.right + player1.getX(), bCurrentCollision.bottom + player1.getY(), new Paint());
+                }
+
+
+
+    }
+
+    protected boolean checkCollision(RectF[][] A, float AX, float AY, RectF[][] B, float BX, float BY){
+
+        for (int i=0; i<15; i++){
+            for (int j=0; j<15; j++){
+                if (A[i][j] != null) {
+                    for (int k = 0; k < 15; k++) {
+                        for (int l = 0; l < 15; l++) {
+                            if (B[k][l] != null) {
+                                /*
+                                if (((AX + A[i][j].left >= BX + B[k][l].left && AX + A[i][j].left <= BX + B[k][l].right) && (AX + A[i][j].right >= BX + B[k][l].left && AX + A[i][j].right <= BX + B[k][l].right)) &&
+                                        ((AY + A[i][j].top >= BY + B[k][l].top && AY + A[i][j].top <= BY + B[k][l].bottom) && (AY + A[i][j].bottom >= BY + B[k][l].top && AY + A[i][j].bottom <= BY + B[k][l].bottom))) {
+                                    log("Colidiu");
+                                    log("AX: " + AX + " -  " + "A: (" + (AX + A[i][j].left) + ", " + (AY + A[i][j].top) + ", " + (AX + A[i][j].right) + ", " + (AY + A[i][j].bottom));
+                                    log("BX: " + BX + " -  " + "B: (" + (BX + B[k][l].left) + ", " + (BY + B[k][l].top) + ", " + (BX + B[k][l].right) + ", " + (BY + B[k][l].bottom));
+                                    return true;
+                                }
+                                */
+                                if (RectF.intersects(new RectF(AX + A[i][j].left, AY + A[i][j].top, AX + A[i][j].right, AY + A[i][j].bottom),
+                                        new RectF(BX + B[k][l].left, BY + B[k][l].top, BX + B[k][l].right, BY + B[k][l].bottom))){
+                                    log("Colidiu");
+                                    /*
+                                    log("AX: " + AX + " -  " + "A: (" + (AX + A[i][j].left) + ", " + (AY + A[i][j].top) + ", " + (AX + A[i][j].right) + ", " + (AY + A[i][j].bottom));
+                                    log("BX: " + BX + " -  " + "B: (" + (BX + B[k][l].left) + ", " + (BY + B[k][l].top) + ", " + (BX + B[k][l].right) + ", " + (BY + B[k][l].bottom));
+                                    */
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
+
+        /*
+        for (RectF[] aCurrentCollision : A)
+            for (RectF tmpA : aCurrentCollision)
+                if (tmpA != null) {
+                    for (RectF[] cCurrentCollision : B)
+                        for (RectF tmpB : cCurrentCollision)
+                            if (tmpB != null) {
+
+                                if(((AX + tmpA.left >= BX + tmpB.left && AX+ tmpA.left <= BX + tmpB.right) && (AX + tmpA.right >= BX + tmpB.left && AX + tmpA.right <= BX + tmpB.right)) &&
+                                        ((AY + tmpA.top >= BY + tmpB.top && AY + tmpA.top <= BY + tmpB.bottom) && (AY + tmpA.bottom >= BY + tmpB.top && AY + tmpA.bottom <= BY + tmpB.bottom))) {
+                                    log("Colidiu");
+                                    log("AX: " + AX + " -  " + "A: (" + (AX + tmpA.left) + ", " + (AY + tmpA.top) + ", " + (AX + tmpA.right) + ", " + (AY + tmpA.bottom));
+                                    log("BX: " + BX + " -  " + "B: (" + (BX + tmpB.left) + ", " + (BY + tmpB.top) + ", " + (BX + tmpB.right) + ", " + (BY + tmpB.bottom));
+                                    return true;
+                                }
+                            }
+                }
+                */
+        return false;
     }
 
     @Override
     public void update(){
         super.update();
 
+        checkCollision(player1.getCurrentCollision(), player1.getX(), player1.getY(),
+                player2.getCurrentCollision(), player2.getX(), player2.getY());
+
+        /*
         if (currentTime > 99)
             new MainScreen(context);
+            */
 
         //Player.checkCollision(player1)
 

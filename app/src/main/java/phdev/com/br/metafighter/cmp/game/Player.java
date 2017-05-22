@@ -65,7 +65,7 @@ public class Player implements Component {
 
     private Sprite currentSprite;
 
-    private RectF[] currentCollision;
+    private Collision currentCollision;
 
     private RectF size;
     private float y;
@@ -128,7 +128,7 @@ public class Player implements Component {
 
         walkingActionLeft = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 0, 5, true), 8);
         walkingActionRight = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 0, 5, false), 8);
-        movingAction = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 6, 13, false), 6);
+        movingAction = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 6, 13, false), 4);
         jump1Action = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 14, 19, false), 3);
         jump2Action = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 14, 19, true), 6);
         jump3Action = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 19,19, false), 1);
@@ -191,8 +191,14 @@ public class Player implements Component {
         this.charID = charID;
     }
 
-    public RectF[] getCurrentCollision(){
-        return this.currentCollision;
+    public RectF[][] getCurrentCollision(){
+        if (invert)
+            return currentCollision.getCollisionI();
+        return currentCollision.getCollision();
+    }
+
+    public RectF[][] getCurrentCollisionI(){
+        return currentCollision.getCollisionI();
     }
 
     public float getX(){
@@ -203,6 +209,10 @@ public class Player implements Component {
 
     public float getY(){
         return y;
+    }
+
+    public boolean isInvert(){
+        return invert;
     }
 
     private void jump(){
@@ -260,12 +270,17 @@ public class Player implements Component {
             log(x + "");
             */
 
+
         if (currentSprite != null){
-            for (int i=0; i<currentCollision.length; i++){
-                //canvas.drawRect(currentCollision[i].left+x, currentCollision[i].top+y, currentCollision[i].right+x, currentCollision[i].bottom+y, paint);
+            for (RectF[] aCurrentCollision : currentCollision.getCollision()) {
+                for (RectF bCurrentCollision : aCurrentCollision)
+                    if (bCurrentCollision != null) {
+                        //canvas.drawRect(bCurrentCollision.left + x, bCurrentCollision.top + y, bCurrentCollision.right + x, bCurrentCollision.bottom + y, paint);
+                    }
             }
-            //canvas.drawBitmap(currentSprite.getTexture().getImage(), x, y, paint);
+            canvas.drawBitmap(currentSprite.getTexture().getImage(), x, y, paint);
         }
+
 
         canvas.restoreToCount(saveCount);
 
@@ -452,8 +467,8 @@ public class Player implements Component {
 
     public static boolean checkCollision(Collision A, Collision B){
 
-        RectF[] cA = A.getCollision();
-        RectF[] cB = B.getCollision();
+        //RectF[] cA = A.getCollision();
+        //RectF[] cB = B.getCollision();
 
         return false;
     }

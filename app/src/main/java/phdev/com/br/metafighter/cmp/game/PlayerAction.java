@@ -28,11 +28,14 @@ public class PlayerAction {
         this.divFrame = divFrame;
         totalSprites = sprites.length-1;
 
+
         collisions = new Collision[sprites.length];
 
         for (int i=0; i<=totalSprites; i++){
-            collisions[i] = new Collision(Collision.detectCollisionFromTexture(sprites[i].getTexture(), 20, 20, 25));
+            //collisions[i] = new Collision(Collision.detectCollisionFromTexture(sprites[i].getTexture(), 20, 20, 25));
+            collisions[i] = new Collision().detectCollisionFromTexture(sprites[i].getTexture(), 15, 15, 25);
         }
+
     }
 
     public PlayerAction execute(){
@@ -45,8 +48,8 @@ public class PlayerAction {
         return collisions;
     }
 
-    public RectF[] getCurrentCollision(){
-        return collisions[currentSprite].getCollision();
+    public Collision getCurrentCollision(){
+        return collisions[currentSprite];
     }
 
     public Sprite getSprite(){

@@ -128,7 +128,7 @@ public class Player implements Component {
 
         walkingActionLeft = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 0, 5, true), 8);
         walkingActionRight = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 0, 5, false), 8);
-        movingAction = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 6, 13, false), 4);
+        movingAction = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 6, 13, false), 6);
         jump1Action = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 14, 19, false), 3);
         jump2Action = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 14, 19, true), 6);
         jump3Action = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 19,19, false), 1);

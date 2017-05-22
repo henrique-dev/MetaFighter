@@ -324,19 +324,12 @@ public class MatchScreen extends Screen {
 
 
 
+        /*
         RectF[][] player1Collision = null;
         RectF[][] player2Collision = null;
 
         player2Collision = player2.getCurrentCollision();
         player1Collision = player1.getCurrentCollision();
-
-        /*
-        for (int i=0; i<currentCollision.length; i++){
-            canvas.drawRect(currentCollision[i].left+ player2.getX(), currentCollision[i].top + player2.getY(), currentCollision[i].right+player2.getX(), currentCollision[i].bottom+player2.getY(), new Paint());
-        }*/
-
-
-
 
         for (RectF[] aCurrentCollision : player2Collision)
             for (RectF bCurrentCollision : aCurrentCollision)
@@ -349,6 +342,7 @@ public class MatchScreen extends Screen {
                 if (bCurrentCollision != null) {
                     canvas.drawRect(bCurrentCollision.left + player1.getX(), bCurrentCollision.top + player1.getY(), bCurrentCollision.right + player1.getX(), bCurrentCollision.bottom + player1.getY(), new Paint());
                 }
+                */
 
 
 

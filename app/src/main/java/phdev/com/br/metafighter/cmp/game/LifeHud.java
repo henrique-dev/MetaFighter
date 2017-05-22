@@ -21,10 +21,14 @@ public class LifeHud extends GameEntity{
     private int HP;
     private Text text;
 
+    private float percent;
+
     public LifeHud(RectF area, Texture hud, String text) {
         super(area, new Paint(), null);
         this.texture = hud;
         paint.setColor(Color.RED);
+
+        HP = 100;
 
         RectF textArea = new RectF(area.left, area.bottom, area.right, area.bottom + area.height());
         this.text = new Text(text);
@@ -34,6 +38,8 @@ public class LifeHud extends GameEntity{
         this.texture.scaleImage((int)area.width(), (int)area.height());
         this.bar = new RectF(this.area.left, this.area.top, this.area.right, this.area.bottom);
 
+        percent = bar.width() / HP;
+
     }
 
     public int getHP() {
@@ -42,6 +48,11 @@ public class LifeHud extends GameEntity{
 
     public void setHP(int HP) {
         this.HP = HP;
+    }
+
+    public void decrementHP(float damage){
+        HP -= damage;
+        bar.right = bar.left + HP * percent;
     }
 
     public Text getText() {

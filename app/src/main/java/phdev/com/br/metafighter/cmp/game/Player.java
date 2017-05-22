@@ -25,12 +25,15 @@ public class Player implements Component {
 
     //
 
-    private final int STOPACTION = 0;
-    private final int MOVEACTION = 1;
-    private final int JUMPACTION = 2;
-    private final int CROUCHACTION = 3;
-    private final int PUNCHACTION = 4;
-    private final int KICKACTION = 5;
+    public static final int STOP_ACTION = 0;
+    public static final int MOVE_ACTION = 1;
+    public static final int JUMP_ACTION = 2;
+    public static final int CROUCH_ACTION = 3;
+    public static final int PUNCH_ACTION = 4;
+    public static final int KICK_ACTION = 5;
+    public static final int GUARD_ACTION = 6;
+    public static final int ESPECIAL_ACTION = 7;
+    public static final int DAMAGED_ACTION = 8;
 
     private Paint paint;
 
@@ -56,7 +59,9 @@ public class Player implements Component {
     private PlayerAction guardAction;
 
     private PlayerAction victoryAction;
+    private PlayerAction victoryAction2;
     private PlayerAction defeatAction;
+    private PlayerAction defeatAction2;
 
     private PlayerAction damageAction;
     // cambaleando
@@ -95,6 +100,8 @@ public class Player implements Component {
 
     //PARA TESTES
 
+    private LifeHud lifeHud;
+
     private Matrix matrix;
     private boolean invert;
 
@@ -126,30 +133,33 @@ public class Player implements Component {
 
         Sprite[] sprites = character.getSprites();
 
-        walkingActionLeft = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 0, 5, true), 8);
-        walkingActionRight = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 0, 5, false), 8);
-        movingAction = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 6, 13, false), 6);
-        jump1Action = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 14, 19, false), 3);
-        jump2Action = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 14, 19, true), 6);
-        jump3Action = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 19,19, false), 1);
-        crouchAction = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 20, 25, false), 3);
-        crouchedAction = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 25, 25, false), 1);
+        walkingActionLeft = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 0, 5, true), 8, MOVE_ACTION, true);
+        walkingActionRight = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 0, 5, false), 8, MOVE_ACTION, true);
+        movingAction = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 6, 13, false), 6, MOVE_ACTION, true);
+        jump1Action = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 14, 19, false), 3, JUMP_ACTION, true);
+        jump2Action = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 14, 19, true), 6, JUMP_ACTION, true);
+        jump3Action = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 19,19, false), 1, JUMP_ACTION, true);
+        crouchAction = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 20, 25, false), 3, CROUCH_ACTION, true);
+        crouchedAction = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 25, 25, false), 1, CROUCH_ACTION, true);
 
 
-        punchAction = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 26, 31, false), 2);
-        punchAction2 = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 26, 31, true), 2);
+        punchAction = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 26, 31, false), 2, PUNCH_ACTION, true);
+        punchAction2 = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 26, 31, true), 2, PUNCH_ACTION, true);
 
 
-        kickAction = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 32, 37, false), 3);
-        kickAction2 = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 32, 37, true), 3);
+        kickAction = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 32, 37, false), 3, KICK_ACTION, true);
+        kickAction2 = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 32, 37, true), 3, KICK_ACTION, true);
 
-        guardAction = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 38, 38, false), 1);
+        guardAction = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 38, 38, false), 1, GUARD_ACTION, true);
 
-        victoryAction = new PlayerAction(Sprite.getSpritesFromSprites(sprites , 0 ,1, false), 8);
-        defeatAction = new PlayerAction(Sprite.getSpritesFromSprites(sprites , 0 ,1, false), 8);
+        defeatAction = new PlayerAction(Sprite.getSpritesFromSprites(sprites , 39 ,46, false), 8, ESPECIAL_ACTION, false);
+        defeatAction2 = new PlayerAction(Sprite.getSpritesFromSprites(sprites , 46 ,46, false), 1, ESPECIAL_ACTION, false);
+
+        victoryAction = new PlayerAction(Sprite.getSpritesFromSprites(sprites , 47 ,61, false), 8, ESPECIAL_ACTION, false);
+        victoryAction2 = new PlayerAction(Sprite.getSpritesFromSprites(sprites , 61 ,61, false), 1, ESPECIAL_ACTION, false);
 
 
-        damageAction = new PlayerAction(Sprite.getSpritesFromSprites(sprites , 0 ,1, false), 8);
+        damageAction = new PlayerAction(Sprite.getSpritesFromSprites(sprites , 0 ,1, false), 8, DAMAGED_ACTION, true);
 
         changeCurrentAction(movingAction);
 
@@ -161,6 +171,10 @@ public class Player implements Component {
         paint = new Paint();
 
         log("Criou o player");
+    }
+
+    public void setLifeHud(LifeHud lifeHud){
+        this.lifeHud = lifeHud;
     }
 
     public ControllerListener getControllerListener(){
@@ -192,13 +206,15 @@ public class Player implements Component {
     }
 
     public RectF[][] getCurrentCollision(){
+        if (currentCollision == null)
+            return null;
         if (invert)
             return currentCollision.getCollisionI();
         return currentCollision.getCollision();
     }
 
-    public RectF[][] getCurrentCollisionI(){
-        return currentCollision.getCollisionI();
+    public int getCurrentAction(){
+        return currentAction.getType();
     }
 
     public float getX(){
@@ -214,6 +230,22 @@ public class Player implements Component {
     public boolean isInvert(){
         return invert;
     }
+
+    public void damaged(float damage){
+        lifeHud.decrementHP(damage);
+        if (lifeHud.getHP() <= 0){
+            //loser();
+        }
+    }
+
+    public void loser(){
+        changeCurrentAction(defeatAction.execute());
+    }
+
+    public void winner(){
+        changeCurrentAction(victoryAction.execute());
+    }
+
 
     private void jump(){
         if (!jumpState){
@@ -272,12 +304,14 @@ public class Player implements Component {
 
 
         if (currentSprite != null){
+            /*
             for (RectF[] aCurrentCollision : currentCollision.getCollision()) {
                 for (RectF bCurrentCollision : aCurrentCollision)
                     if (bCurrentCollision != null) {
-                        //canvas.drawRect(bCurrentCollision.left + x, bCurrentCollision.top + y, bCurrentCollision.right + x, bCurrentCollision.bottom + y, paint);
+                        canvas.drawRect(bCurrentCollision.left + x, bCurrentCollision.top + y, bCurrentCollision.right + x, bCurrentCollision.bottom + y, paint);
                     }
             }
+            */
             canvas.drawBitmap(currentSprite.getTexture().getImage(), x, y, paint);
         }
 
@@ -293,7 +327,8 @@ public class Player implements Component {
 
         if (tmpSprite != null){
             currentSprite = tmpSprite;
-            currentCollision = currentAction.getCurrentCollision();
+            if (currentAction.getCurrentCollision() != null)
+                currentCollision = currentAction.getCurrentCollision();
         }
         else {
             if (crouching || crouchState){
@@ -318,7 +353,13 @@ public class Player implements Component {
                                     if (currentAction.equals(jump1Action) || currentAction.equals(jump3Action))
                                         changeCurrentAction(jump3Action.execute());
                                     else
-                                        changeCurrentAction(currentAction.execute());
+                                        if (currentAction.equals(defeatAction) || currentAction.equals(defeatAction2))
+                                            changeCurrentAction(defeatAction2);
+                                        else
+                                            if (currentAction.equals(victoryAction) || currentAction.equals(victoryAction2))
+                                                changeCurrentAction(victoryAction2);
+                                            else
+                                                changeCurrentAction(currentAction.execute());
             }
         }
 

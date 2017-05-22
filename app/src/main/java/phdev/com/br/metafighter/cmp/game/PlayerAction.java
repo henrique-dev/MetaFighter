@@ -19,23 +19,25 @@ public class PlayerAction {
     private int counter;
     private int totalSprites;
 
+    private int type;
+
     private int divFrame;
 
-    public PlayerAction(Sprite[] sprites, int divFrame){
+    public PlayerAction(Sprite[] sprites, int divFrame, int type, boolean collisionOn){
         this.sprites = sprites;
         counter = 0;
         currentSprite = 0;
         this.divFrame = divFrame;
         totalSprites = sprites.length-1;
+        this.type = type;
 
-
-        collisions = new Collision[sprites.length];
-
-        for (int i=0; i<=totalSprites; i++){
-            //collisions[i] = new Collision(Collision.detectCollisionFromTexture(sprites[i].getTexture(), 20, 20, 25));
-            collisions[i] = new Collision().detectCollisionFromTexture(sprites[i].getTexture(), 15, 15, 25);
+        if (collisionOn){
+            collisions = new Collision[sprites.length];
+            for (int i=0; i<=totalSprites; i++){
+                //collisions[i] = new Collision(Collision.detectCollisionFromTexture(sprites[i].getTexture(), 20, 20, 25));
+                collisions[i] = new Collision().detectCollisionFromTexture(sprites[i].getTexture(), 15, 15, 25);
+            }
         }
-
     }
 
     public PlayerAction execute(){
@@ -49,7 +51,13 @@ public class PlayerAction {
     }
 
     public Collision getCurrentCollision(){
+        if (collisions == null)
+            return null;
         return collisions[currentSprite];
+    }
+
+    public int getType(){
+        return type;
     }
 
     public Sprite getSprite(){
@@ -57,12 +65,11 @@ public class PlayerAction {
         currentSprite = counter / divFrame;
 
         if (currentSprite > totalSprites) {
-            counter = 0;
+            //counter = 0;
         } else {
             counter++;
             return sprites[currentSprite];
         }
-
         return null;
     }
 

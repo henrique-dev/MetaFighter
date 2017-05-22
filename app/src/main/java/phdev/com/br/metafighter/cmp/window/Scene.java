@@ -27,12 +27,15 @@ public abstract class Scene implements Component {
     public abstract void init();
 
     public Scene start(){
-
         return this;
     }
 
     public void add(Component cmp){
         this.components.add(cmp);
+    }
+
+    public void remove(Component cmp){
+        this.components.remove(cmp);
     }
 
     public void processPacket(Packet packet){

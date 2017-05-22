@@ -10,6 +10,10 @@ import android.util.Log;
 import android.view.MotionEvent;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import phdev.com.br.metafighter.BluetoothManager;
 import phdev.com.br.metafighter.GameParameters;
@@ -40,6 +44,7 @@ public class MatchScreen extends Screen {
 
     private Scene mainScene;
     private Scene preBattleScene;
+    private Scene posBattleScene;
 
     private BackGround backGround;
     private BackGround preBattleBackground;
@@ -63,6 +68,8 @@ public class MatchScreen extends Screen {
 
     private int charIDplayer1;
     private int charIDplayer2;
+
+    private boolean gameIn;
 
     private Controller controller;
 
@@ -155,6 +162,9 @@ public class MatchScreen extends Screen {
                         new RectF(screenSize.right - 10 - areaController.width(), screenSize.bottom - 10 - areaController.height(),
                                 screenSize.right - 10, screenSize.bottom-10), controllerDirTexture, player1.getControllerListener());
 
+                player1.setLifeHud(lifeHudPlayer1);
+                player2.setLifeHud(lifeHudPlayer2);
+
 
                 super.add(backGround);
                 super.add(lifeHudPlayer1);
@@ -209,11 +219,27 @@ public class MatchScreen extends Screen {
 
                 if (timer.getTicks()/1000000000 > 3){
                     currentScene = mainScene.start();
+                    gameIn = true;
                     preBattleScene = null;
                 }
 
             }
         };
+
+        posBattleScene = new Scene() {
+            @Override
+            public void init() {
+                Paint paint = new Paint();
+                paint.setColor(Color.BLACK);
+                paint.setAlpha(150);
+
+                super.add(mainScene);
+
+                super.add(new BackGround(screenSize, paint));
+            }
+        };
+
+        
 
         currentScene = preBattleScene;
 
@@ -299,7 +325,7 @@ public class MatchScreen extends Screen {
                 numeroSpritesAchados += GameParameters.getInstance().assetManager.list("images/characters/" + name + "/action/" + paths[i]).length;
             }
 
-            log("Numero de sprites: " + numeroSpritesAchados);
+            //log("Numero de sprites: " + numeroSpritesAchados);
 
             int contador = 0;
             tmpSpriteAction = new Sprite[numeroSpritesAchados];
@@ -307,8 +333,11 @@ public class MatchScreen extends Screen {
             for (int i=0; i<paths.length; i++){
                 log(paths[i] + "");
                 String arqs[] = GameParameters.getInstance().assetManager.list("images/characters/" + name + "/action/" + paths[i]);
+
                 for (int j=0; j < arqs.length; j++){
-                    tmpSpriteAction[contador++] = new Sprite(new Texture("images/characters/" + name + "/action/" + paths[i] + "/" + arqs[j]));
+                    //tmpSpriteAction[contador++] = new Sprite(new Texture("images/characters/" + name + "/action/" + paths[i] + "/" + arqs[j]));
+                    tmpSpriteAction[contador++] = new Sprite(new Texture("images/characters/" + name + "/action/" + paths[i] + "/" + ((j+1) + ".png")));
+                    //log(paths[i] + " / " + arqs[j]);
                 }
             }
 
@@ -356,18 +385,9 @@ public class MatchScreen extends Screen {
                     for (int k = 0; k < 15; k++) {
                         for (int l = 0; l < 15; l++) {
                             if (B[k][l] != null) {
-                                /*
-                                if (((AX + A[i][j].left >= BX + B[k][l].left && AX + A[i][j].left <= BX + B[k][l].right) && (AX + A[i][j].right >= BX + B[k][l].left && AX + A[i][j].right <= BX + B[k][l].right)) &&
-                                        ((AY + A[i][j].top >= BY + B[k][l].top && AY + A[i][j].top <= BY + B[k][l].bottom) && (AY + A[i][j].bottom >= BY + B[k][l].top && AY + A[i][j].bottom <= BY + B[k][l].bottom))) {
-                                    log("Colidiu");
-                                    log("AX: " + AX + " -  " + "A: (" + (AX + A[i][j].left) + ", " + (AY + A[i][j].top) + ", " + (AX + A[i][j].right) + ", " + (AY + A[i][j].bottom));
-                                    log("BX: " + BX + " -  " + "B: (" + (BX + B[k][l].left) + ", " + (BY + B[k][l].top) + ", " + (BX + B[k][l].right) + ", " + (BY + B[k][l].bottom));
-                                    return true;
-                                }
-                                */
                                 if (RectF.intersects(new RectF(AX + A[i][j].left, AY + A[i][j].top, AX + A[i][j].right, AY + A[i][j].bottom),
                                         new RectF(BX + B[k][l].left, BY + B[k][l].top, BX + B[k][l].right, BY + B[k][l].bottom))){
-                                    log("Colidiu");
+                                    //log("Colidiu");
                                     /*
                                     log("AX: " + AX + " -  " + "A: (" + (AX + A[i][j].left) + ", " + (AY + A[i][j].top) + ", " + (AX + A[i][j].right) + ", " + (AY + A[i][j].bottom));
                                     log("BX: " + BX + " -  " + "B: (" + (BX + B[k][l].left) + ", " + (BY + B[k][l].top) + ", " + (BX + B[k][l].right) + ", " + (BY + B[k][l].bottom));
@@ -380,25 +400,6 @@ public class MatchScreen extends Screen {
                 }
             }
         }
-
-        /*
-        for (RectF[] aCurrentCollision : A)
-            for (RectF tmpA : aCurrentCollision)
-                if (tmpA != null) {
-                    for (RectF[] cCurrentCollision : B)
-                        for (RectF tmpB : cCurrentCollision)
-                            if (tmpB != null) {
-
-                                if(((AX + tmpA.left >= BX + tmpB.left && AX+ tmpA.left <= BX + tmpB.right) && (AX + tmpA.right >= BX + tmpB.left && AX + tmpA.right <= BX + tmpB.right)) &&
-                                        ((AY + tmpA.top >= BY + tmpB.top && AY + tmpA.top <= BY + tmpB.bottom) && (AY + tmpA.bottom >= BY + tmpB.top && AY + tmpA.bottom <= BY + tmpB.bottom))) {
-                                    log("Colidiu");
-                                    log("AX: " + AX + " -  " + "A: (" + (AX + tmpA.left) + ", " + (AY + tmpA.top) + ", " + (AX + tmpA.right) + ", " + (AY + tmpA.bottom));
-                                    log("BX: " + BX + " -  " + "B: (" + (BX + tmpB.left) + ", " + (BY + tmpB.top) + ", " + (BX + tmpB.right) + ", " + (BY + tmpB.bottom));
-                                    return true;
-                                }
-                            }
-                }
-                */
         return false;
     }
 
@@ -406,8 +407,40 @@ public class MatchScreen extends Screen {
     public void update(){
         super.update();
 
-        checkCollision(player1.getCurrentCollision(), player1.getX(), player1.getY(),
-                player2.getCurrentCollision(), player2.getX(), player2.getY());
+        if (gameIn) {
+            if (checkCollision(player1.getCurrentCollision(), player1.getX(), player1.getY(),
+                    player2.getCurrentCollision(), player2.getX(), player2.getY())) {
+                if (player1.getCurrentAction() == Player.KICK_ACTION) {
+                    log("Acertou um chute");
+                    player2.damaged(0.5f);
+                }
+                if (player1.getCurrentAction() == Player.PUNCH_ACTION) {
+                    player2.damaged(0.2f);
+                    //lifeHudPlayer2.decrementHP(0.2f);
+                    log("Acertou um soco");
+                }
+            }
+
+            if (lifeHudPlayer1.getHP() <=0 || lifeHudPlayer2.getHP() <= 0) {
+                matchTimer.pause();
+
+                if (lifeHudPlayer1.getHP() <=0){
+                    player2.winner();
+                    player1.loser();
+                }
+                else
+                    if (lifeHudPlayer2.getHP() <= 0){
+                        player2.loser();
+                        player1.winner();
+                }
+
+
+                mainScene.remove(controller);
+                gameIn = false;
+                currentScene = posBattleScene;
+            }
+        }
+
 
         /*
         if (currentTime > 99)
@@ -420,8 +453,8 @@ public class MatchScreen extends Screen {
 
     @Override
     public boolean onTouchEvent(MotionEvent event){
-        super.onTouchEvent(event);
-
+        if (gameIn)
+            super.onTouchEvent(event);
 
         return true;
     }

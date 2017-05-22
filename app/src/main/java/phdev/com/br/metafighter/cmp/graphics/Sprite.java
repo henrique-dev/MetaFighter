@@ -50,21 +50,19 @@ public class Sprite {
     public static Sprite[] getSpritesFromSprites(Sprite[] sprites, int indexBegin, int indexEnd, boolean reverse){
         Sprite cSprite[] = null;
 
-            cSprite = new Sprite[(indexEnd+1)-indexBegin];
-            int tCounter = 0;
-            for (int i=indexBegin; i<=indexEnd; i++){
+        cSprite = new Sprite[(indexEnd+1)-indexBegin];
 
-                if (!reverse){
-                    cSprite[tCounter] = sprites[i];
-                }
-                else {
-                    cSprite[cSprite.length-1 - tCounter] = sprites[i];
-                }
+        int tCounter = 0;
+        for (int i=indexBegin; i<=indexEnd; i++){
 
-
-
-                tCounter++;
+            if (!reverse){
+                cSprite[tCounter] = sprites[i];
             }
+            else {
+                cSprite[cSprite.length-1 - tCounter] = sprites[i];
+            }
+            tCounter++;
+        }
 
 
         return cSprite;

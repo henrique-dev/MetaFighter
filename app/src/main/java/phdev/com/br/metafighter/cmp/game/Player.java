@@ -77,7 +77,6 @@ public class Player implements Component {
     private float x;
 
     private Timer jumpTimer;
-    private Timer guardTimer;
     private Double firstTouchGuard;
     private Double secondTouchGuard;
 
@@ -167,7 +166,7 @@ public class Player implements Component {
         x = size.left;
         y = size.top;
 
-        velocityX = GameParameters.getInstance().screenSize.width() / 130;
+        velocityX = GameParameters.getInstance().screenSize.width() / 140;
         log(velocityX + "");
         velocityY = GameParameters.getInstance().screenSize.height() / 40;
 
@@ -259,8 +258,10 @@ public class Player implements Component {
     }
 
     public void damaged(float damage){
-        if (currentAction.getType() == GUARD_ACTION)
-            lifeHud.decrementHP((10 * damage)/100);
+        if (currentAction.getType() == GUARD_ACTION) {
+            lifeHud.decrementHP((0.3f * damage));
+            log("Defendeu");
+        }
         else
             lifeHud.decrementHP(damage);
     }
@@ -284,9 +285,16 @@ public class Player implements Component {
         }
     }
 
+    private void move(){
 
-    private void move(int x, int y){
-        log("Se movendo");
+    }
+
+    private void moveAhead(){
+
+    }
+
+    private void moveBack(){
+
     }
 
     private void crouch(){
@@ -405,7 +413,13 @@ public class Player implements Component {
             if (y > mainArea.top) {
                 jumpState = false;
                 y = mainArea.top;
-                changeCurrentAction(movingAction);
+                if (movingstate)
+                    if (directionX > 0)
+                        changeCurrentAction(walkingActionRight);
+                    else
+                        changeCurrentAction(walkingActionLeft);
+                else
+                    changeCurrentAction(movingAction);
             }
             else
                 y += -velocidade;
@@ -460,34 +474,15 @@ public class Player implements Component {
         @Override
         public void arrowLeftPressed(){
 
-            boolean cond = false;
+            if (!jumpState)
+                if (!currentAction.equals(walkingActionLeft))
+                    changeCurrentAction(walkingActionLeft);
+            movingstate = true;
 
-            if (guardTimer == null)
-                guardTimer = new Timer().start();
-            else {
-                if (guardTimer.getTicks()/100000000 < 5)
-                    cond = true;
-                else
-                    if (guardTimer.getTicks()/100000000 > 5)
-                        guardTimer.start();
-            }
-
-            if (!cond){
-                if (!jumpState)
-                    changeCurrentAction(walkingActionLeft.execute());
-                movingstate = true;
-
-                if (invert)
-                    directionX = 1;
-                else
-                    directionX = -1;
-
-            }
-            else {
-                guardState = true;
-                movingstate = false;
-                changeCurrentAction(guardAction.execute());
-            }
+            if (invert)
+                directionX = 1;
+            else
+                directionX = -1;
 
         }
 
@@ -501,9 +496,10 @@ public class Player implements Component {
         @Override
         public void arrowRightPressed(){
             if (!jumpState)
-                currentAction = walkingActionRight.execute();
-            movingstate = true;
+                if (!currentAction.equals(walkingActionRight))
+                    currentAction = walkingActionRight;
 
+            movingstate = true;
 
             if (invert)
                 directionX = -1;
@@ -531,9 +527,16 @@ public class Player implements Component {
         }
 
         @Override
-        public void action3Performed(){
-
+        public void action3Pressed(){
+            changeCurrentAction(guardAction.execute());
         }
+
+        @Override
+        public void action3Released(){
+            changeCurrentAction(movingAction);
+        }
+
+
 
     };
 

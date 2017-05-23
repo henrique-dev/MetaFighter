@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.opengl.GLES31Ext;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -119,8 +120,12 @@ public final class GameEngine extends SurfaceView implements SurfaceHolder.Callb
 
         connectionManager = new ConnectionManager(gameContext);
 
-        //new MainScreen(gameContext);
-        new MatchScreen(gameContext, null, Character.GUEDES, Character.GUEDES);
+        Log.d("GameEngine", "initBasicComponents: " + getContext().getCacheDir());
+
+
+
+        new MainScreen(gameContext);
+        //new MatchScreen(gameContext, null, Character.GUEDES, Character.GUEDES);
     }
 
     @SuppressLint("MissingSuperCall")

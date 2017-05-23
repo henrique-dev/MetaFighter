@@ -18,7 +18,7 @@ public class LifeHud extends GameEntity{
 
     private RectF bar;
     private Texture texture;
-    private int HP;
+    private float HP;
     private Text text;
 
     private float percent;
@@ -42,7 +42,7 @@ public class LifeHud extends GameEntity{
 
     }
 
-    public int getHP() {
+    public float getHP() {
         return HP;
     }
 

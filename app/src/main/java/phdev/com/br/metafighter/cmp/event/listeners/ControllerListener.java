@@ -54,6 +54,15 @@ public abstract class ControllerListener implements EventListener{
     public void action3Performed(){
 
     }
+
+    public void action3Pressed(){
+
+    }
+
+    public void action3Released(){
+
+    }
+
     public void action4Performed(){
 
     }

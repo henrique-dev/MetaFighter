@@ -2,7 +2,6 @@ package phdev.com.br.metafighter.cmp.misc;
 
 import android.graphics.Canvas;
 import android.graphics.RectF;
-import android.util.Log;
 import android.view.MotionEvent;
 
 import java.util.ArrayList;
@@ -15,7 +14,6 @@ import phdev.com.br.metafighter.cmp.event.animation.GoAndBack;
 import phdev.com.br.metafighter.cmp.event.listeners.ActionListener;
 import phdev.com.br.metafighter.cmp.event.listeners.ClickListener;
 import phdev.com.br.metafighter.cmp.event.listeners.ControllerListener;
-import phdev.com.br.metafighter.cmp.event.listeners.PressingListener;
 import phdev.com.br.metafighter.cmp.graphics.Texture;
 import phdev.com.br.metafighter.cmp.window.Button;
 
@@ -41,7 +39,9 @@ public class Controller implements Component {
     public static final int ACTION_1 = 16;
     public static final int ACTION_2 = 17;
     public static final int ACTION_3 = 18;
-    public static final int ACTION_4 = 19;
+    public static final int ACTION_3_PRESSED = 19;
+    public static final int ACTION_3_RELEASED = 20;
+    public static final int ACTION_4 = 21;
 
     private Texture directionalTexture;
     private Texture buttonTexture;
@@ -226,7 +226,17 @@ public class Controller implements Component {
                 buttonsArea.top + divy*2 ),
                 null, this.directionalTexture);
         action3Button.getPaint().setAlpha(170);
-        action3Button.addEventListener(new ActionListener() {
+        action3Button.addEventListener(new ClickListener() {
+            @Override
+            public void pressedPerformed(ClickEvent event) {
+                fireAction(ACTION_3_PRESSED);
+            }
+
+            @Override
+            public void releasedPerformed(ClickEvent event) {
+                fireAction(ACTION_3_RELEASED);
+            }
+
             @Override
             public void actionPerformed(Event event) {
                 fireAction(ACTION_3);
@@ -262,6 +272,10 @@ public class Controller implements Component {
         buttons.add(action2Button);
         buttons.add(action3Button);
         buttons.add(action4Button);
+    }
+
+    public Controller(ControllerListener listener){
+        this.listener = listener;
     }
 
     public void fireAction(int action){
@@ -310,6 +324,12 @@ public class Controller implements Component {
                 break;
             case ACTION_3:
                 listener.action3Performed();
+                break;
+            case ACTION_3_PRESSED:
+                listener.action3Pressed();
+                break;
+            case ACTION_3_RELEASED:
+                listener.action3Released();
                 break;
             case ACTION_4:
                 listener.action4Performed();

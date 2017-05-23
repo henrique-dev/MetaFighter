@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.Log;
 
+import java.io.File;
 import java.util.List;
 
 import phdev.com.br.metafighter.BluetoothManager;
@@ -81,6 +82,8 @@ public class MainScreen extends Screen {
         super(context);
         init();
         this.bluetoothManager = context.getConnectionType().getBluetoothManager();
+
+
     }
 
     @Override

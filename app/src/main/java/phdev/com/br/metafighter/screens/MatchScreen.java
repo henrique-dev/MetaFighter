@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 import phdev.com.br.metafighter.BluetoothManager;
 import phdev.com.br.metafighter.GameParameters;
@@ -72,6 +73,18 @@ public class MatchScreen extends Screen {
     private boolean gameIn;
 
     private Controller controller;
+    private Controller bot;
+
+    // PARA TESTES
+
+    private Random randBot = new Random();
+    private boolean executingSomething;
+    private Timer taskBot = new Timer();
+    private int duration = 0;
+
+    private boolean botMove;
+
+    //
 
     public MatchScreen(GameContext context, BluetoothManager manager, int charIDplayer1, int charIDplayer2) {
         super(context);
@@ -163,6 +176,8 @@ public class MatchScreen extends Screen {
                         new RectF(10, screenSize.bottom - 10 - areaController.height(), 10 + areaController.width(), screenSize.bottom-10 ) , controllerDirTexture,
                         new RectF(screenSize.right - 10 - areaController.width(), screenSize.bottom - 10 - areaController.height(),
                                 screenSize.right - 10, screenSize.bottom-10), controllerDirTexture, player1.getControllerListener());
+
+                bot = new Controller(player2.getControllerListener());
 
                 player1.setLifeHud(lifeHudPlayer1);
                 player2.setLifeHud(lifeHudPlayer2);
@@ -426,6 +441,9 @@ public class MatchScreen extends Screen {
             if (lifeHudPlayer1.getHP() <=0 || lifeHudPlayer2.getHP() <= 0) {
                 matchTimer.pause();
 
+                bot = null;
+                controller = null;
+
                 if (lifeHudPlayer1.getHP() <=0){
                     player2.winner();
                     player1.loser();
@@ -458,9 +476,45 @@ public class MatchScreen extends Screen {
                     }
                 }
 
+            // PARA TESTES COM O BOT
+
+            if (player1.getCurrentAction() == Player.KICK_ACTION || player1.getCurrentAction() == Player.PUNCH_ACTION) {
+                bot.fireAction(Controller.ACTION_3_PRESSED);
+                executingSomething = true;
+            }
+            else {
+                bot.fireAction(Controller.ACTION_3_RELEASED);
+                executingSomething = false;
+            }
+
+            if (!executingSomething) {
+                if (randBot.nextInt(400) < 5) {
+                    executingSomething = true;
+                    botMove = true;
+                    taskBot.start();
+                    duration = randBot.nextInt(5);
+                }
+            }
+
+            if (botMove){
+                if (!player1.isInvert())
+                    bot.fireAction(Controller.ARROW_LEFT_PRESSED);
+                else
+                    bot.fireAction(Controller.ARROW_RIGHT_PRESSED);
+
+                if (taskBot.getTicks()/100000000 > duration){
+                    botMove = false;
+                    executingSomething = false;
+                    bot.fireAction(Controller.ARROW_LEFT_RELEASED);
+                    bot.fireAction(Controller.ARROW_RIGHT_RELEASED);
+                    taskBot.stop();
+                }
+
+            }
 
 
 
+            //
 
         }
 

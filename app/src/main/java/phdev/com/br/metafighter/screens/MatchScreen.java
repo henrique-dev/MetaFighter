@@ -130,9 +130,11 @@ public class MatchScreen extends Screen {
 
                 player1 = loadPlayer(charIDplayer1,
                         new RectF(screenSize.centerX() - playerArea.width(), screenSize.bottom - playerArea.height(), screenSize.centerX(), screenSize.bottom), false);
+                player1.setDirectionX(1);
 
                 player2 = loadPlayer(charIDplayer2,
                         new RectF(screenSize.centerX() - playerArea.width(), screenSize.bottom - playerArea.height(), screenSize.centerX(), screenSize.bottom), true);
+                player2.setDirectionX(-1);
 
                 //player1 = loadPlayer(charIDplayer1, player1Area, false);
                 //player2 = loadPlayer(charIDplayer2, player2Area, true);
@@ -239,7 +241,7 @@ public class MatchScreen extends Screen {
             }
         };
 
-        
+
 
         currentScene = preBattleScene;
 
@@ -439,6 +441,27 @@ public class MatchScreen extends Screen {
                 gameIn = false;
                 currentScene = posBattleScene;
             }
+
+
+
+            if (!player1.isInvert() && player2.isInvert()) {
+                if (player1.getX() + player1.getMainArea().left > player2.getX() + player2.getMainArea().right) {
+                    player2.setInvert(false);
+                    player1.setInvert(true);
+                }
+            }
+            else
+                if (!player2.isInvert() && player1.isInvert()){
+                    if (player1.getX() + player1.getMainArea().right < player2.getX() + player2.getMainArea().left) {
+                        player2.setInvert(true);
+                        player1.setInvert(false);
+                    }
+                }
+
+
+
+
+
         }
 
 
@@ -455,6 +478,21 @@ public class MatchScreen extends Screen {
     public boolean onTouchEvent(MotionEvent event){
         if (gameIn)
             super.onTouchEvent(event);
+
+
+        /*
+        if (event.getActionMasked() == MotionEvent.ACTION_DOWN)
+            if (!player1.isInvert()) {
+                player1.setInvert(true);
+                player2.setInvert(false);
+            }
+            else {
+                player1.setInvert(false);
+                player2.setInvert(true);
+            }
+            */
+
+
 
         return true;
     }

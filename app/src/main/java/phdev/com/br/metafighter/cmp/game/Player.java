@@ -72,7 +72,7 @@ public class Player implements Component {
 
     private Collision currentCollision;
 
-    private RectF size;
+    private RectF mainArea;
     private float y;
     private float x;
 
@@ -92,7 +92,8 @@ public class Player implements Component {
 
     private boolean movingstate;
     private int directionX = 0;
-    private int velocityX = 2;
+    private float velocityX;
+    private float velocityY;
 
     private String name;
     private int charID;
@@ -116,10 +117,10 @@ public class Player implements Component {
 
         // Componentes de depuração
 
-        if (GameParameters.getInstance().debug) {
-            debugPaint = new Paint();
-            debugPaint.setColor(Color.RED);
-        }
+
+        //debugPaint = new Paint();
+        //debugPaint.setColor(Color.RED);
+
 
         //
 
@@ -166,7 +167,11 @@ public class Player implements Component {
         x = size.left;
         y = size.top;
 
-        this.size = size;
+        velocityX = GameParameters.getInstance().screenSize.width() / 130;
+        log(velocityX + "");
+        velocityY = GameParameters.getInstance().screenSize.height() / 40;
+
+        this.mainArea = size;
 
         paint = new Paint();
 
@@ -187,6 +192,22 @@ public class Player implements Component {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public RectF getMainArea() {
+        return mainArea;
+    }
+
+    public void setMainArea(RectF mainArea) {
+        this.mainArea = mainArea;
+    }
+
+    public int getDirectionX() {
+        return directionX;
+    }
+
+    public void setDirectionX(int directionX) {
+        this.directionX = directionX;
     }
 
     public Sprite[] getView() {
@@ -219,7 +240,7 @@ public class Player implements Component {
 
     public float getX(){
         if (invert)
-            return GameParameters.getInstance().screenSize.width() - x - size.width();
+            return GameParameters.getInstance().screenSize.width() - x - mainArea.width();
         return x;
     }
 
@@ -227,15 +248,21 @@ public class Player implements Component {
         return y;
     }
 
+    public void setInvert(boolean invert){
+        x = GameParameters.getInstance().screenSize.width() - x - mainArea.width()/2;
+        directionX *= -1;
+        this.invert = invert;
+    }
+
     public boolean isInvert(){
         return invert;
     }
 
     public void damaged(float damage){
-        lifeHud.decrementHP(damage);
-        if (lifeHud.getHP() <= 0){
-            //loser();
-        }
+        if (currentAction.getType() == GUARD_ACTION)
+            lifeHud.decrementHP((10 * damage)/100);
+        else
+            lifeHud.decrementHP(damage);
     }
 
     public void loser(){
@@ -297,7 +324,7 @@ public class Player implements Component {
 
         /*
         if (invert)
-            log((GameParameters.getInstance().screenSize.width() - x - size.width()/2) + "");
+            log((GameParameters.getInstance().screenSize.width() - x - mainArea.width()/2) + "");
         else
             log(x + "");
             */
@@ -336,13 +363,13 @@ public class Player implements Component {
             }
             else {
                 if (currentAction.equals(punchAction))
-                    changeCurrentAction(punchAction2);
+                    changeCurrentAction(punchAction2.execute());
                 else
                     if (currentAction.equals(punchAction2))
                         changeCurrentAction(movingAction);
                     else
                         if (currentAction.equals(kickAction))
-                            changeCurrentAction(kickAction2);
+                            changeCurrentAction(kickAction2.execute());
                         else
                             if (currentAction.equals(kickAction2))
                                 changeCurrentAction(movingAction);
@@ -373,11 +400,11 @@ public class Player implements Component {
         }
 
         if (jumpState){
-            float velocidade = 8 + (-20 * jumpTimer.getTicks()/1000000000);
+            float velocidade = velocityY + (-20 * jumpTimer.getTicks()/1000000000);
 
-            if (y > size.top) {
+            if (y > mainArea.top) {
                 jumpState = false;
-                y = size.top;
+                y = mainArea.top;
                 changeCurrentAction(movingAction);
             }
             else
@@ -449,10 +476,12 @@ public class Player implements Component {
                 if (!jumpState)
                     changeCurrentAction(walkingActionLeft.execute());
                 movingstate = true;
+
                 if (invert)
                     directionX = 1;
                 else
                     directionX = -1;
+
             }
             else {
                 guardState = true;
@@ -475,10 +504,12 @@ public class Player implements Component {
                 currentAction = walkingActionRight.execute();
             movingstate = true;
 
+
             if (invert)
                 directionX = -1;
             else
                 directionX = 1;
+
         }
 
         @Override
@@ -516,14 +547,14 @@ public class Player implements Component {
 
     protected void drawDebug(Canvas canvas){
 
-        float newx = GameParameters.getInstance().screenSize.width() - x - size.width();
+        float newx = GameParameters.getInstance().screenSize.width() - x - mainArea.width();
 
         if (invert) {
-            canvas.drawRect(newx, y, newx + size.width(), y + size.height(), debugPaint);
+            canvas.drawRect(newx, y, newx + mainArea.width(), y + mainArea.height(), debugPaint);
             canvas.drawText("X: " + newx + " - Y: " + y, newx, y, paint);
         }
         else {
-            canvas.drawRect(x, y, x + size.width(), y+size.height(), debugPaint);
+            canvas.drawRect(x, y, x + mainArea.width(), y+ mainArea.height(), debugPaint);
             canvas.drawText("X: " + x + " - Y: " + y, x, y, paint);
         }
 

@@ -352,8 +352,21 @@ public class Controller implements Component {
 
     @Override
     public boolean onTouchEvent(MotionEvent evt) {
+
+        action1Button.onTouchEvent(evt);
+        action2Button.onTouchEvent(evt);
+        action3Button.onTouchEvent(evt);
+        action4Button.onTouchEvent(evt);
+
+        direcUpButton.onTouchEvent(evt);
+        direcDownButton.onTouchEvent(evt);
+        direcLeftButton.onTouchEvent(evt);
+        direcRightButton.onTouchEvent(evt);
+
+        /*
         for (Component cmp: buttons)
             cmp.onTouchEvent(evt);
+            */
         return true;
     }
 }

@@ -139,8 +139,8 @@ public abstract class Entity implements Component {
 
 
     protected static void log(String msg){
-        if(!GameParameters.getInstance().debug)
-            return;
+        //if(!GameParameters.getInstance().debug)
+          //  return;
         GameParameters.getInstance().log(msg);
     }
 

@@ -79,4 +79,8 @@ public class PlayerAction {
         return null;
     }
 
+    public Sprite getLastSprite(){
+        return sprites[totalSprites];
+    }
+
 }

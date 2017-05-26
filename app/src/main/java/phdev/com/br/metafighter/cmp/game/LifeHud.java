@@ -46,7 +46,7 @@ public class LifeHud extends GameEntity{
         return HP;
     }
 
-    public void setHP(int HP) {
+    public void setHP(float HP) {
         this.HP = HP;
     }
 

@@ -6,7 +6,7 @@ import java.io.Serializable;
  * @author Paulo Henrique Gonçalves Bacelar
  * @version 1.0
  */
-public class Action implements Packet, Serializable {
+public class Action implements Packet {
 
     private int value1;
     private int value2;

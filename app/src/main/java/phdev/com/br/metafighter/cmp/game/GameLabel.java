@@ -162,6 +162,7 @@ public class GameLabel extends GameEntity {
         if (super.sprites != null){
             for (int i = 0; i < super.sprites.length; i++){
                 canvas.drawBitmap(super.sprites[i].getTexture().getImage(), getX(), getY(), super.paint);
+                log("Desenhandi sprites");
             }
         }
         canvas.drawBitmap(texture.getImage(), getX(), getY(), paint);

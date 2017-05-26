@@ -16,7 +16,7 @@ import phdev.com.br.metafighter.cmp.connections.packets.Packet;
  * @author Paulo Henrique Gonçalves Bacelar
  * @version 1.0
  */
-public abstract class   Scene implements Component {
+public abstract class Scene implements Component {
 
     private List<Component> components;
 

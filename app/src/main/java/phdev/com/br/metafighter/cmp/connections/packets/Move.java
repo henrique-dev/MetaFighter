@@ -6,7 +6,7 @@ import java.io.Serializable;
  * @author Paulo Henrique Gonçalves Bacelar
  * @version 1.0
  */
-public class Move implements Serializable, Packet {
+public class Move implements Packet {
 
     private int value1;
     private float x;

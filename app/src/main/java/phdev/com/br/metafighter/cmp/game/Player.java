@@ -204,6 +204,10 @@ public class Player implements Component {
         log("Criou o player");
     }
 
+    public LifeHud getLifeHud() {
+        return lifeHud;
+    }
+
     public void setLifeHud(LifeHud lifeHud){
         this.lifeHud = lifeHud;
     }

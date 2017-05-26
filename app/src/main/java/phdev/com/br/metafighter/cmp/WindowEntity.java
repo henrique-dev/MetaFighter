@@ -167,17 +167,38 @@ public abstract class WindowEntity extends Entity{
     @Override
     public boolean onTouchEvent(MotionEvent event){
         int action = event.getActionMasked();
-        float x = event.getX();
-        float y = event.getY();
+        float x;
+        float y;
 
-        if (checkCollision(new RectF(x,y,x,y), this.area)){
-            if (listeners != null) {
-                return this.processListeners(new ClickEvent(action, x, y, true, this.id, null));
+        if (event.getActionIndex() == 1){
+            log("Segundo toque");
+            x = event.getX(1);
+            y = event.getY(1);
+            if (checkCollision(new RectF(x,y,x,y), this.area)){
+                if (listeners != null) {
+                    //return this.processListeners(new ClickEvent(action, x, y, true, this.id, null));
+                    this.processListeners(new ClickEvent(action, x, y, true, this.id, null));
+                }
+            }
+            else {
+                if (clicked)
+                    this.processListeners(new ClickEvent(MotionEvent.ACTION_UP, event.getX(1), event.getY(1), false, this.id, null));
             }
         }
-        else {
-            if (clicked)
-                this.processListeners(new ClickEvent(MotionEvent.ACTION_UP, x, y, false, this.id, null));
+        if (event.getActionIndex() == 0){
+            log("Primeiro toque");
+            x = event.getX();
+            y = event.getY();
+            if (checkCollision(new RectF(x,y,x,y), this.area)){
+                if (listeners != null) {
+                    //return this.processListeners(new ClickEvent(action, x, y, true, this.id, null));
+                    this.processListeners(new ClickEvent(action, x, y, true, this.id, null));
+                }
+            }
+            else {
+                if (clicked)
+                    this.processListeners(new ClickEvent(MotionEvent.ACTION_UP, x, y, false, this.id, null));
+            }
         }
         return true;
     }

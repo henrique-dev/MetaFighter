@@ -2,7 +2,10 @@ package phdev.com.br.metafighter.screens;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.RectF;
+
+import java.io.IOException;
 
 import phdev.com.br.metafighter.ConnectionManager;
 import phdev.com.br.metafighter.GameParameters;
@@ -18,12 +21,15 @@ import phdev.com.br.metafighter.cmp.event.listeners.AutoDestroyableListener;
 import phdev.com.br.metafighter.cmp.game.Character;
 import phdev.com.br.metafighter.cmp.game.GameLabel;
 import phdev.com.br.metafighter.cmp.game.Player;
+import phdev.com.br.metafighter.cmp.game.PlayerAction;
 import phdev.com.br.metafighter.cmp.graphics.Sprite;
 import phdev.com.br.metafighter.cmp.graphics.Texture;
 import phdev.com.br.metafighter.cmp.misc.Constant;
 import phdev.com.br.metafighter.cmp.misc.GameContext;
+import phdev.com.br.metafighter.cmp.misc.Timer;
 import phdev.com.br.metafighter.cmp.window.BackGround;
 import phdev.com.br.metafighter.cmp.window.Button;
+import phdev.com.br.metafighter.cmp.window.Popup;
 import phdev.com.br.metafighter.cmp.window.Scene;
 import phdev.com.br.metafighter.cmp.window.Screen;
 import phdev.com.br.metafighter.cmp.window.Text;
@@ -58,6 +64,28 @@ public class MultiplayerSelectCharacterScreen extends Screen {
     private Sprite[] spriteViewRomulo;
     private Sprite[] spriteViewPatricia;
     private Sprite[] spriteViewLuiz;
+
+    private PlayerAction[] charactersMoveAction;
+    private PlayerAction[] charactersVictoryAction;
+
+    /*
+    private PlayerAction kailaMoveAction;
+    private PlayerAction guedesMoveAction;
+    private PlayerAction queleMoveAction;
+    private PlayerAction romuloMoveAction;
+    private PlayerAction patriciaMoveAction;
+    private PlayerAction luizMoveAction;
+    */
+
+    private PlayerAction currentPlayerAction1;
+    private PlayerAction currentPlayerAction2;
+
+    private Sprite[] spriteActionKaila;
+    private Sprite[] spriteActionGuedes;
+    private Sprite[] spriteActionQuele;
+    private Sprite[] spriteActionRomulo;
+    private Sprite[] spriteActionPatricia;
+    private Sprite[] spriteActionLuiz;
 
     private BackGround mainBackground;
 
@@ -123,6 +151,15 @@ public class MultiplayerSelectCharacterScreen extends Screen {
         spriteViewQuele = Sprite.getSpriteFromTexture(new Texture("images/characters/quele/view.png"), 1, 1);
         spriteViewRomulo = Sprite.getSpriteFromTexture(new Texture("images/characters/romulo/view.png"), 1, 1);
 
+        spriteActionKaila = loadTextureChar("guedes");
+        spriteActionGuedes = loadTextureChar("guedes");
+        spriteActionQuele = loadTextureChar("guedes");
+        spriteActionRomulo = loadTextureChar("guedes");
+        spriteActionPatricia = loadTextureChar("guedes");
+        spriteActionLuiz = loadTextureChar("guedes");
+
+        log(spriteActionGuedes.length + "");
+
         return true;
     }
 
@@ -154,6 +191,9 @@ public class MultiplayerSelectCharacterScreen extends Screen {
         characters[Character.QUELE] = new Character(null, spriteViewQuele, "Quele");
         characters[Character.ROMULO] = new Character(null, spriteViewRomulo, "Romulo");
 
+        charactersMoveAction = new PlayerAction[6];
+        charactersVictoryAction = new PlayerAction[6];
+
         RectF buttonSize = new RectF(0, 0, screenSize.width()/4, screenSize.height()/4);
         float fontSize = Text.adaptText(new String[]{"Voltar"}, buttonSize);
         this.backButton = new Button(
@@ -165,6 +205,7 @@ public class MultiplayerSelectCharacterScreen extends Screen {
         this.backButton.addEventListener(new ActionListener() {
             @Override
             public void actionPerformed(Event event) {
+                manager.getBluetoothManager().stop();
                 new MainScreen(context);
             }
         });
@@ -199,6 +240,33 @@ public class MultiplayerSelectCharacterScreen extends Screen {
         this.gameLabelPlayer2.addText("Jogador 2",
                 new RectF( gameLabelPlayer2.getArea().left, marginY*4, gameLabelPlayer2.getArea().right, gameLabelPlayer2.getArea().top),
                 20, Color.WHITE);
+
+        RectF size = gameLabelPlayer1.getArea();
+
+        charactersMoveAction[Character.KAILA] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionKaila, 0, 7, false), 10, -1, false);
+        charactersVictoryAction[Character.KAILA] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionKaila, 8, 22, false), 6, -1, false);
+        for (Sprite aTmpSpriteAction : spriteActionKaila)
+            aTmpSpriteAction.getTexture().scaleImage((int) size.width(), (int) size.height());
+        charactersMoveAction[Character.GUEDES] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionGuedes, 0, 7, false), 10, -1, false);
+        charactersVictoryAction[Character.GUEDES] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionKaila, 8, 22, false), 6, -1, false);
+        for (Sprite aTmpSpriteAction : spriteActionGuedes)
+            aTmpSpriteAction.getTexture().scaleImage((int) size.width(), (int) size.height());
+        charactersMoveAction[Character.LUIZ] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionLuiz, 0, 7, false), 10, -1, false);
+        charactersVictoryAction[Character.LUIZ] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionKaila, 8, 22, false), 6, -1, false);
+        for (Sprite aTmpSpriteAction : spriteActionLuiz)
+            aTmpSpriteAction.getTexture().scaleImage((int) size.width(), (int) size.height());
+        charactersMoveAction[Character.PATRICIA] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionPatricia, 0, 7, false), 10, -1, false);
+        charactersVictoryAction[Character.PATRICIA] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionKaila, 8, 22, false), 6, -1, false);
+        for (Sprite aTmpSpriteAction : spriteActionPatricia)
+            aTmpSpriteAction.getTexture().scaleImage((int) size.width(), (int) size.height());
+        charactersMoveAction[Character.QUELE] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionQuele, 0, 7, false), 10, -1, false);
+        charactersVictoryAction[Character.QUELE] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionKaila, 8, 22, false), 6, -1, false);
+        for (Sprite aTmpSpriteAction : spriteActionQuele)
+            aTmpSpriteAction.getTexture().scaleImage((int) size.width(), (int) size.height());
+        charactersMoveAction[Character.ROMULO] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionRomulo, 0, 7, false), 10, -1, false);
+        charactersVictoryAction[Character.ROMULO] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionKaila, 8, 22, false), 6, -1, false);
+        for (Sprite aTmpSpriteAction : spriteActionRomulo)
+            aTmpSpriteAction.getTexture().scaleImage((int) size.width(), (int) size.height());
 
         //HandlerChoiceCharacter handler = new HandlerChoiceCharacter();
 
@@ -313,7 +381,17 @@ public class MultiplayerSelectCharacterScreen extends Screen {
 
         mainScene = new Scene() {
 
-            private boolean start = false;
+            final int READY_FIRST = 0;
+            final int ME_TOO = 1;
+
+            private Timer timer;
+            private boolean waitingPlayers = true;
+            private boolean allReady = false;
+            private Popup message;
+
+            private Thread waitingThread;
+
+            private Matrix matrix;
 
             @Override
             public void init() {
@@ -328,26 +406,178 @@ public class MultiplayerSelectCharacterScreen extends Screen {
                 super.add(gameLabelQuele);
                 super.add(backButton);
 
+                matrix = new Matrix();
+                matrix.postScale(-1,1);
+
+                message = new Popup("Esperando outros jogadores", new AutoDestroyableListener() {
+                    @Override
+                    public void autoDestroy(Object entity) {}
+                }, 1000);
+
+                waitingThread = new Thread(){
+
+                    @Override
+                    public void run(){
+                        Timer timer = new Timer().start();
+                        int currentSecond = (int)(timer.getTicks()/100000000);
+                        while (waitingPlayers){
+                            int tmpSecond = (int)(timer.getTicks()/100000000);
+
+                            if (tmpSecond > currentSecond){
+                                currentSecond = tmpSecond + 3;
+                                try{
+
+                                    Packet packet = getCurrentPacketToRead();
+
+                                    if (packet != null) {
+                                        Action action = (Action)packet;
+                                        if (action.getValue1() == READY_FIRST){
+                                            manager.addPacketsToWrite(new Action(ME_TOO,-1,-1,-1));
+                                            allReady = true;
+                                            waitingThread = null;
+                                        }
+                                        if (action.getValue1() == ME_TOO){
+                                            allReady = true;
+                                            waitingThread = null;
+                                        }
+                                    }
+                                    else
+                                        manager.addPacketsToWrite(new Action(READY_FIRST,-1,-1,-1));
+
+                                }
+                                catch (Exception e){
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    }
+                };
+
+                waitingThread.start();
+
+            }
+
+            @Override
+            public void update(){
+
+                if (waitingPlayers){
+                    if (allReady){
+                        waitingPlayers = false;
+                        timer = new Timer();
+                        timer.start();
+                        message = null;
+                    }
+                }
+                else {
+                    super.update();
+
+                    if (selectedPlayer1 != null)
+                        if (selectedPlayer1.isActive())
+                            selectedPlayer1.update();
+
+                    if (selectedPlayer2 != null)
+                        if (selectedPlayer2.isActive())
+                            selectedPlayer2.update();
+
+                    if (flash != null)
+                        flash.update();
+
+                    if ((player1 != null && player2 != null)){
+                        if (flash == null)
+                            //new MatchScreen(context, null, player1.getCharID(), player2.getCharID());
+                            //new MatchScreen(context, null, Character.GUEDES, Character.GUEDES);
+                            new MultiplayerMatchScreen(context, myID, Character.GUEDES, Character.GUEDES);
+                    }
+                }
+            }
+
+            @Override
+            public void draw(Canvas canvas){
+
+                if (waitingPlayers)
+                    message.draw(canvas);
+                else {
+                    super.draw(canvas);
+
+                    if (selectedPlayer1 != null)
+                        if (selectedPlayer1.isActive())
+                            selectedPlayer1.draw(canvas);
+
+                    if (selectedPlayer2 != null)
+                        if (selectedPlayer2.isActive())
+                            selectedPlayer2.draw(canvas);
+
+                    if (flash != null)
+                        flash.draw(canvas);
+
+                    if (currentPlayerAction1 != null) {
+                        Sprite tmpSprite;
+                        if (player1 == null)
+                            tmpSprite = currentPlayerAction1.getSprite();
+                        else {
+                            tmpSprite = currentPlayerAction1.getSprite();
+                            if (tmpSprite == null)
+                                tmpSprite = currentPlayerAction1.getLastSprite();
+                        }
+
+                        if (tmpSprite == null) {
+                            currentPlayerAction1.execute();
+                            tmpSprite = currentPlayerAction1.getSprite();
+                        }
+                        if (tmpSprite != null)
+                            canvas.drawBitmap(tmpSprite.getTexture().getImage(), (int) gameLabelPlayer1.getArea().left, (int) gameLabelPlayer1.getArea().top, gameLabelPlayer1.getPaint());
+                    }
+                    if (currentPlayerAction2 != null) {
+                        Sprite tmpSprite;
+                        if (player2 == null)
+                            tmpSprite = currentPlayerAction2.getSprite();
+                        else {
+                            tmpSprite = currentPlayerAction2.getSprite();
+                            if (tmpSprite == null)
+                                tmpSprite = currentPlayerAction2.getLastSprite();
+                        }
+
+                        if (tmpSprite == null) {
+                            currentPlayerAction2.execute();
+                            tmpSprite = currentPlayerAction2.getSprite();
+                        }
+                        if (tmpSprite != null) {
+                            int savedCount = canvas.save();
+                            canvas.setMatrix(matrix);
+                            canvas.translate(-GameParameters.getInstance().screenSize.width(), 0);
+
+                            int x = (int)GameParameters.getInstance().screenSize.width() - (int)gameLabelPlayer2.getArea().left - (int)gameLabelPlayer2.getArea().width();
+
+                            canvas.drawBitmap(tmpSprite.getTexture().getImage(), x, (int) gameLabelPlayer2.getArea().top, gameLabelPlayer2.getPaint());
+
+                            canvas.restoreToCount(savedCount);
+                        }
+                    }
+                }
             }
 
             @Override
             public void  processPacket(Packet packet){
-                if (packet != null){
 
-                    Action action = null;
+                if (waitingPlayers)
+                    super.processPacket(packet);
+                else
+                    if (packet != null){
 
-                    if (currentScene != null)
-                        action = (Action)packet;
+                        Action action = null;
 
-                    if (action != null){
+                        if (currentScene != null)
+                            action = (Action)packet;
 
-                        if (action.getValue3() == SELECT){
-                            changeLabelPlayer(action.getValue2(), action.getValue1());
-                            selectPlayer(action.getValue2(), action.getValue1());
+                        if (action != null){
+
+                            if (action.getValue3() == SELECT){
+                                changeLabelPlayer(action.getValue2(), action.getValue1());
+                                selectPlayer(action.getValue2(), action.getValue1());
+                            }
+
                         }
-
                     }
-                }
             }
 
         };
@@ -357,79 +587,41 @@ public class MultiplayerSelectCharacterScreen extends Screen {
         return true;
     }
 
-    @Override
-    public void draw(Canvas canvas){
-        super.draw(canvas);
-
-        if (selectedPlayer1 != null)
-            if (selectedPlayer1.isActive())
-                selectedPlayer1.draw(canvas);
-
-        if (selectedPlayer2 != null)
-            if (selectedPlayer2.isActive())
-                selectedPlayer2.draw(canvas);
-
-        if (flash != null)
-            flash.draw(canvas);
-    }
-
-    @Override
-    public void update(){
-
-        if (selectedPlayer1 != null)
-            if (selectedPlayer1.isActive())
-                selectedPlayer1.update();
-
-        if (selectedPlayer2 != null)
-            if (selectedPlayer2.isActive())
-                selectedPlayer2.update();
-
-        if (flash != null)
-            flash.update();
-
-        if ((player1 != null && player2 != null)){
-            if (flash == null)
-                //new MatchScreen(context, null, player1.getCharID(), player2.getCharID());
-                //new MatchScreen(context, null, Character.GUEDES, Character.GUEDES);
-                new MultiplayerMatchScreen(context, myID, Character.GUEDES, Character.GUEDES);
-        }
-    }
-
     private void selectPlayer(int charID, int playerID){
 
         switch (charID){
             case Character.GUEDES:
-                changeLabelPlayer(Character.GUEDES, myID);
+                changeLabelPlayer(Character.GUEDES, playerID);
                 choseCharacter(gameLabelGuedes, Character.GUEDES, playerID);
                 //manager.addPacketsToWrite(new Action(myID, Character.GUEDES, SELECT, -1, -1));
                 break;
             case Character.KAILA:
-                changeLabelPlayer(Character.KAILA, myID);
+                changeLabelPlayer(Character.KAILA, playerID);
                 choseCharacter(gameLabelKaila, Character.KAILA, playerID);
                 //manager.addPacketsToWrite(new Action(myID, Character.KAILA, SELECT, -1, -1));
                 break;
             case Character.LUIZ:
-                changeLabelPlayer(Character.LUIZ, myID);
+                changeLabelPlayer(Character.LUIZ, playerID);
                 choseCharacter(gameLabelLuiz, Character.LUIZ, playerID);
                 //manager.addPacketsToWrite(new Action(myID, Character.LUIZ, SELECT, -1, -1));
                 break;
             case Character.PATRICIA:
-                changeLabelPlayer(Character.PATRICIA, myID);
+                changeLabelPlayer(Character.PATRICIA, playerID);
                 choseCharacter(gameLabelPatricia, Character.PATRICIA, playerID);
                 //manager.addPacketsToWrite(new Action(myID, Character.PATRICIA, SELECT, -1, -1));
                 break;
             case Character.ROMULO:
-                changeLabelPlayer(Character.ROMULO, myID);
+                changeLabelPlayer(Character.ROMULO, playerID);
                 choseCharacter(gameLabelRomulo, Character.ROMULO, playerID);
                 //manager.addPacketsToWrite(new Action(myID, Character.ROMULO, SELECT, -1, -1));
                 break;
             case Character.QUELE:
-                changeLabelPlayer(Character.QUELE, myID);
+                changeLabelPlayer(Character.QUELE, playerID);
                 choseCharacter(gameLabelQuele, Character.QUELE, playerID);
                 //manager.addPacketsToWrite(new Action(myID, Character.QUELE, SELECT, -1, -1));
                 break;
             case Character.TESTE:
-                changeLabelPlayer(Character.TESTE, myID);
+                changeLabelPlayer(Character.TESTE, playerID);
                 choseCharacter(gameLabelGuedes, Character.TESTE, playerID);
                 //manager.addPacketsToWrite(new Action(myID, Character.TESTE, SELECT, -1, -1));
                 break;
@@ -442,21 +634,21 @@ public class MultiplayerSelectCharacterScreen extends Screen {
 
     private void changeLabelPlayer(int charID, int playerID){
 
+        log("Executou");
+
         if (playerID == Constant.GAMEMODE_MULTIPLAYER_HOST)
             if (player1 == null) {
                 gameLabelPlayer1.getText().setText(characters[charID].getName());
                 gameLabelPlayer1.setSprites(characters[charID].getSprites());
+                currentPlayerAction1 = charactersMoveAction[charID];
             }
 
         if (playerID == Constant.GAMEMODE_MULTIPLAYER_JOIN)
             if (player2 == null) {
                 gameLabelPlayer2.getText().setText(characters[charID].getName());
                 gameLabelPlayer2.setSprites(characters[charID].getSprites());
+                currentPlayerAction2 = charactersMoveAction[charID];
             }
-    }
-
-    private void choseAdversaryCharacter(Entity entity, int charID){
-
     }
 
     private void choseCharacter(Entity entity, int charID, int playerID) {
@@ -472,8 +664,6 @@ public class MultiplayerSelectCharacterScreen extends Screen {
 
         if (selected != null) {
 
-            log("Here");
-
             selected.setEntity(entity);
 
             if (currentSelect == charID) {
@@ -481,12 +671,15 @@ public class MultiplayerSelectCharacterScreen extends Screen {
                 selected.setEstatic();
                 currentSelect = -1;
 
+
                 if (selected.equals(selectedPlayer1)) {
+                    currentPlayerAction1 = charactersVictoryAction[charID];
                     player1 = new Player();
                     player1.setName(characters[charID].getName());
                     player1.setCharID(charID);
                 }
                 if (selected.equals(selectedPlayer2)) {
+                    currentPlayerAction2 = charactersVictoryAction[charID];
                     player2 = new Player();
                     player2.setName(characters[charID].getName());
                     player2.setCharID(charID);
@@ -503,6 +696,47 @@ public class MultiplayerSelectCharacterScreen extends Screen {
             }
         }
 
+    }
+
+    private Sprite[] loadTextureChar(String name){
+
+        RectF screenSize = GameParameters.getInstance().screenSize;
+
+        Sprite[] tmpSpriteAction = null;
+
+        try {
+            //String paths[] = GameParameters.getInstance().assetManager.list("images/characters/" + name + "/action");
+            String paths[] = new String[]{
+                    "1gingando",
+                    "8win"
+            };
+
+            int numeroSpritesAchados = 0;
+
+            for (int i=0; i<paths.length; i++){
+                numeroSpritesAchados += GameParameters.getInstance().assetManager.list("images/characters/" + name + "/action/" + paths[i]).length;
+            }
+
+            log("Numero de sprites: " + numeroSpritesAchados);
+
+            int contador = 0;
+            tmpSpriteAction = new Sprite[numeroSpritesAchados];
+
+            for (int i=0; i<paths.length; i++){
+                log(paths[i] + "");
+                String arqs[] = GameParameters.getInstance().assetManager.list("images/characters/" + name + "/action/" + paths[i]);
+
+                for (int j=0; j < arqs.length; j++){
+                    //tmpSpriteAction[contador++] = new Sprite(new Texture("images/characters/" + name + "/action/" + paths[i] + "/" + arqs[j]));
+                    tmpSpriteAction[contador++] = new Sprite(new Texture("images/characters/" + name + "/action/" + paths[i] + "/" + ((j+1) + ".png"), (int)screenSize.width()/15, (int)screenSize.height()/15));
+                    //log(paths[i] + " / " + arqs[j]);
+                }
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return tmpSpriteAction;
     }
 
     private class DisableFlashHandler implements AutoDestroyableListener{

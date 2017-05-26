@@ -15,6 +15,7 @@ import java.util.UUID;
 
 import phdev.com.br.metafighter.cmp.misc.Constant;
 import phdev.com.br.metafighter.cmp.misc.GameContext;
+import phdev.com.br.metafighter.screens.MultiplayerSelectCharacterScreen;
 import phdev.com.br.metafighter.screens.TesteScreen;
 
 /**
@@ -296,9 +297,12 @@ public final class BluetoothManager {
             if (!socket.isConnected())
                 log("Thread Conectado: O soquete não esta conectado");
 
+            log("ID de conexão: " + userID);
+
             //gameEngine.connectionManager = new ConnectionManager(BluetoothManager.this);
 
-            new TesteScreen(context, userID);
+            //new TesteScreen(context, userID);
+            new MultiplayerSelectCharacterScreen(context, userID);
 
 
             InputStream tmpIn = null;

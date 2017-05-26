@@ -4,22 +4,23 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.RectF;
 
-import java.util.List;
-
+import phdev.com.br.metafighter.ConnectionManager;
 import phdev.com.br.metafighter.GameParameters;
 import phdev.com.br.metafighter.cmp.Entity;
+import phdev.com.br.metafighter.cmp.connections.packets.Action;
+import phdev.com.br.metafighter.cmp.connections.packets.Packet;
 import phdev.com.br.metafighter.cmp.event.Event;
 import phdev.com.br.metafighter.cmp.event.animation.Fade;
 import phdev.com.br.metafighter.cmp.event.animation.Flash;
 import phdev.com.br.metafighter.cmp.event.animation.Selected;
 import phdev.com.br.metafighter.cmp.event.listeners.ActionListener;
 import phdev.com.br.metafighter.cmp.event.listeners.AutoDestroyableListener;
-import phdev.com.br.metafighter.cmp.event.listeners.EventListener;
 import phdev.com.br.metafighter.cmp.game.Character;
 import phdev.com.br.metafighter.cmp.game.GameLabel;
 import phdev.com.br.metafighter.cmp.game.Player;
 import phdev.com.br.metafighter.cmp.graphics.Sprite;
 import phdev.com.br.metafighter.cmp.graphics.Texture;
+import phdev.com.br.metafighter.cmp.misc.Constant;
 import phdev.com.br.metafighter.cmp.misc.GameContext;
 import phdev.com.br.metafighter.cmp.window.BackGround;
 import phdev.com.br.metafighter.cmp.window.Button;
@@ -31,9 +32,16 @@ import phdev.com.br.metafighter.cmp.window.Text;
  * @author Paulo Henrique Gonçalves Bacelar
  * @version 1.0
  */
-public class SelectCharacterScreen extends Screen {
+public class MultiplayerSelectCharacterScreen extends Screen {
+
+    private final int SELECT = 0;
+    private final int SELECTED = 1;
 
     private Scene mainScene;
+
+    private ConnectionManager manager;
+    private final int myID;
+    private final int otherID;
 
     private GameLabel gameLabelLuiz;
     private GameLabel gameLabelQuele;
@@ -71,26 +79,42 @@ public class SelectCharacterScreen extends Screen {
 
     private int currentSelect = -1;
 
+
     private Flash flash;
     private int flashDuration = 1;
 
+    final DisableFlashHandler handler = new DisableFlashHandler();
+
     private Button backButton;
 
-    public SelectCharacterScreen(GameContext context) {
+    public MultiplayerSelectCharacterScreen(GameContext context, int myID) {
         super(context);
 
+        context.getConnectionType().init();
+        manager = context.getConnectionType();
+
+        if (myID == Constant.GAMEMODE_MULTIPLAYER_HOST) {
+            this.myID = myID;
+            otherID = Constant.GAMEMODE_MULTIPLAYER_JOIN;
+        }
+        else {
+            this.myID = myID;
+            otherID = Constant.GAMEMODE_MULTIPLAYER_HOST;
+        }
+
         init();
+
     }
 
     @Override
     protected boolean loadTextures() {
 
-        this.backButtonTexture = new Texture("images/buttons/button2.png");
+        backButtonTexture = new Texture("images/buttons/button2.png");
 
-        this.gameLabelPlayerTexture = new Texture("images/labels/label3.png");
-        this.gameLabelCharTexture = new Texture("images/labels/label4.png");
+        gameLabelPlayerTexture = new Texture("images/labels/label3.png");
+        gameLabelCharTexture = new Texture("images/labels/label4.png");
 
-        this.mainBackgroundTexture = new Texture("images/backgrounds/background7.png");
+        mainBackgroundTexture = new Texture("images/backgrounds/background7.png");
 
         spriteViewKaila = Sprite.getSpriteFromTexture(new Texture("images/characters/kaila/view.png"), 1, 1);
         spriteViewGuedes = Sprite.getSpriteFromTexture(new Texture("images/characters/guedes/view.png"), 1, 1);
@@ -178,8 +202,6 @@ public class SelectCharacterScreen extends Screen {
 
         //HandlerChoiceCharacter handler = new HandlerChoiceCharacter();
 
-        final DisableFlashHandler handler = new DisableFlashHandler();
-
         gameLabelLuiz = new GameLabel(
                 new RectF( gameLabelPlayer1.getArea().right + marginX,
                         marginY,
@@ -192,10 +214,9 @@ public class SelectCharacterScreen extends Screen {
         gameLabelLuiz.addEventListener(new ActionListener() {
             @Override
             public void actionPerformed(Event event) {
-                changeLabelPlayer(characters[Character.LUIZ]);
-
-                choseCharacter(gameLabelLuiz, Character.LUIZ, handler);
-
+                //changeLabelPlayer(characters[Character.LUIZ]);
+                //choseCharacter(gameLabelLuiz, Character.LUIZ, handler);
+                selectPlayer(Character.LUIZ, myID);
             }
         });
 
@@ -211,10 +232,9 @@ public class SelectCharacterScreen extends Screen {
         gameLabelQuele.addEventListener(new ActionListener() {
             @Override
             public void actionPerformed(Event event) {
-
-                changeLabelPlayer(characters[Character.QUELE]);
-
-                choseCharacter(gameLabelQuele, Character.QUELE, handler);
+                //changeLabelPlayer(characters[Character.QUELE]);
+                //choseCharacter(gameLabelQuele, Character.QUELE, handler);
+                selectPlayer(Character.QUELE, myID);
             }
         });
 
@@ -230,10 +250,9 @@ public class SelectCharacterScreen extends Screen {
         gameLabelRomulo.addEventListener(new ActionListener() {
             @Override
             public void actionPerformed(Event event) {
-                changeLabelPlayer(characters[Character.ROMULO]);
-
-
-                choseCharacter(gameLabelRomulo, Character.ROMULO, handler);
+                //changeLabelPlayer(characters[Character.ROMULO]);
+                //choseCharacter(gameLabelRomulo, Character.ROMULO, handler);
+                selectPlayer(Character.ROMULO, myID);
             }
         });
 
@@ -249,10 +268,9 @@ public class SelectCharacterScreen extends Screen {
         gameLabelPatricia.addEventListener(new ActionListener() {
             @Override
             public void actionPerformed(Event event) {
-                changeLabelPlayer(characters[Character.PATRICIA]);
-
-
-                choseCharacter(gameLabelPatricia, Character.PATRICIA, handler);
+                //changeLabelPlayer(characters[Character.PATRICIA]);
+                //choseCharacter(gameLabelPatricia, Character.PATRICIA, handler);
+                selectPlayer(Character.PATRICIA, myID);
             }
         });
 
@@ -268,10 +286,9 @@ public class SelectCharacterScreen extends Screen {
         gameLabelKaila.addEventListener(new ActionListener() {
             @Override
             public void actionPerformed(Event event) {
-                changeLabelPlayer(characters[Character.KAILA]);
-
-
-                choseCharacter(gameLabelKaila, Character.KAILA, handler);
+                //changeLabelPlayer(characters[Character.KAILA]);
+                //choseCharacter(gameLabelKaila, Character.KAILA, handler);
+                selectPlayer(Character.KAILA, myID);
             }
         });
 
@@ -287,14 +304,17 @@ public class SelectCharacterScreen extends Screen {
         gameLabelGuedes.addEventListener(new ActionListener() {
             @Override
             public void actionPerformed(Event event) {
-                changeLabelPlayer(characters[Character.GUEDES]);
 
-
-                choseCharacter(gameLabelGuedes, Character.GUEDES, handler);
+                //changeLabelPlayer(characters[Character.GUEDES]);
+                //choseCharacter(gameLabelGuedes, Character.GUEDES, handler);
+                selectPlayer(Character.GUEDES, myID);
             }
         });
 
         mainScene = new Scene() {
+
+            private boolean start = false;
+
             @Override
             public void init() {
                 super.add(mainBackground);
@@ -307,21 +327,30 @@ public class SelectCharacterScreen extends Screen {
                 super.add(gameLabelRomulo);
                 super.add(gameLabelQuele);
                 super.add(backButton);
+
             }
+
+            @Override
+            public void  processPacket(Packet packet){
+                if (packet != null){
+
+                    Action action = null;
+
+                    if (currentScene != null)
+                        action = (Action)packet;
+
+                    if (action != null){
+
+                        if (action.getValue3() == SELECT){
+                            changeLabelPlayer(action.getValue2(), action.getValue1());
+                            selectPlayer(action.getValue2(), action.getValue1());
+                        }
+
+                    }
+                }
+            }
+
         };
-
-        //mainScene.add(mainBackground);
-
-        //mainScene.add(gameLabelPlayer1);
-        //mainScene.add(gameLabelPlayer2);
-
-        //mainScene.add(gameLabelGuedes);
-        //mainScene.add(gameLabelKaila);
-        //mainScene.add(gameLabelLuiz);
-        //mainScene.add(gameLabelPatricia);
-        //mainScene.add(gameLabelRomulo);
-        //mainScene.add(gameLabelQuele);
-        //mainScene.add(backButton);
 
         currentScene = mainScene.start();
 
@@ -346,7 +375,6 @@ public class SelectCharacterScreen extends Screen {
 
     @Override
     public void update(){
-        super.update();
 
         if (selectedPlayer1 != null)
             if (selectedPlayer1.isActive())
@@ -362,32 +390,90 @@ public class SelectCharacterScreen extends Screen {
         if ((player1 != null && player2 != null)){
             if (flash == null)
                 //new MatchScreen(context, null, player1.getCharID(), player2.getCharID());
-                new MatchScreen(context, null, Character.GUEDES, Character.GUEDES);
+                //new MatchScreen(context, null, Character.GUEDES, Character.GUEDES);
+                new MultiplayerMatchScreen(context, myID, Character.GUEDES, Character.GUEDES);
         }
     }
 
-    private void changeLabelPlayer(Character character){
-        if (player1 == null){
-            gameLabelPlayer1.getText().setText(character.getName());
-            gameLabelPlayer1.setSprites(character.getSprites());
+    private void selectPlayer(int charID, int playerID){
+
+        switch (charID){
+            case Character.GUEDES:
+                changeLabelPlayer(Character.GUEDES, myID);
+                choseCharacter(gameLabelGuedes, Character.GUEDES, playerID);
+                //manager.addPacketsToWrite(new Action(myID, Character.GUEDES, SELECT, -1, -1));
+                break;
+            case Character.KAILA:
+                changeLabelPlayer(Character.KAILA, myID);
+                choseCharacter(gameLabelKaila, Character.KAILA, playerID);
+                //manager.addPacketsToWrite(new Action(myID, Character.KAILA, SELECT, -1, -1));
+                break;
+            case Character.LUIZ:
+                changeLabelPlayer(Character.LUIZ, myID);
+                choseCharacter(gameLabelLuiz, Character.LUIZ, playerID);
+                //manager.addPacketsToWrite(new Action(myID, Character.LUIZ, SELECT, -1, -1));
+                break;
+            case Character.PATRICIA:
+                changeLabelPlayer(Character.PATRICIA, myID);
+                choseCharacter(gameLabelPatricia, Character.PATRICIA, playerID);
+                //manager.addPacketsToWrite(new Action(myID, Character.PATRICIA, SELECT, -1, -1));
+                break;
+            case Character.ROMULO:
+                changeLabelPlayer(Character.ROMULO, myID);
+                choseCharacter(gameLabelRomulo, Character.ROMULO, playerID);
+                //manager.addPacketsToWrite(new Action(myID, Character.ROMULO, SELECT, -1, -1));
+                break;
+            case Character.QUELE:
+                changeLabelPlayer(Character.QUELE, myID);
+                choseCharacter(gameLabelQuele, Character.QUELE, playerID);
+                //manager.addPacketsToWrite(new Action(myID, Character.QUELE, SELECT, -1, -1));
+                break;
+            case Character.TESTE:
+                changeLabelPlayer(Character.TESTE, myID);
+                choseCharacter(gameLabelGuedes, Character.TESTE, playerID);
+                //manager.addPacketsToWrite(new Action(myID, Character.TESTE, SELECT, -1, -1));
+                break;
         }
-        else if (player2 == null){
-            gameLabelPlayer2.getText().setText(character.getName());
-            gameLabelPlayer2.setSprites(character.getSprites());
-        }
+
+        if (myID == playerID)
+            manager.addPacketsToWrite(new Action(myID, charID, SELECT, -1));
 
     }
 
-    private void choseCharacter(Entity entity, int charID, DisableFlashHandler handler) {
+    private void changeLabelPlayer(int charID, int playerID){
+
+        if (playerID == Constant.GAMEMODE_MULTIPLAYER_HOST)
+            if (player1 == null) {
+                gameLabelPlayer1.getText().setText(characters[charID].getName());
+                gameLabelPlayer1.setSprites(characters[charID].getSprites());
+            }
+
+        if (playerID == Constant.GAMEMODE_MULTIPLAYER_JOIN)
+            if (player2 == null) {
+                gameLabelPlayer2.getText().setText(characters[charID].getName());
+                gameLabelPlayer2.setSprites(characters[charID].getSprites());
+            }
+    }
+
+    private void choseAdversaryCharacter(Entity entity, int charID){
+
+    }
+
+    private void choseCharacter(Entity entity, int charID, int playerID) {
         Selected selected = null;
 
-        if (player1 == null) {
-            selected = selectedPlayer1;
-        } else if (player2 == null) {
-            selected = selectedPlayer2;
-        }
+        if (player1 == null)
+            if (playerID == Constant.GAMEMODE_MULTIPLAYER_HOST)
+                selected = selectedPlayer1;
+
+        if (player2 == null)
+            if (playerID == Constant.GAMEMODE_MULTIPLAYER_JOIN)
+                selected = selectedPlayer2;
 
         if (selected != null) {
+
+            log("Here");
+
             selected.setEntity(entity);
 
             if (currentSelect == charID) {
@@ -412,8 +498,9 @@ public class SelectCharacterScreen extends Screen {
                     log("Player 2 selecionado");
 
 
-            } else
+            } else{
                 currentSelect = charID;
+            }
         }
 
     }

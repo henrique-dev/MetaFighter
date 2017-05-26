@@ -192,12 +192,12 @@ public class MainScreen extends Screen {
 
             private void optionsButtonAction(Event evt){
                 //new MatchScreen(listener, null);
-                currentScene = optionsScene;
+                currentScene = optionsScene.start();
             }
 
             private void multiplayerButtonAction(Event evt){
                 bluetoothManager.activate();
-                currentScene = multiplayerSelectScene;
+                currentScene = multiplayerSelectScene.start();
             }
 
             private void singleplayerButtonAction(Event evt){
@@ -272,7 +272,7 @@ public class MainScreen extends Screen {
             }
 
             private void backToMainFromMultiSelectButtonAction(Event evt){
-                currentScene = mainMenuScene;
+                currentScene = mainMenuScene.start();
             }
 
             private void joinButtonAction(Event evt){
@@ -298,6 +298,7 @@ public class MainScreen extends Screen {
                                 @Override
                                 public void actionPerformed(Event event) {
                                     log("Clicou");
+                                    bluetoothManager.stop();
                                     bluetoothManager.connect(pairedDevices.get(((ClickEvent)event).id));
                                 }
                             });
@@ -306,7 +307,7 @@ public class MainScreen extends Screen {
                             counter++;
                         }
                     }
-                    currentScene = multiplayerJoinScene;
+                    currentScene = multiplayerJoinScene.start();
 
                 }
             }
@@ -318,8 +319,9 @@ public class MainScreen extends Screen {
                 if (!bluetoothManager.isEnabled())
                     sendMessageToScreen(": O bluetooth deve estar ativado para proseeguir.");
                 else {
+                    bluetoothManager.stop();
                     bluetoothManager.start();
-                    currentScene = multiplayerHostScene;
+                    currentScene = multiplayerHostScene.start();
                 }
             }
         };
@@ -353,7 +355,7 @@ public class MainScreen extends Screen {
 
             private void backToMultiSelectFromHostButtonAction(Event evt){
                 bluetoothManager.stop();
-                currentScene = multiplayerSelectScene;
+                currentScene = multiplayerSelectScene.start();
             }
         };
 
@@ -402,7 +404,7 @@ public class MainScreen extends Screen {
 
             private void backToMultiSelectFromJoinButtonAction(Event evt){
                 bluetoothManager.stop();
-                currentScene = multiplayerSelectScene;
+                currentScene = multiplayerSelectScene.start();
             }
         };
 
@@ -432,11 +434,11 @@ public class MainScreen extends Screen {
             }
 
             private void backToMainFromOptionsButtonAction(Event evt){
-                currentScene = mainMenuScene;
+                currentScene = mainMenuScene.start();
             }
         };
 
-        currentScene = mainMenuScene;
+        currentScene = mainMenuScene.start();
 
         return true;
     }

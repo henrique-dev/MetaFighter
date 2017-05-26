@@ -31,7 +31,6 @@ public class TesteScreen extends Screen {
     private Texture labelTexture;
 
     private LabelMove player1;
-
     private LabelMove player2;
 
     private BackGround backGround;
@@ -72,7 +71,7 @@ public class TesteScreen extends Screen {
     @Override
     protected boolean loadTextures() {
 
-        backgroundTexture = new Texture("images/backgrounds/background1.png");
+        backgroundTexture = new Texture("images/backgrounds/background7.png");
         labelTexture = new Texture("images/labels/label2.png");
 
         return true;
@@ -108,11 +107,11 @@ public class TesteScreen extends Screen {
 
         if (myID == Constant.GAMEMODE_MULTIPLAYER_HOST){
             player1.addUser(myID);
-            player2.addUser(10);
+            //player2.addUser(10);
         }
         else
         {
-            player1.addUser(10);
+            //player1.addUser(10);
             player2.addUser(myID);
         }
 
@@ -128,7 +127,7 @@ public class TesteScreen extends Screen {
         //mainscene.add(player1);
         //mainscene.add(player2);
 
-        currentScene = mainscene;
+        currentScene = mainscene.start();
 
         return true;
     }
@@ -154,7 +153,7 @@ public class TesteScreen extends Screen {
         if (Entity.checkCollision(new RectF(event.getX(), event.getY(), event.getX(), event.getY()), player2.getArea())){
             if (myID == player2.getUser()){
                 player2.onTouchEvent(event);
-                manager.addPacketsToWrite(new Move(1, player2.getArea().left, player2.getArea().top));
+                manager.addPacketsToWrite(new Move(2, player2.getArea().left, player2.getArea().top));
             }
             else
                 log("Vc não é dono deste objeto");

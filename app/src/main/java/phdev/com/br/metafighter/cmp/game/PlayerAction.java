@@ -46,6 +46,12 @@ public class PlayerAction {
         return this;
     }
 
+    public PlayerAction execute(int counter){
+        this.counter = divFrame+counter;
+        currentSprite = 0;
+        return this;
+    }
+
     public Collision[] getCollisions() {
         return collisions;
     }

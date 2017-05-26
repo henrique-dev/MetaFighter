@@ -1,12 +1,12 @@
 package phdev.com.br.metafighter.cmp.game;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.view.MotionEvent;
 
+import phdev.com.br.metafighter.ConnectionManager;
 import phdev.com.br.metafighter.GameParameters;
 import phdev.com.br.metafighter.cmp.Component;
 import phdev.com.br.metafighter.cmp.event.listeners.ControllerListener;
@@ -19,14 +19,37 @@ import phdev.com.br.metafighter.cmp.misc.Timer;
  */
 public class Player implements Component {
 
+    public static final int WALKING_LEFT_ACTION = 0;
+    public static final int WALKING_RIGHT_ACTION = 1;
+    public static final int MOVE1_ACTION = 2;
+    public static final int MOVE2_ACTION = 3;
+    public static final int JUMP2_ACTION = 4;
+    public static final int JUMP3_ACTION = 5;
+    public static final int JUMP1_ACTION = 6;
+    public static final int CROUCH_ACTION = 7;
+    public static final int CROUCHED_ACTION = 8;
+    public static final int PUNCH1_ACTION = 9;
+    public static final int PUNCH2_ACTION = 10;
+    public static final int KICK1_ACTION = 11;
+    public static final int KICK2_ACTION = 12;
+    public static final int GUARD_ACTION = 13;
+    public static final int DEFEAT1_ACTION = 14;
+    public static final int DEFEAT2_ACTION = 15;
+    public static final int VICTORY1_ACTION = 16;
+    public static final int VICTORY2_ACTION = 17;
+    public static final int DAMAGED_ACTION = 18;
+
     // Componentes para depuração
 
     private Paint debugPaint;
 
     //
 
+    /*
     public static final int STOP_ACTION = 0;
     public static final int MOVE_ACTION = 1;
+    public static final int MOVE_RIGHT = 9;
+    public static final int MOVE_LEFT = 10;
     public static final int JUMP_ACTION = 2;
     public static final int CROUCH_ACTION = 3;
     public static final int PUNCH_ACTION = 4;
@@ -34,10 +57,12 @@ public class Player implements Component {
     public static final int GUARD_ACTION = 6;
     public static final int ESPECIAL_ACTION = 7;
     public static final int DAMAGED_ACTION = 8;
+    */
 
     private Paint paint;
 
-    private PlayerAction movingAction;
+    private PlayerAction moving1Action;
+    private PlayerAction moving2Action;
     private PlayerAction walkingActionLeft;
     private PlayerAction walkingActionRight;
     private PlayerAction jump1Action;
@@ -46,22 +71,22 @@ public class Player implements Component {
     private PlayerAction crouchAction;
     private PlayerAction crouchedAction;
 
-    private PlayerAction punchAction;
-    private PlayerAction punchAction2;
+    private PlayerAction punch1Action;
+    private PlayerAction punch2Action;
     // cotovelada.....
     // gancho.....
 
-    private PlayerAction kickAction;
-    private PlayerAction kickAction2;
+    private PlayerAction kick1Action;
+    private PlayerAction kick2Action;
     // joelhada....
     // defesa....
 
     private PlayerAction guardAction;
 
-    private PlayerAction victoryAction;
-    private PlayerAction victoryAction2;
-    private PlayerAction defeatAction;
-    private PlayerAction defeatAction2;
+    private PlayerAction victory1Action;
+    private PlayerAction victory2Action;
+    private PlayerAction defeat1Action;
+    private PlayerAction defeat2Action;
 
     private PlayerAction damageAction;
     // cambaleando
@@ -93,6 +118,7 @@ public class Player implements Component {
     private int directionX = 0;
     private float velocityX;
     private float velocityY;
+    private float acceleration;
 
     private String name;
     private int charID;
@@ -111,7 +137,7 @@ public class Player implements Component {
         log("Criando um player");
     }
 
-    public Player(Character character, RectF size, boolean invert){
+    public Player(Character character, RectF size, boolean invert, ConnectionManager manager){
         log("Criando um player");
 
         // Componentes de depuração
@@ -119,7 +145,6 @@ public class Player implements Component {
 
         //debugPaint = new Paint();
         //debugPaint.setColor(Color.RED);
-
 
         //
 
@@ -133,42 +158,44 @@ public class Player implements Component {
 
         Sprite[] sprites = character.getSprites();
 
-        walkingActionLeft = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 0, 5, true), 8, MOVE_ACTION, true);
-        walkingActionRight = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 0, 5, false), 8, MOVE_ACTION, true);
-        movingAction = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 6, 13, false), 6, MOVE_ACTION, true);
-        jump1Action = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 14, 19, false), 3, JUMP_ACTION, true);
-        jump2Action = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 14, 19, true), 6, JUMP_ACTION, true);
-        jump3Action = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 19,19, false), 1, JUMP_ACTION, true);
+        walkingActionLeft = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 0, 5, true), 8, WALKING_LEFT_ACTION, true);
+        walkingActionRight = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 0, 5, false), 8, WALKING_RIGHT_ACTION, true);
+        moving1Action = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 6, 13, false), 10, MOVE1_ACTION, true);
+        moving2Action = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 6, 13, true), 10, MOVE2_ACTION, true);
+        jump1Action = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 14, 19, false), 3, JUMP1_ACTION, true);
+        jump2Action = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 14, 19, true), 6, JUMP2_ACTION, true);
+        jump3Action = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 19,19, false), 1, JUMP3_ACTION, true);
         crouchAction = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 20, 25, false), 3, CROUCH_ACTION, true);
-        crouchedAction = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 25, 25, false), 1, CROUCH_ACTION, true);
+        crouchedAction = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 25, 25, false), 1, CROUCHED_ACTION, true);
 
 
-        punchAction = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 26, 31, false), 2, PUNCH_ACTION, true);
-        punchAction2 = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 26, 31, true), 2, PUNCH_ACTION, true);
+        punch1Action = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 26, 31, false), 2, PUNCH1_ACTION, true);
+        punch2Action = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 26, 31, true), 2, PUNCH2_ACTION, true);
 
 
-        kickAction = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 32, 37, false), 3, KICK_ACTION, true);
-        kickAction2 = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 32, 37, true), 3, KICK_ACTION, true);
+        kick1Action = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 32, 37, false), 3, KICK1_ACTION, true);
+        kick2Action = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 32, 37, true), 3, KICK2_ACTION, true);
 
         guardAction = new PlayerAction(Sprite.getSpritesFromSprites(sprites, 38, 38, false), 1, GUARD_ACTION, true);
 
-        defeatAction = new PlayerAction(Sprite.getSpritesFromSprites(sprites , 39 ,46, false), 8, ESPECIAL_ACTION, false);
-        defeatAction2 = new PlayerAction(Sprite.getSpritesFromSprites(sprites , 46 ,46, false), 1, ESPECIAL_ACTION, false);
+        defeat1Action = new PlayerAction(Sprite.getSpritesFromSprites(sprites , 39 ,46, false), 8, DEFEAT1_ACTION, false);
+        defeat2Action = new PlayerAction(Sprite.getSpritesFromSprites(sprites , 46 ,46, false), 1, DEFEAT2_ACTION, false);
 
-        victoryAction = new PlayerAction(Sprite.getSpritesFromSprites(sprites , 47 ,61, false), 8, ESPECIAL_ACTION, false);
-        victoryAction2 = new PlayerAction(Sprite.getSpritesFromSprites(sprites , 61 ,61, false), 1, ESPECIAL_ACTION, false);
+        victory1Action = new PlayerAction(Sprite.getSpritesFromSprites(sprites , 47 ,61, false), 8, VICTORY1_ACTION, false);
+        victory2Action = new PlayerAction(Sprite.getSpritesFromSprites(sprites , 61 ,61, false), 1, VICTORY2_ACTION, false);
 
 
         damageAction = new PlayerAction(Sprite.getSpritesFromSprites(sprites , 0 ,1, false), 8, DAMAGED_ACTION, true);
 
-        changeCurrentAction(movingAction);
+        changeCurrentAction(moving1Action);
 
         x = size.left;
         y = size.top;
 
-        velocityX = GameParameters.getInstance().screenSize.width() / 140;
+        velocityX = GameParameters.getInstance().screenSize.width() / 150;
         log(velocityX + "");
         velocityY = GameParameters.getInstance().screenSize.height() / 40;
+        acceleration = velocityY / 0.5f;
 
         this.mainArea = size;
 
@@ -237,14 +264,66 @@ public class Player implements Component {
         return currentAction.getType();
     }
 
+    public void setX(float x){
+        if (invert)
+            this.x = GameParameters.getInstance().screenSize.width() - x - mainArea.width();
+        else
+            this.x = x;
+    }
+
     public float getX(){
         if (invert)
             return GameParameters.getInstance().screenSize.width() - x - mainArea.width();
         return x;
     }
 
+    public void setY(float y){
+        this.y = y;
+    }
+
     public float getY(){
         return y;
+    }
+
+    public void setCurrentPlayerAction(int playerActionID){
+        switch (playerActionID){
+            case WALKING_LEFT_ACTION:
+                changeCurrentAction(walkingActionLeft);
+                break;
+            case WALKING_RIGHT_ACTION:
+                changeCurrentAction(walkingActionRight);
+                break;
+            case MOVE1_ACTION:
+                changeCurrentAction(moving1Action.execute());
+                break;
+            case MOVE2_ACTION:
+                changeCurrentAction(moving2Action.execute());
+                break;
+            case PUNCH1_ACTION:
+                changeCurrentAction(punch1Action.execute());
+                break;
+            case PUNCH2_ACTION:
+                changeCurrentAction(punch2Action.execute());
+                break;
+            case KICK1_ACTION:
+                changeCurrentAction(kick1Action.execute());
+                break;
+            case KICK2_ACTION:
+                changeCurrentAction(kick2Action.execute());
+                break;
+            case GUARD_ACTION:
+                changeCurrentAction(guardAction.execute());
+                break;
+            case JUMP1_ACTION:
+                changeCurrentAction(jump1Action.execute());
+                break;
+            case JUMP2_ACTION:
+                changeCurrentAction(jump2Action.execute());
+                break;
+            case JUMP3_ACTION:
+                changeCurrentAction(jump3Action.execute());
+                break;
+        }
     }
 
     public void setInvert(boolean invert){
@@ -267,11 +346,11 @@ public class Player implements Component {
     }
 
     public void loser(){
-        changeCurrentAction(defeatAction.execute());
+        changeCurrentAction(defeat1Action.execute());
     }
 
     public void winner(){
-        changeCurrentAction(victoryAction.execute());
+        changeCurrentAction(victory1Action.execute());
     }
 
 
@@ -370,17 +449,17 @@ public class Player implements Component {
                 changeCurrentAction(crouchedAction.execute());
             }
             else {
-                if (currentAction.equals(punchAction))
-                    changeCurrentAction(punchAction2.execute());
+                if (currentAction.equals(punch1Action))
+                    changeCurrentAction(punch2Action.execute());
                 else
-                    if (currentAction.equals(punchAction2))
-                        changeCurrentAction(movingAction);
+                    if (currentAction.equals(punch2Action))
+                        changeCurrentAction(moving1Action);
                     else
-                        if (currentAction.equals(kickAction))
-                            changeCurrentAction(kickAction2.execute());
+                        if (currentAction.equals(kick1Action))
+                            changeCurrentAction(kick2Action.execute());
                         else
-                            if (currentAction.equals(kickAction2))
-                                changeCurrentAction(movingAction);
+                            if (currentAction.equals(kick2Action))
+                                changeCurrentAction(moving1Action);
                             else
                                 if (currentAction.equals(guardAction))
                                     changeCurrentAction(guardAction.execute());
@@ -388,13 +467,19 @@ public class Player implements Component {
                                     if (currentAction.equals(jump1Action) || currentAction.equals(jump3Action))
                                         changeCurrentAction(jump3Action.execute());
                                     else
-                                        if (currentAction.equals(defeatAction) || currentAction.equals(defeatAction2))
-                                            changeCurrentAction(defeatAction2);
+                                        if (currentAction.equals(defeat1Action) || currentAction.equals(defeat2Action))
+                                            changeCurrentAction(defeat2Action);
                                         else
-                                            if (currentAction.equals(victoryAction) || currentAction.equals(victoryAction2))
-                                                changeCurrentAction(victoryAction2);
+                                            if (currentAction.equals(victory1Action) || currentAction.equals(victory2Action))
+                                                changeCurrentAction(victory2Action);
                                             else
-                                                changeCurrentAction(currentAction.execute());
+                                                if (currentAction.equals(moving1Action))
+                                                    changeCurrentAction(moving2Action.execute(1));
+                                                else
+                                                    if (currentAction.equals(moving2Action))
+                                                        changeCurrentAction(moving1Action.execute(1));
+                                                    else
+                                                        changeCurrentAction(currentAction.execute());
             }
         }
 
@@ -408,7 +493,7 @@ public class Player implements Component {
         }
 
         if (jumpState){
-            float velocidade = velocityY + (-20 * jumpTimer.getTicks()/1000000000);
+            float velocidade = velocityY + (-acceleration * jumpTimer.getTicks()/1000000000);
 
             if (y > mainArea.top) {
                 jumpState = false;
@@ -419,7 +504,7 @@ public class Player implements Component {
                     else
                         changeCurrentAction(walkingActionLeft);
                 else
-                    changeCurrentAction(movingAction);
+                    changeCurrentAction(moving1Action);
             }
             else
                 y += -velocidade;
@@ -467,7 +552,7 @@ public class Player implements Component {
         public void arrowDownReleased(){
             crouching = false;
             crouchState = false;
-            changeCurrentAction(movingAction);
+            changeCurrentAction(moving1Action);
         }
 
 
@@ -489,7 +574,7 @@ public class Player implements Component {
         @Override
         public void arrowLeftReleased(){
             if (!jumpState)
-                currentAction = movingAction;
+                currentAction = moving1Action;
             movingstate = false;
         }
 
@@ -511,19 +596,19 @@ public class Player implements Component {
         @Override
         public void arrowRightReleased(){
             if (!jumpState)
-                currentAction = movingAction;
+                currentAction = moving1Action;
             movingstate = false;
         }
 
         @Override
         public void action1Performed(){
             //armAct();
-            changeCurrentAction(punchAction.execute());
+            changeCurrentAction(punch1Action.execute());
         }
 
         @Override
         public void action2Performed(){
-            changeCurrentAction(kickAction.execute());
+            changeCurrentAction(kick1Action.execute());
         }
 
         @Override
@@ -533,7 +618,7 @@ public class Player implements Component {
 
         @Override
         public void action3Released(){
-            changeCurrentAction(movingAction);
+            changeCurrentAction(moving1Action);
         }
 
 

@@ -8,22 +8,22 @@ import java.io.Serializable;
  */
 public class Move implements Serializable, Packet {
 
-    private int sendtoid;
+    private int value1;
     private float x;
     private float y;
 
     public Move(int sendtoid, float x, float y){
-        this.sendtoid = sendtoid;
+        this.value1 = sendtoid;
         this.x = x;
         this.y = y;
     }
 
-    public int getSendtoid() {
-        return sendtoid;
+    public int getValue1() {
+        return value1;
     }
 
-    public void setSendtoid(int sendtoid) {
-        this.sendtoid = sendtoid;
+    public void setValue1(int value1) {
+        this.value1 = value1;
     }
 
     public float getX() {

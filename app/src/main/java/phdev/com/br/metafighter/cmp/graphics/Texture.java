@@ -17,7 +17,7 @@ import phdev.com.br.metafighter.GameParameters;
  */
 public class Texture {
 
-    final static int bitmapQuality = 100;
+    final static int bitmapQuality = 20;
 
     private Bitmap image;
 
@@ -74,7 +74,7 @@ public class Texture {
 
                 ByteArrayOutputStream imagePosCompress = new ByteArrayOutputStream();
 
-                if((BitmapFactory.decodeByteArray(finalBuffer.toByteArray(), 0, finalBuffer.size(), options)).compress(Bitmap.CompressFormat.JPEG, bitmapQuality, imagePosCompress))
+                if((BitmapFactory.decodeByteArray(finalBuffer.toByteArray(), 0, finalBuffer.size(), options)).compress(Bitmap.CompressFormat.PNG, bitmapQuality, imagePosCompress))
                     return BitmapFactory.decodeByteArray(imagePosCompress.toByteArray(), 0, imagePosCompress.size());
             }
             else

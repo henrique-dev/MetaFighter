@@ -103,7 +103,7 @@ public abstract class Entity implements Component {
     }
 
     public void processPacket(Move move){
-        if (this.id == move.getSendtoid()){
+        if (this.id == move.getValue1()){
             this.setX(move.getX());
             this.setY(move.getY());
         }

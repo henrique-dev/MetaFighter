@@ -120,12 +120,10 @@ public final class GameEngine extends SurfaceView implements SurfaceHolder.Callb
 
         connectionManager = new ConnectionManager(gameContext);
 
-        Log.d("GameEngine", "initBasicComponents: " + getContext().getCacheDir());
-
 
 
         new MainScreen(gameContext);
-        //new MatchScreen(gameContext, null, Character.GUEDES, Character.GUEDES);
+        //new MatchScreen(gameContext, null, Character.TESTE, Character.GUEDES);
     }
 
     @SuppressLint("MissingSuperCall")

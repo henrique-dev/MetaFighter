@@ -3,6 +3,8 @@ package phdev.com.br.metafighter.cmp;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.support.v4.view.MotionEventCompat;
+import android.util.Log;
 import android.view.MotionEvent;
 
 import phdev.com.br.metafighter.cmp.event.ClickEvent;
@@ -101,7 +103,7 @@ public abstract class WindowEntity extends Entity{
 
                 switch (clickEvent.action){
                     // Quando a entidade é pressionada
-                    case ClickEvent.CLICKED:
+                    case MotionEvent.ACTION_DOWN:
                         if (ls != null)
                             // Executa a ação correspondente
                             ls.pressedPerformed(clickEvent);
@@ -114,7 +116,7 @@ public abstract class WindowEntity extends Entity{
                         this.clicked = true;
                         break;
                     // Quando a entidade é solta
-                    case ClickEvent.RELEASED:
+                    case MotionEvent.ACTION_UP:
                         // Caso ela tenha sido pressionada
                         if (clicked) {
                             if (ls != null)
@@ -143,9 +145,50 @@ public abstract class WindowEntity extends Entity{
                             return false;
                         }
                         break;
-                    case ClickEvent.MOVE:
+                    case MotionEvent.ACTION_MOVE:
                         if (pl != null)
                             ls.pressedPerformed(clickEvent);
+                        break;
+                    case MotionEvent.ACTION_POINTER_DOWN:
+                        if (ls != null)
+                            // Executa a ação correspondente
+                            ls.pressedPerformed(clickEvent);
+
+                        // Caso haja uma animação, à executa
+                        if (goAndBackAnimationListener != null)
+                            // Executa a animação de ir e voltar
+                            ((GoAndBack) goAndBackAnimationListener).go();
+                        // Define que a entidade foi pressionada
+                        this.clicked = true;
+                        break;
+                    case MotionEvent.ACTION_POINTER_UP:
+                        // Caso ela tenha sido pressionada
+                        if (clicked) {
+                            if (ls != null)
+                                // Executa a ação correspondente
+                                ls.releasedPerformed(clickEvent);
+
+                            // Caso haja uma animação, à executa
+                            if (goAndBackAnimationListener != null)
+                                // Executa a animação de ir e voltar
+                                ((GoAndBack) goAndBackAnimationListener).back();
+
+                            // Caso a entidade tenha sido soltada para executar sua função
+                            if (clickEvent.execute) {
+                                if (ls != null)
+                                    // Executa a ação correspodente
+                                    ls.actionPerformed(clickEvent);
+                                if (al != null)
+                                    al.actionPerformed(clickEvent);
+                            }
+
+                            // Define que a entidade foi e não esta mais pressionada.
+                            return this.clicked = false;
+                        }
+                        if (pl != null){
+                            ls.releasedPerformed(clickEvent);
+                            return false;
+                        }
                         break;
                 }
             }
@@ -160,18 +203,20 @@ public abstract class WindowEntity extends Entity{
         if (this.texture != null){
             canvas.drawBitmap(this.texture.getImage(), super.getX(), super.getY(), this.paint);
         }
+        /*
         else
             canvas.drawRect(super.getArea(), this.paint);
+            */
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event){
-        int action = event.getActionMasked();
+
+        int action = MotionEventCompat.getActionMasked(event);
         float x;
         float y;
 
         if (event.getActionIndex() == 1){
-            log("Segundo toque");
             x = event.getX(1);
             y = event.getY(1);
             if (checkCollision(new RectF(x,y,x,y), this.area)){
@@ -186,9 +231,8 @@ public abstract class WindowEntity extends Entity{
             }
         }
         if (event.getActionIndex() == 0){
-            log("Primeiro toque");
-            x = event.getX();
-            y = event.getY();
+            x = event.getX(0);
+            y = event.getY(0);
             if (checkCollision(new RectF(x,y,x,y), this.area)){
                 if (listeners != null) {
                     //return this.processListeners(new ClickEvent(action, x, y, true, this.id, null));

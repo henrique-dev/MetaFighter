@@ -4,6 +4,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.RectF;
+import android.media.MediaPlayer;
+import android.media.SoundPool;
 
 import java.io.IOException;
 
@@ -44,6 +46,9 @@ public class MultiplayerSelectCharacterScreen extends Screen {
     private final int SELECTED = 1;
 
     private Scene mainScene;
+
+    private MediaPlayer mediaPlayer;
+    private SoundPool soundPool;
 
     private ConnectionManager manager;
     private final int myID;
@@ -120,6 +125,8 @@ public class MultiplayerSelectCharacterScreen extends Screen {
 
         context.getConnectionType().init();
         manager = context.getConnectionType();
+        mediaPlayer = context.getSoundManager().getMediaPlayer();
+        soundPool = context.getSoundManager().getSoundPool();
 
         if (myID == Constant.GAMEMODE_MULTIPLAYER_HOST) {
             this.myID = myID;
@@ -138,15 +145,11 @@ public class MultiplayerSelectCharacterScreen extends Screen {
     protected boolean loadTextures() {
 
         backButtonTexture = new Texture("images/buttons/3.png");
-
-        log("HERE 1");
-
         gameLabelPlayerTexture = new Texture("images/labels/label3.png");
         gameLabelCharTexture = new Texture("images/labels/label4.png");
-
-        log("HERE 2");
-
         mainBackgroundTexture = new Texture("images/backgrounds/2.png");
+
+        context.getProgressCmp().increase(5);
 
         spriteViewKaila = Sprite.getSpriteFromTexture(new Texture("images/characters/kaila/view.png"), 1, 1);
         spriteViewGuedes = Sprite.getSpriteFromTexture(new Texture("images/characters/guedes/view.png"), 1, 1);
@@ -155,14 +158,20 @@ public class MultiplayerSelectCharacterScreen extends Screen {
         spriteViewQuele = Sprite.getSpriteFromTexture(new Texture("images/characters/quele/view.png"), 1, 1);
         spriteViewRomulo = Sprite.getSpriteFromTexture(new Texture("images/characters/romulo/view.png"), 1, 1);
 
-        spriteActionKaila = loadTextureChar("kaila");
-        spriteActionGuedes = loadTextureChar("guedes");
-        spriteActionQuele = loadTextureChar("quele");
-        spriteActionRomulo = loadTextureChar("romulo");
-        spriteActionPatricia = loadTextureChar("patricia");
-        spriteActionLuiz = loadTextureChar("luiz");
+        context.getProgressCmp().increase(10);
 
-        log("HERE 3");
+        spriteActionKaila = loadTextureChar("kaila");
+        context.getProgressCmp().increase(13);
+        spriteActionGuedes = loadTextureChar("guedes");
+        context.getProgressCmp().increase(16);
+        spriteActionQuele = loadTextureChar("quele");
+        context.getProgressCmp().increase(18);
+        spriteActionRomulo = loadTextureChar("romulo");
+        context.getProgressCmp().increase(21);
+        spriteActionPatricia = loadTextureChar("patricia");
+        context.getProgressCmp().increase(23);
+        spriteActionLuiz = loadTextureChar("luiz");
+        context.getProgressCmp().increase(25);
 
         return true;
     }
@@ -195,6 +204,8 @@ public class MultiplayerSelectCharacterScreen extends Screen {
         characters[Character.QUELE] = new Character(null, spriteViewQuele, "Quele");
         characters[Character.ROMULO] = new Character(null, spriteViewRomulo, "Romulo");
 
+        context.getProgressCmp().increase(80);
+
         charactersMoveAction = new PlayerAction[6];
         charactersVictoryAction = new PlayerAction[6];
 
@@ -210,7 +221,7 @@ public class MultiplayerSelectCharacterScreen extends Screen {
             @Override
             public void actionPerformed(Event event) {
                 manager.getBluetoothManager().stop();
-                new MainScreen(context);
+                //new MainScreen(context);
             }
         });
         this.backButton.getText().setTextSize(fontSize);
@@ -230,7 +241,7 @@ public class MultiplayerSelectCharacterScreen extends Screen {
                         marginX*2 + gameLabelPlayerArea.width(),
                         marginY*6 + gameLabelPlayerArea.height()),
                 null, null);
-        this.gameLabelPlayer1.addText("Jogador 1",
+        this.gameLabelPlayer1.addText("",
                 new RectF( marginX*2, marginY*4, gameLabelPlayer1.getArea().right, gameLabelPlayer1.getArea().top),
                 20, Color.WHITE);
 
@@ -241,9 +252,11 @@ public class MultiplayerSelectCharacterScreen extends Screen {
                         screenSize.right - marginX*2,
                         marginY*6 + gameLabelPlayerArea.height()),
                 null, null);
-        this.gameLabelPlayer2.addText("Jogador 2",
+        this.gameLabelPlayer2.addText("",
                 new RectF( gameLabelPlayer2.getArea().left, marginY*4, gameLabelPlayer2.getArea().right, gameLabelPlayer2.getArea().top),
                 20, Color.WHITE);
+
+        context.getProgressCmp().increase(85);
 
         RectF size = gameLabelPlayer1.getArea();
 
@@ -251,26 +264,32 @@ public class MultiplayerSelectCharacterScreen extends Screen {
         charactersVictoryAction[Character.KAILA] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionKaila, 8, 22, false), 6, -1, false);
         for (Sprite aTmpSpriteAction : spriteActionKaila)
             aTmpSpriteAction.getTexture().scaleImage((int) size.width(), (int) size.height());
+        context.getProgressCmp().increase(86);
         charactersMoveAction[Character.GUEDES] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionGuedes, 0, 7, false), 10, -1, false);
         charactersVictoryAction[Character.GUEDES] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionKaila, 8, 22, false), 6, -1, false);
         for (Sprite aTmpSpriteAction : spriteActionGuedes)
             aTmpSpriteAction.getTexture().scaleImage((int) size.width(), (int) size.height());
+        context.getProgressCmp().increase(87);
         charactersMoveAction[Character.LUIZ] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionLuiz, 0, 7, false), 10, -1, false);
         charactersVictoryAction[Character.LUIZ] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionKaila, 8, 22, false), 6, -1, false);
         for (Sprite aTmpSpriteAction : spriteActionLuiz)
             aTmpSpriteAction.getTexture().scaleImage((int) size.width(), (int) size.height());
+        context.getProgressCmp().increase(88);
         charactersMoveAction[Character.PATRICIA] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionPatricia, 0, 7, false), 10, -1, false);
         charactersVictoryAction[Character.PATRICIA] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionKaila, 8, 22, false), 6, -1, false);
         for (Sprite aTmpSpriteAction : spriteActionPatricia)
             aTmpSpriteAction.getTexture().scaleImage((int) size.width(), (int) size.height());
+        context.getProgressCmp().increase(89);
         charactersMoveAction[Character.QUELE] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionQuele, 0, 7, false), 10, -1, false);
         charactersVictoryAction[Character.QUELE] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionKaila, 8, 22, false), 6, -1, false);
         for (Sprite aTmpSpriteAction : spriteActionQuele)
             aTmpSpriteAction.getTexture().scaleImage((int) size.width(), (int) size.height());
+        context.getProgressCmp().increase(90);
         charactersMoveAction[Character.ROMULO] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionRomulo, 0, 7, false), 10, -1, false);
         charactersVictoryAction[Character.ROMULO] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionKaila, 8, 22, false), 6, -1, false);
         for (Sprite aTmpSpriteAction : spriteActionRomulo)
             aTmpSpriteAction.getTexture().scaleImage((int) size.width(), (int) size.height());
+        context.getProgressCmp().increase(91);
 
         //HandlerChoiceCharacter handler = new HandlerChoiceCharacter();
 
@@ -292,6 +311,8 @@ public class MultiplayerSelectCharacterScreen extends Screen {
             }
         });
 
+        context.getProgressCmp().increase(92);
+
         gameLabelQuele = new GameLabel(
                 new RectF( gameLabelLuiz.getArea().right + marginX,
                         marginY,
@@ -309,6 +330,8 @@ public class MultiplayerSelectCharacterScreen extends Screen {
                 selectPlayer(Character.QUELE, myID);
             }
         });
+
+        context.getProgressCmp().increase(93);
 
         gameLabelRomulo = new GameLabel(
                 new RectF( gameLabelQuele.getArea().right + marginX,
@@ -328,6 +351,8 @@ public class MultiplayerSelectCharacterScreen extends Screen {
             }
         });
 
+        context.getProgressCmp().increase(94);
+
         gameLabelPatricia = new GameLabel(
                 new RectF( gameLabelPlayer1.getArea().right + marginX,
                         marginY*2 + gameLabelCharArea.height(),
@@ -346,6 +371,8 @@ public class MultiplayerSelectCharacterScreen extends Screen {
             }
         });
 
+        context.getProgressCmp().increase(95);
+
         gameLabelKaila = new GameLabel(
                 new RectF( gameLabelPatricia.getArea().right + marginX,
                         marginY*2 + gameLabelCharArea.height(),
@@ -363,6 +390,8 @@ public class MultiplayerSelectCharacterScreen extends Screen {
                 selectPlayer(Character.KAILA, myID);
             }
         });
+
+        context.getProgressCmp().increase(96);
 
         gameLabelGuedes = new GameLabel(
                 new RectF( gameLabelKaila.getArea().right + marginX,
@@ -397,13 +426,15 @@ public class MultiplayerSelectCharacterScreen extends Screen {
 
             private Matrix matrix;
 
+            private int count = 0;
+
             @Override
             public void init() {
                 super.add(mainBackground);
                 super.add(gameLabelPlayer1);
                 super.add(gameLabelPlayer2);
                 super.add(gameLabelGuedes);
-                super.add(gameLabelKaila);
+                //super.add(gameLabelKaila);
                 super.add(gameLabelLuiz);
                 super.add(gameLabelPatricia);
                 super.add(gameLabelRomulo);

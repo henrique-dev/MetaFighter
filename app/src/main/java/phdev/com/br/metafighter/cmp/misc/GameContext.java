@@ -1,5 +1,6 @@
 package phdev.com.br.metafighter.cmp.misc;
 
+import android.content.Context;
 import android.content.Intent;
 
 import phdev.com.br.metafighter.ConnectionManager;
@@ -28,6 +29,10 @@ public abstract class GameContext {
     public void screenUpdate(Screen screen) {}
 
     public SoundManager getSoundManager(){
+        return null;
+    }
+
+    public Context getAppContetxt(){
         return null;
     }
 }

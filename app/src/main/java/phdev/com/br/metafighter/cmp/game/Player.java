@@ -608,23 +608,25 @@ public class Player implements Component {
 
         @Override
         public void action1Performed(){
-            //armAct();
-            changeCurrentAction(punch1Action.execute());
+            if (currentAction.equals(moving1Action) || currentAction.equals(moving2Action))
+                changeCurrentAction(punch1Action.execute());
         }
 
         @Override
         public void action2Performed(){
-            changeCurrentAction(kick1Action.execute());
+            if (currentAction.equals(moving1Action) || currentAction.equals(moving2Action))
+                changeCurrentAction(kick1Action.execute());
         }
 
         @Override
         public void action3Pressed(){
-            changeCurrentAction(guardAction.execute());
+                changeCurrentAction(guardAction.execute());
         }
 
         @Override
         public void action3Released(){
-            changeCurrentAction(moving1Action);
+            if (currentAction.equals(moving1Action) || currentAction.equals(moving2Action))
+                changeCurrentAction(moving1Action);
         }
 
 

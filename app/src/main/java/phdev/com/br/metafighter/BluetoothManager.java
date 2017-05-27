@@ -15,6 +15,7 @@ import java.util.UUID;
 
 import phdev.com.br.metafighter.cmp.misc.Constant;
 import phdev.com.br.metafighter.cmp.misc.GameContext;
+import phdev.com.br.metafighter.screens.MainScreen;
 import phdev.com.br.metafighter.screens.MultiplayerSelectCharacterScreen;
 import phdev.com.br.metafighter.screens.TesteScreen;
 
@@ -338,6 +339,7 @@ public final class BluetoothManager {
                 }
             }
             log("Conexão encerrada");
+            new MainScreen(context);
         }
 
         public void write(byte[] bytes){

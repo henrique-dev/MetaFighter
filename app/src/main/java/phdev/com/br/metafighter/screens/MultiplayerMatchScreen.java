@@ -4,6 +4,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.media.MediaPlayer;
+import android.media.SoundPool;
 import android.view.MotionEvent;
 
 import java.io.IOException;
@@ -12,6 +14,7 @@ import java.util.Random;
 import phdev.com.br.metafighter.BluetoothManager;
 import phdev.com.br.metafighter.ConnectionManager;
 import phdev.com.br.metafighter.GameParameters;
+import phdev.com.br.metafighter.R;
 import phdev.com.br.metafighter.cmp.connections.packets.Action;
 import phdev.com.br.metafighter.cmp.connections.packets.Damage;
 import phdev.com.br.metafighter.cmp.connections.packets.Move;
@@ -49,6 +52,8 @@ public class MultiplayerMatchScreen extends Screen {
     private Scene posBattleScene;
 
     private ConnectionManager manager;
+    private SoundPool soundPool;
+    private MediaPlayer mediaPlayer;
 
     private BackGround backGround;
     private BackGround preBattleBackground;
@@ -91,13 +96,18 @@ public class MultiplayerMatchScreen extends Screen {
     private int myID;
     private int otherID;
 
+    private int[] sounds;
+    private Random randSound;
+
     //
 
     public MultiplayerMatchScreen(GameContext context, int myID, int charIDplayer1, int charIDplayer2) {
         super(context);
 
         context.getConnectionType().init();
-        this.manager = context.getConnectionType();
+        manager = context.getConnectionType();
+        mediaPlayer = context.getSoundManager().getMediaPlayer();
+        soundPool = context.getSoundManager().getSoundPool();
 
         if (myID == Constant.GAMEMODE_MULTIPLAYER_HOST) {
             this.myID = myID;
@@ -120,6 +130,8 @@ public class MultiplayerMatchScreen extends Screen {
         backgroundTexture = new Texture("images/backgrounds/4.png");
         preBattleBackgroundTexture = new Texture("images/backgrounds/3.png");
 
+        context.getProgressCmp().increase(15);
+
         lifeHudTexture = new Texture("images/labels/label5.png");
         controllerDirTexture = new Texture("cmp/controller/directionalBase.png");
 
@@ -133,6 +145,29 @@ public class MultiplayerMatchScreen extends Screen {
 
     @Override
     protected boolean loadSounds() {
+
+        if (mediaPlayer != null)
+            mediaPlayer.stop();
+        mediaPlayer = MediaPlayer.create(context.getAppContetxt(), R.raw.music2);
+
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                if (mp != null)
+                    mp.start();
+            }
+        });
+
+        context.getProgressCmp().increase(65);
+
+        sounds = new int[4];
+        randSound = new Random();
+
+        sounds[0] = soundPool.load(context.getAppContetxt(), R.raw.p1, 1);
+        sounds[1] = soundPool.load(context.getAppContetxt(), R.raw.p2, 1);
+        sounds[2] = soundPool.load(context.getAppContetxt(), R.raw.p3, 1);
+        sounds[3] = soundPool.load(context.getAppContetxt(), R.raw.p4, 1);
+
         return true;
     }
 
@@ -182,6 +217,8 @@ public class MultiplayerMatchScreen extends Screen {
                     log(e.getMessage());
                 }
 
+                context.getProgressCmp().increase(80);
+
                 //player1 = loadPlayer(charIDplayer1, player1Area, false);
                 //player2 = loadPlayer(charIDplayer2, player2Area, true);
 
@@ -196,6 +233,8 @@ public class MultiplayerMatchScreen extends Screen {
                 lifeHudPlayer2.getText().setHorizontalAlignment(Text.RIGHT);
                 lifeHudPlayer2.getText().getPaint().setColor(Color.BLUE);
 
+
+                context.getProgressCmp().increase(90);
 
                 timerLabel = new Label(
                         new RectF(lifeHudPlayer1.getArea().right, 0, lifeHudPlayer2.getArea().left, lifeHudPlayer1.getArea().bottom + divy),
@@ -221,6 +260,8 @@ public class MultiplayerMatchScreen extends Screen {
                     myPlayer.setLifeHud(lifeHudPlayer2);
                 }
 
+                context.getProgressCmp().increase(95);
+
 
                 super.add(backGround);
                 super.add(lifeHudPlayer1);
@@ -236,6 +277,7 @@ public class MultiplayerMatchScreen extends Screen {
                 super.start();
                 matchTimer = new Timer();
                 matchTimer.start();
+                mediaPlayer.start();
                 return this;
             }
 
@@ -262,12 +304,17 @@ public class MultiplayerMatchScreen extends Screen {
                             manager.addPacketsToWrite(new Damage(0.5f));
                             otherPlayer.damaged(0.5f);
 
+                            soundPool.play(sounds[randSound.nextInt(4)], 1, 1, 1, 0, 1f);
+
                             //if (myID == Constant.GAMEMODE_MULTIPLAYER_HOST)
                             manager.addPacketsToWrite(new Request(YOUR_HP, -1, -1, -1));
                         }
                         if (myPlayer.getCurrentAction() == Player.PUNCH1_ACTION) {
-                            manager.addPacketsToWrite(new Damage(0.2f));
-                            otherPlayer.damaged(0.2f);
+                            manager.addPacketsToWrite(new Damage(0.3f));
+                            otherPlayer.damaged(0.3f);
+
+                            soundPool.play(sounds[randSound.nextInt(4)], 1, 1, 1, 0, 1f);
+
                             manager.addPacketsToWrite(new Request(YOUR_HP, myPlayer.getLifeHud().getHP(), -1, -1));
                         }
                         if (otherPlayer.getCurrentAction() == Player.KICK1_ACTION) {
@@ -355,8 +402,6 @@ public class MultiplayerMatchScreen extends Screen {
                                 myPlayer.damaged(damage);
                             } else {
                                 if (packet instanceof Request) {
-
-                                    log("Nova solicitação de HP");
 
                                     switch (((Request) packet).getRequest()) {
                                         case YOUR_HP:

@@ -93,6 +93,8 @@ public final class GameEngine extends SurfaceView implements SurfaceHolder.Callb
                 if(!this.thread.running){
                     Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": Zerando a lista de telas.");
                     screen = null;
+                    soundManager.release();
+                    soundManager = null;
                 }
             }
 
@@ -116,6 +118,8 @@ public final class GameEngine extends SurfaceView implements SurfaceHolder.Callb
         this.loadingScreen = new LoadingScreen(new BackGround(screenSize, new Texture("images/backgrounds/1.png")), progressHud);
 
         connectionManager = new ConnectionManager(gameContext);
+
+        soundManager = new SoundManager();
 
 
 
@@ -307,6 +311,11 @@ public final class GameEngine extends SurfaceView implements SurfaceHolder.Callb
         @Override
         public SoundManager getSoundManager(){
             return soundManager;
+        }
+
+        @Override
+        public Context getAppContetxt(){
+            return getContext();
         }
     };
 

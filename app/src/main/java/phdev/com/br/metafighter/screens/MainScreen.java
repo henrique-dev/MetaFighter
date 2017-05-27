@@ -5,13 +5,18 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.media.MediaPlayer;
+import android.media.SoundPool;
 import android.util.Log;
+import android.view.MotionEvent;
 
 import java.io.File;
 import java.util.List;
 
 import phdev.com.br.metafighter.BluetoothManager;
 import phdev.com.br.metafighter.GameParameters;
+import phdev.com.br.metafighter.R;
+import phdev.com.br.metafighter.SoundManager;
 import phdev.com.br.metafighter.cmp.event.ClickEvent;
 import phdev.com.br.metafighter.cmp.event.Event;
 import phdev.com.br.metafighter.cmp.event.listeners.ActionListener;
@@ -21,6 +26,7 @@ import phdev.com.br.metafighter.cmp.misc.Constant;
 import phdev.com.br.metafighter.cmp.misc.GameContext;
 import phdev.com.br.metafighter.cmp.window.BackGround;
 import phdev.com.br.metafighter.cmp.window.Button;
+import phdev.com.br.metafighter.cmp.window.Label;
 import phdev.com.br.metafighter.cmp.window.Scene;
 import phdev.com.br.metafighter.cmp.window.Screen;
 import phdev.com.br.metafighter.cmp.window.Table;
@@ -34,6 +40,9 @@ import phdev.com.br.metafighter.cmp.event.animation.GoAndBack;
  * @version 1.0
  */
 public class MainScreen extends Screen {
+
+    private MediaPlayer mediaPlayer;
+    private SoundPool soundPool;
 
     private BluetoothManager bluetoothManager;
 
@@ -72,6 +81,8 @@ public class MainScreen extends Screen {
     private Button backToMultiSelectFromJoinButton;
     private Button backToMainFromOptionsButton;
 
+    private Label labelInfo;
+
     private Table table;
 
 
@@ -81,7 +92,10 @@ public class MainScreen extends Screen {
     public MainScreen(GameContext context) {
         super(context);
         init();
-        this.bluetoothManager = context.getConnectionType().getBluetoothManager();
+        bluetoothManager = context.getConnectionType().getBluetoothManager();
+
+        mediaPlayer = context.getSoundManager().getMediaPlayer();
+        soundPool = context.getSoundManager().getSoundPool();
 
 
     }
@@ -90,11 +104,17 @@ public class MainScreen extends Screen {
     protected boolean loadTextures() {
 
         mainBackgroundTexture = new Texture("images/backgrounds/1.png");
+        context.getProgressCmp().increase(3);
         buttonTexture = new Texture("images/buttons/2.png");
+        context.getProgressCmp().increase(8);
         textureTableHead = new Texture("cmp/table/head.png");
+        context.getProgressCmp().increase(10);
         textureTableBody = new Texture("cmp/table/body.png");
+        context.getProgressCmp().increase(15);
         textureTableShow = new Texture("cmp/table/show.png");
+        context.getProgressCmp().increase(20);
         textureTableItem = new Texture("cmp/table/item.png");
+        context.getProgressCmp().increase(25);
 
         //buttonSingleTexture = new Texture("images/buttons/botao1.png");
         //buttonMultiTexture = new Texture("images/buttons/botao2.png");
@@ -110,6 +130,17 @@ public class MainScreen extends Screen {
 
     @Override
     protected boolean loadSounds() {
+
+        mediaPlayer = MediaPlayer.create(context.getAppContetxt(), R.raw.music);
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                if (mp != null)
+                    mp.start();
+            }
+        });
+        context.getProgressCmp().increase(70);
+
         return true;
     }
 
@@ -134,6 +165,10 @@ public class MainScreen extends Screen {
                 RectF buttonSize = new RectF(0, 0, screenSize.width()/4, screenSize.height()/4);
 
                 float fontSize = Text.adaptText(new String[]{"Multijogador"}, buttonSize);
+
+                labelInfo = new Label(new RectF(0, screenSize.bottom - buttonSize.height(), buttonSize.width(), screenSize.bottom),
+                        "Versão beta", null);
+                labelInfo.getText().setTextSize(fontSize);
 
                 singleplayerButton = new Button(
                         new RectF( screenSize.centerX() - divx - buttonSize.width(),
@@ -183,11 +218,23 @@ public class MainScreen extends Screen {
                 optionsButton.addAnimationListener(new GoAndBack(optionsButton));
                 optionsButton.setId(2);
 
+                context.getProgressCmp().increase(80);
+
 
                 super.add(mainBackGround);
                 super.add(singleplayerButton);
                 super.add(multiplayerButton);
                 super.add(optionsButton);
+                super.add(labelInfo);
+            }
+
+            @Override
+            public Scene start(){
+                super.start();
+
+                mediaPlayer.start();
+
+                return this;
             }
 
             private void optionsButtonAction(Event evt){
@@ -263,6 +310,8 @@ public class MainScreen extends Screen {
                 });
                 backToMainFromMultiSelectButton.addAnimationListener(new GoAndBack(backToMainFromMultiSelectButton));
                 backToMainFromMultiSelectButton.setId(2);
+
+                context.getProgressCmp().increase(85);
 
 
                 super.add(mainBackGround);
@@ -348,6 +397,8 @@ public class MainScreen extends Screen {
                 });
                 backToMultiSelectFromHostButton.getText().setTextSize(fontSize);
 
+                context.getProgressCmp().increase(90);
+
 
                 super.add(mainBackGround);
                 super.add(backToMultiSelectFromHostButton);
@@ -396,6 +447,8 @@ public class MainScreen extends Screen {
                 });
                 backToMultiSelectFromJoinButton.getText().setTextSize(fontSize);
 
+                context.getProgressCmp().increase(95);
+
 
                 super.add(mainBackGround);
                 super.add(table);
@@ -427,6 +480,8 @@ public class MainScreen extends Screen {
                     }
                 });
                 backToMainFromOptionsButton.getText().setTextSize(fontSize);
+
+                context.getProgressCmp().increase(98);
 
 
                 super.add(mainBackGround);

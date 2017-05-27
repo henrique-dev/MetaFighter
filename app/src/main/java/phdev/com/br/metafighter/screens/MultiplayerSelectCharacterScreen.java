@@ -137,12 +137,16 @@ public class MultiplayerSelectCharacterScreen extends Screen {
     @Override
     protected boolean loadTextures() {
 
-        backButtonTexture = new Texture("images/buttons/button2.png");
+        backButtonTexture = new Texture("images/buttons/3.png");
+
+        log("HERE 1");
 
         gameLabelPlayerTexture = new Texture("images/labels/label3.png");
         gameLabelCharTexture = new Texture("images/labels/label4.png");
 
-        mainBackgroundTexture = new Texture("images/backgrounds/background7.png");
+        log("HERE 2");
+
+        mainBackgroundTexture = new Texture("images/backgrounds/2.png");
 
         spriteViewKaila = Sprite.getSpriteFromTexture(new Texture("images/characters/kaila/view.png"), 1, 1);
         spriteViewGuedes = Sprite.getSpriteFromTexture(new Texture("images/characters/guedes/view.png"), 1, 1);
@@ -151,14 +155,14 @@ public class MultiplayerSelectCharacterScreen extends Screen {
         spriteViewQuele = Sprite.getSpriteFromTexture(new Texture("images/characters/quele/view.png"), 1, 1);
         spriteViewRomulo = Sprite.getSpriteFromTexture(new Texture("images/characters/romulo/view.png"), 1, 1);
 
-        spriteActionKaila = loadTextureChar("guedes");
+        spriteActionKaila = loadTextureChar("kaila");
         spriteActionGuedes = loadTextureChar("guedes");
-        spriteActionQuele = loadTextureChar("guedes");
-        spriteActionRomulo = loadTextureChar("guedes");
-        spriteActionPatricia = loadTextureChar("guedes");
-        spriteActionLuiz = loadTextureChar("guedes");
+        spriteActionQuele = loadTextureChar("quele");
+        spriteActionRomulo = loadTextureChar("romulo");
+        spriteActionPatricia = loadTextureChar("patricia");
+        spriteActionLuiz = loadTextureChar("luiz");
 
-        log(spriteActionGuedes.length + "");
+        log("HERE 3");
 
         return true;
     }
@@ -225,7 +229,7 @@ public class MultiplayerSelectCharacterScreen extends Screen {
                         marginY*6,
                         marginX*2 + gameLabelPlayerArea.width(),
                         marginY*6 + gameLabelPlayerArea.height()),
-                this.gameLabelPlayerTexture, null);
+                null, null);
         this.gameLabelPlayer1.addText("Jogador 1",
                 new RectF( marginX*2, marginY*4, gameLabelPlayer1.getArea().right, gameLabelPlayer1.getArea().top),
                 20, Color.WHITE);
@@ -236,7 +240,7 @@ public class MultiplayerSelectCharacterScreen extends Screen {
                         marginY*6,
                         screenSize.right - marginX*2,
                         marginY*6 + gameLabelPlayerArea.height()),
-                this.gameLabelPlayerTexture, null);
+                null, null);
         this.gameLabelPlayer2.addText("Jogador 2",
                 new RectF( gameLabelPlayer2.getArea().left, marginY*4, gameLabelPlayer2.getArea().right, gameLabelPlayer2.getArea().top),
                 20, Color.WHITE);

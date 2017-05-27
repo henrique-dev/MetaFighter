@@ -33,8 +33,10 @@ public class GameLabel extends GameEntity {
 
     public GameLabel(RectF area, Texture texture, Sprite sprites[]) {
         super(area, new Paint(), sprites);
-        this.texture = texture;
-        this.texture.scaleImage((int)area.width(), (int)area.height());
+        if (texture != null) {
+            this.texture = texture;
+            this.texture.scaleImage((int) area.width(), (int) area.height());
+        }
     }
 
     public void addText(String text, RectF textArea, float textSize, int color){
@@ -162,10 +164,11 @@ public class GameLabel extends GameEntity {
         if (super.sprites != null){
             for (int i = 0; i < super.sprites.length; i++){
                 canvas.drawBitmap(super.sprites[i].getTexture().getImage(), getX(), getY(), super.paint);
-                log("Desenhandi sprites");
             }
         }
-        canvas.drawBitmap(texture.getImage(), getX(), getY(), paint);
+        if (texture != null)
+            canvas.drawBitmap(texture.getImage(), getX(), getY(), paint);
+
         if (this.text != null){
             this.text.draw(canvas);
         }

@@ -7,15 +7,14 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
-import android.opengl.GLES31Ext;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import phdev.com.br.metafighter.cmp.Component;
+import phdev.com.br.metafighter.cmp.connections.packets.Packet;
 import phdev.com.br.metafighter.cmp.event.handlers.AutoDestroyableHandler;
-import phdev.com.br.metafighter.cmp.game.Character;
 import phdev.com.br.metafighter.cmp.graphics.Texture;
 import phdev.com.br.metafighter.cmp.misc.GameContext;
 import phdev.com.br.metafighter.cmp.window.BackGround;
@@ -23,9 +22,7 @@ import phdev.com.br.metafighter.cmp.window.LoadingScreen;
 import phdev.com.br.metafighter.cmp.window.Popup;
 import phdev.com.br.metafighter.cmp.window.ProgressHud;
 import phdev.com.br.metafighter.cmp.window.Screen;
-import phdev.com.br.metafighter.cmp.connections.packets.Packet;
 import phdev.com.br.metafighter.screens.MainScreen;
-import phdev.com.br.metafighter.screens.MatchScreen;
 
 /**
  * @author Paulo Henrique Gonçalves Bacelar
@@ -116,14 +113,14 @@ public final class GameEngine extends SurfaceView implements SurfaceHolder.Callb
         RectF areaProgressHud = new RectF(divX, divY*5, screenSize.right - divX, screenSize.bottom - divY*2);
         progressHud = new ProgressHud(new Texture("cmp/progessHud/hud.png"), areaProgressHud);
 
-        this.loadingScreen = new LoadingScreen(new BackGround(screenSize, new Texture("images/backgrounds/background7.png")), progressHud);
+        this.loadingScreen = new LoadingScreen(new BackGround(screenSize, new Texture("images/backgrounds/1.png")), progressHud);
 
         connectionManager = new ConnectionManager(gameContext);
 
 
 
         new MainScreen(gameContext);
-        //new MatchScreen(gameContext, null, Character.TESTE, Character.GUEDES);
+        //new MatchScreen(gameContext, null, Character.ROMULO, Character.GUEDES);
     }
 
     @SuppressLint("MissingSuperCall")

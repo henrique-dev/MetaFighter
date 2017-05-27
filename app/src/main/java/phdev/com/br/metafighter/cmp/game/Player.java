@@ -137,7 +137,7 @@ public class Player implements Component {
         log("Criando um player");
     }
 
-    public Player(Character character, RectF size, boolean invert, ConnectionManager manager){
+    public Player(Character character, RectF size, boolean invert){
         log("Criando um player");
 
         // Componentes de depuração
@@ -197,7 +197,9 @@ public class Player implements Component {
         velocityY = GameParameters.getInstance().screenSize.height() / 40;
         acceleration = velocityY / 0.5f;
 
-        this.mainArea = size;
+        mainArea = size;
+
+        name = character.getName();
 
         paint = new Paint();
 

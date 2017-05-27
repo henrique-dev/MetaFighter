@@ -98,8 +98,8 @@ public class MatchScreen extends Screen {
     @Override
     protected boolean loadTextures() {
 
-        backgroundTexture = new Texture("images/backgrounds/background9.png");
-        preBattleBackgroundTexture = new Texture("images/backgrounds/background3.png");
+        backgroundTexture = new Texture("images/backgrounds/4.png");
+        preBattleBackgroundTexture = new Texture("images/backgrounds/3.png");
 
         lifeHudTexture = new Texture("images/labels/label5.png");
         controllerDirTexture = new Texture("cmp/controller/directionalBase.png");
@@ -162,12 +162,12 @@ public class MatchScreen extends Screen {
 
                 RectF lifeHudArea = new RectF(0,0,divx*13, divy);
 
-                lifeHudPlayer1 = new LifeHud( new RectF(divx, divy, divx + lifeHudArea.width(), divy + lifeHudArea.height()), lifeHudTexture, "Player 1");
+                lifeHudPlayer1 = new LifeHud( new RectF(divx, divy, divx + lifeHudArea.width(), divy + lifeHudArea.height()), lifeHudTexture, player1.getName());
                 lifeHudPlayer1.getText().setHorizontalAlignment(Text.LEFT);
                 lifeHudPlayer1.getText().getPaint().setColor(Color.BLUE);
 
                 lifeHudPlayer2 = new LifeHud( new RectF(screenSize.right - divx - lifeHudArea.width(),
-                        divy, screenSize.right - divx, divy + lifeHudArea.height()), lifeHudTexture, "Player 2");
+                        divy, screenSize.right - divx, divy + lifeHudArea.height()), lifeHudTexture, player2.getName());
                 lifeHudPlayer2.getText().setHorizontalAlignment(Text.RIGHT);
                 lifeHudPlayer2.getText().getPaint().setColor(Color.BLUE);
 
@@ -335,7 +335,7 @@ public class MatchScreen extends Screen {
                 log("Criou o character");
         }
         log("Terminou de carregar os asprites");
-        return new Player(character, size, invert, null);
+        return new Player(character, size, invert);
     }
 
     private Sprite[] loadTextureChar(String name){
@@ -364,7 +364,7 @@ public class MatchScreen extends Screen {
 
                 for (int j=0; j < arqs.length; j++){
                     //tmpSpriteAction[contador++] = new Sprite(new Texture("images/characters/" + name + "/action/" + paths[i] + "/" + arqs[j]));
-                    tmpSpriteAction[contador++] = new Sprite(new Texture("images/characters/" + name + "/action/" + paths[i] + "/" + ((j+1) + ".png"), (int)screenSize.width()/5, (int)screenSize.height()/5));
+                    tmpSpriteAction[contador++] = new Sprite(new Texture("images/characters/" + name + "/action/" + paths[i] + "/" + ((j+1) + ".png"), (int)screenSize.width()/2, (int)screenSize.height()/2));
                     //log(paths[i] + " / " + arqs[j]);
                 }
             }

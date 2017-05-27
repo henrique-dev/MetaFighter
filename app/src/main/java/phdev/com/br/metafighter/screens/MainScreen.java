@@ -45,9 +45,9 @@ public class MainScreen extends Screen {
     private Scene multiplayerHostScene;
     private Scene multiplayerJoinScene;
 
-    private Texture buttonSingleTexture;
-    private Texture buttonMultiTexture;
-    private Texture buttonOptionTexture;
+    //private Texture buttonSingleTexture;
+    //private Texture buttonMultiTexture;
+    //private Texture buttonOptionTexture;
 
     private Texture buttonTexture;
     private Texture mainBackgroundTexture;
@@ -89,16 +89,16 @@ public class MainScreen extends Screen {
     @Override
     protected boolean loadTextures() {
 
-        this.mainBackgroundTexture = new Texture("images/backgrounds/background6.png");
-        this.buttonTexture = new Texture("images/buttons/button2.png");
-        this.textureTableHead = new Texture("cmp/table/head.png");
-        this.textureTableBody = new Texture("cmp/table/body.png");
-        this.textureTableShow = new Texture("cmp/table/show.png");
-        this.textureTableItem = new Texture("cmp/table/item.png");
+        mainBackgroundTexture = new Texture("images/backgrounds/1.png");
+        buttonTexture = new Texture("images/buttons/2.png");
+        textureTableHead = new Texture("cmp/table/head.png");
+        textureTableBody = new Texture("cmp/table/body.png");
+        textureTableShow = new Texture("cmp/table/show.png");
+        textureTableItem = new Texture("cmp/table/item.png");
 
-        buttonSingleTexture = new Texture("images/buttons/botao1.png");
-        buttonMultiTexture = new Texture("images/buttons/botao2.png");
-        buttonOptionTexture = new Texture("images/buttons/botao3.png");
+        //buttonSingleTexture = new Texture("images/buttons/botao1.png");
+        //buttonMultiTexture = new Texture("images/buttons/botao2.png");
+        //buttonOptionTexture = new Texture("images/buttons/botao3.png");
 
         return true;
     }
@@ -140,7 +140,7 @@ public class MainScreen extends Screen {
                                 screenSize.centerY() - divy - buttonSize.height(),
                                 screenSize.centerX() - divx,
                                 screenSize.centerY() - divy),
-                        "", buttonSingleTexture);
+                        "1 Jogador", buttonTexture);
                 singleplayerButton.getText().setTextSize(fontSize);
                 singleplayerButton.addEventListener(new ActionListener() {
                     @Override
@@ -156,7 +156,7 @@ public class MainScreen extends Screen {
                                 screenSize.centerY() - divy - buttonSize.height(),
                                 screenSize.centerX() + divx + buttonSize.width(),
                                 screenSize.centerY() - divy),
-                        "", buttonMultiTexture);
+                        "2 Jogadores", buttonTexture);
                 multiplayerButton.getText().setTextSize(fontSize);
                 multiplayerButton.addEventListener(new ActionListener() {
                     @Override
@@ -172,7 +172,7 @@ public class MainScreen extends Screen {
                                 screenSize.centerY() + divy,
                                 screenSize.centerX() + (buttonSize.width()/2),
                                 screenSize.centerY() + divy + buttonSize.height()),
-                        "", buttonOptionTexture);
+                        "Opções", buttonTexture);
                 optionsButton.getText().setTextSize(fontSize);
                 optionsButton.addEventListener(new ActionListener() {
                     @Override

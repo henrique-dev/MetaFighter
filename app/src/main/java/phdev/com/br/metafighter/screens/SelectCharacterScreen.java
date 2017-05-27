@@ -85,12 +85,12 @@ public class SelectCharacterScreen extends Screen {
     @Override
     protected boolean loadTextures() {
 
-        this.backButtonTexture = new Texture("images/buttons/button2.png");
+        backButtonTexture = new Texture("images/buttons/3.png");
 
-        this.gameLabelPlayerTexture = new Texture("images/labels/label3.png");
-        this.gameLabelCharTexture = new Texture("images/labels/label4.png");
+        gameLabelPlayerTexture = new Texture("images/labels/label3.png");
+        gameLabelCharTexture = new Texture("images/labels/label4.png");
 
-        this.mainBackgroundTexture = new Texture("images/backgrounds/background7.png");
+        mainBackgroundTexture = new Texture("images/backgrounds/2.png");
 
         spriteViewKaila = Sprite.getSpriteFromTexture(new Texture("images/characters/kaila/view.png"), 1, 1);
         spriteViewGuedes = Sprite.getSpriteFromTexture(new Texture("images/characters/guedes/view.png"), 1, 1);

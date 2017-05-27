@@ -117,8 +117,8 @@ public class MultiplayerMatchScreen extends Screen {
     @Override
     protected boolean loadTextures() {
 
-        backgroundTexture = new Texture("images/backgrounds/background9.png");
-        preBattleBackgroundTexture = new Texture("images/backgrounds/background3.png");
+        backgroundTexture = new Texture("images/backgrounds/4.png");
+        preBattleBackgroundTexture = new Texture("images/backgrounds/3.png");
 
         lifeHudTexture = new Texture("images/labels/label5.png");
         controllerDirTexture = new Texture("cmp/controller/directionalBase.png");
@@ -605,7 +605,7 @@ public class MultiplayerMatchScreen extends Screen {
                 character = new Character(tmpSpriteAction, null, "Teste");
                 log("Criou o character");
         }
-        return new Player(character, size, invert, context.getConnectionType());
+        return new Player(character, size, invert);
     }
 
     private Sprite[] loadTextureChar(String name){

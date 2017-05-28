@@ -324,7 +324,6 @@ public class MainScreen extends Screen {
             }
 
             int counter = 0;
-            List<BluetoothDevice> newDevices;
 
             private void joinButtonAction(Event evt){
                 if (bluetoothManager.haveBluetooth())
@@ -339,17 +338,13 @@ public class MainScreen extends Screen {
 
                         for (BluetoothDevice device : pairedDevices){
 
-                            log("Inserindo elementos");
-
                             TableItem item = new TableItem(device.getName());
-                            item.getText().setTextSize(20);
                             item.getText().setColor(Color.BLACK);
                             item.setId(counter);
 
                             item.addEventListener(new ActionListener() {
                                 @Override
                                 public void actionPerformed(Event event) {
-                                    log("Clicou");
                                     bluetoothManager.stop();
                                     bluetoothManager.connect(pairedDevices.get(((ClickEvent)event).id));
                                     bluetoothManager.cancelDiscovery();
@@ -361,34 +356,35 @@ public class MainScreen extends Screen {
                         }
                     }
 
-                    newDevices = new ArrayList<>();
-
                     BroadcastReceiver receiver = new BroadcastReceiver() {
                         @Override
                         public void onReceive(Context context, Intent intent) {
-                            String action = intent.getAction();
 
-                            if (BluetoothDevice.ACTION_FOUND.equals(action)){
-                                log("Achou um");
-                                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                                TableItem item = new TableItem(device.getName());
-                                item.getText().setTextSize(20);
-                                item.setId(counter);
+                            try{
+                                String action = intent.getAction();
+                                if (BluetoothDevice.ACTION_FOUND.equals(action)){
 
-                                pairedDevices.add(device);
+                                    BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                                    TableItem item = new TableItem(device.getName());
+                                    item.getText().setColor(Color.BLACK);
+                                    item.setId(counter);
 
-                                item.addEventListener(new ActionListener() {
-                                    @Override
-                                    public void actionPerformed(Event event) {
-                                        bluetoothManager.stop();
-                                        bluetoothManager.connect(pairedDevices.get(((ClickEvent)event).id));
-                                        bluetoothManager.cancelDiscovery();
+                                    pairedDevices.add(device);
+
+                                    item.addEventListener(new ActionListener() {
+                                        @Override
+                                        public void actionPerformed(Event event) {
+                                            bluetoothManager.stop();
+                                            bluetoothManager.connect(pairedDevices.get(((ClickEvent)event).id));
+                                            bluetoothManager.cancelDiscovery();
                                         }
-                                });
+                                    });
 
-                                counter++;
-                                table.addItem(item);
+                                    counter++;
+                                    table.addItem(item);
+                                }
                             }
+                            catch (Exception e){}
                         }
                     };
 
@@ -470,7 +466,7 @@ public class MainScreen extends Screen {
                         textureTableHead,
                         textureTableShow,
                         textureTableItem,
-                        "Lutadores"
+                        " Jogadores "
                 );
                 table.getTextHead().setColor(Color.BLACK);
 
@@ -500,8 +496,8 @@ public class MainScreen extends Screen {
             }
 
             private void backToMultiSelectFromJoinButtonAction(Event evt){
-                bluetoothManager.stop();
                 bluetoothManager.cancelDiscovery();
+                bluetoothManager.stop();
                 currentScene = multiplayerSelectScene.start();
             }
         };

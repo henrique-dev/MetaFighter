@@ -1,6 +1,7 @@
 package phdev.com.br.metafighter.cmp.window;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.Log;
@@ -119,6 +120,9 @@ public class Table extends WindowEntity{
                 this.areaItem.right,
                 this.areaShow.top + (this.areaItem.height() * (this.items.size()+1))));
 
+        item.getText().setTextSize(areaItem.height() / 3);
+        item.getText().setColor(Color.BLACK);
+
         item.addEventListener(new ClickListener() {
             @Override
             public void actionPerformed(Event event) {
@@ -141,6 +145,7 @@ public class Table extends WindowEntity{
 
     public void addItem(TableItem item){
         //TableItem tableItem = new TableItem(item.getText());
+        item.getText().setTextSize(areaItem.height() / 3);
         item.setArea( new RectF(this.areaItem.left,
                         this.areaShow.top + (this.areaItem.height() * this.items.size()),
                         this.areaItem.right,

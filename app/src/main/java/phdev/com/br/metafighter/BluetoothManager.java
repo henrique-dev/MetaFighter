@@ -64,8 +64,11 @@ public final class BluetoothManager {
 
     public void cancelDiscovery(){
         bluetoothAdapter.cancelDiscovery();
-        if (receiver != null)
-            context.getAppContetxt().unregisterReceiver(receiver);
+        try {
+            if (receiver != null)
+                context.getAppContetxt().unregisterReceiver(receiver);
+        }
+        catch (Exception e){}
     }
 
 

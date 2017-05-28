@@ -126,6 +126,6 @@ public abstract class Screen implements Component {
 
     protected void sendMessageToScreen(String msg){
         log(msg);
-            context.sendMessage(msg, 5);
+        context.sendMessage(msg, 5);
     }
 }

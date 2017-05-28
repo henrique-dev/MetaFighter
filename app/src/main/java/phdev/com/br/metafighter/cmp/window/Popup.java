@@ -26,7 +26,7 @@ public class Popup extends WindowEntity {
         addEventListener(listener);
         //this.listener = listener;
 
-        super.paint.setAlpha(190);
+        super.paint.setAlpha(200);
 
         this.text = new Text(text);
 
@@ -35,7 +35,11 @@ public class Popup extends WindowEntity {
         super.setArea(new RectF(screenSize));
         super.setDrawableArea(area);
 
-        float fontSize = Text.adaptText(new String[]{text}, screenSize);
+
+        //if (autoSize)
+          //  fontSize = Text.adaptText(Text.getArrayFromText(text), screenSize);
+        //else
+        float fontSize = GameParameters.getInstance().defaultTextSize;
 
         /*
         super.setArea(new RectF( screenSize.centerX() - popupSize.width()/2,

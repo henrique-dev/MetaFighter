@@ -134,7 +134,8 @@ public abstract class Entity implements Component {
     protected static void logMessages(Object obj, String msg){
         if(!GameParameters.getInstance().debug)
             return;
-        GameParameters.getInstance().log("      Objeto criado: " + obj.getClass().getSimpleName() + (msg != null ? msg : ""));
+        if (GameParameters.getInstance().debugCreateObjects)
+            GameParameters.getInstance().log("      Objeto criado: " + obj.getClass().getSimpleName() + (msg != null ? msg : ""));
     }
 
 

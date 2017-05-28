@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/MetaFighter.iml" filepath="$PROJECT_DIR$/MetaFighter.iml" />
-      <module fileurl="file://$PROJECT_DIR$/apkexpansion/apkexpansion.iml" filepath="$PROJECT_DIR$/apkexpansion/apkexpansion.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

@@ -364,7 +364,7 @@ public class MatchScreen extends Screen {
 
                 for (int j=0; j < arqs.length; j++){
                     //tmpSpriteAction[contador++] = new Sprite(new Texture("images/characters/" + name + "/action/" + paths[i] + "/" + arqs[j]));
-                    tmpSpriteAction[contador++] = new Sprite(new Texture("images/characters/" + name + "/action/" + paths[i] + "/" + ((j+1) + ".png"), (int)screenSize.width()/2, (int)screenSize.height()/2));
+                    tmpSpriteAction[contador++] = new Sprite(new Texture("images/characters/" + name + "/action/" + paths[i] + "/" + ((j+1) + ".png"), (int)screenSize.width()/15, (int)screenSize.height()/15));
                     //log(paths[i] + " / " + arqs[j]);
                 }
             }
@@ -532,6 +532,17 @@ public class MatchScreen extends Screen {
 
 
             //
+
+
+
+            if (!player1.isInvert()){
+                if (player1.getX() > GameParameters.getInstance().screenSize.width())
+                    player1.setX(GameParameters.getInstance().screenSize.width());
+            }
+            else {
+                if (player1.getX() + player1.getMainArea().width() > GameParameters.getInstance().screenSize.width())
+                    player1.setX(GameParameters.getInstance().screenSize.width() - player1.getMainArea().width());
+            }
 
         }
 

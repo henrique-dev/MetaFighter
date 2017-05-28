@@ -44,7 +44,7 @@ public class SelectCharacterScreen extends Screen {
 
     private Character[] characters;
 
-    private Sprite[] spriteViewKaila;
+    //private Sprite[] spriteViewKaila;
     private Sprite[] spriteViewGuedes;
     private Sprite[] spriteViewQuele;
     private Sprite[] spriteViewRomulo;
@@ -92,7 +92,7 @@ public class SelectCharacterScreen extends Screen {
 
         mainBackgroundTexture = new Texture("images/backgrounds/2.png");
 
-        spriteViewKaila = Sprite.getSpriteFromTexture(new Texture("images/characters/kaila/view.png"), 1, 1);
+        //spriteViewKaila = Sprite.getSpriteFromTexture(new Texture("images/characters/kaila/view.png"), 1, 1);
         spriteViewGuedes = Sprite.getSpriteFromTexture(new Texture("images/characters/guedes/view.png"), 1, 1);
         spriteViewPatricia = Sprite.getSpriteFromTexture(new Texture("images/characters/patricia/view.png"), 1, 1);
         spriteViewLuiz = Sprite.getSpriteFromTexture(new Texture("images/characters/luiz/view.png"), 1, 1);
@@ -123,7 +123,7 @@ public class SelectCharacterScreen extends Screen {
         selectedPlayer1 = new Selected(Color.BLUE);
         selectedPlayer2 = new Selected(Color.RED);
 
-        characters[Character.KAILA] = new Character(null, spriteViewKaila, "Kaila");
+        //characters[Character.KAILA] = new Character(null, spriteViewKaila, "Kaila");
         characters[Character.GUEDES] = new Character(null, spriteViewGuedes, "Carlos Guedes");
         characters[Character.LUIZ] = new Character(null, spriteViewLuiz, "Luiz Silva");
         characters[Character.PATRICIA] = new Character(null, spriteViewPatricia, "Patricia");
@@ -256,24 +256,29 @@ public class SelectCharacterScreen extends Screen {
             }
         });
 
-        gameLabelKaila = new GameLabel(
-                new RectF( gameLabelPatricia.getArea().right + marginX,
-                        marginY*2 + gameLabelCharArea.height(),
-                        gameLabelPatricia.getArea().right + marginX + gameLabelCharArea.width(),
-                        marginY*2 + gameLabelCharArea.height() + gameLabelCharArea.height()),
-                this.gameLabelCharTexture, null);
-        gameLabelKaila.setSprites(characters[Character.KAILA].getView());
-        gameLabelKaila.setId(Character.KAILA);
-        //gameLabelKaila.addEventListener(handler);
-        gameLabelKaila.addEventListener(new ActionListener() {
-            @Override
-            public void actionPerformed(Event event) {
-                changeLabelPlayer(characters[Character.KAILA]);
+        try {
+
+            gameLabelKaila = new GameLabel(
+                    new RectF(gameLabelPatricia.getArea().right + marginX,
+                            marginY * 2 + gameLabelCharArea.height(),
+                            gameLabelPatricia.getArea().right + marginX + gameLabelCharArea.width(),
+                            marginY * 2 + gameLabelCharArea.height() + gameLabelCharArea.height()),
+                    this.gameLabelCharTexture, null);
+            gameLabelKaila.setSprites(characters[Character.KAILA].getView());
+            gameLabelKaila.setId(Character.KAILA);
+            //gameLabelKaila.addEventListener(handler);
+            gameLabelKaila.addEventListener(new ActionListener() {
+                @Override
+                public void actionPerformed(Event event) {
+                    changeLabelPlayer(characters[Character.KAILA]);
 
 
-                choseCharacter(gameLabelKaila, Character.KAILA, handler);
-            }
-        });
+                    choseCharacter(gameLabelKaila, Character.KAILA, handler);
+                }
+            });
+        }
+        catch (Exception e){}
+
 
         gameLabelGuedes = new GameLabel(
                 new RectF( gameLabelKaila.getArea().right + marginX,
@@ -301,7 +306,7 @@ public class SelectCharacterScreen extends Screen {
                 super.add(gameLabelPlayer1);
                 super.add(gameLabelPlayer2);
                 super.add(gameLabelGuedes);
-                super.add(gameLabelKaila);
+                //super.add(gameLabelKaila);
                 super.add(gameLabelLuiz);
                 super.add(gameLabelPatricia);
                 super.add(gameLabelRomulo);

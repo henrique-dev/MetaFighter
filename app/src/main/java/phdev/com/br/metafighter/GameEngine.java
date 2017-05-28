@@ -15,6 +15,7 @@ import android.view.SurfaceView;
 import phdev.com.br.metafighter.cmp.Component;
 import phdev.com.br.metafighter.cmp.connections.packets.Packet;
 import phdev.com.br.metafighter.cmp.event.handlers.AutoDestroyableHandler;
+import phdev.com.br.metafighter.cmp.game.Character;
 import phdev.com.br.metafighter.cmp.graphics.Texture;
 import phdev.com.br.metafighter.cmp.misc.GameContext;
 import phdev.com.br.metafighter.cmp.window.BackGround;
@@ -23,12 +24,13 @@ import phdev.com.br.metafighter.cmp.window.Popup;
 import phdev.com.br.metafighter.cmp.window.ProgressHud;
 import phdev.com.br.metafighter.cmp.window.Screen;
 import phdev.com.br.metafighter.screens.MainScreen;
+import phdev.com.br.metafighter.screens.MatchScreen;
 
 /**
  * @author Paulo Henrique Gonçalves Bacelar
  * @version 1.0
  */
-public final class GameEngine extends SurfaceView implements SurfaceHolder.Callback{
+public class GameEngine extends SurfaceView implements SurfaceHolder.Callback{
 
     private MainThread thread;
 
@@ -47,9 +49,13 @@ public final class GameEngine extends SurfaceView implements SurfaceHolder.Callb
     public GameEngine(Context context) {
         super(context);
 
+        Log.e("GameEngine", "AQUIII");
+
         getHolder().addCallback(this);
 
-        this.thread = new MainThread(getHolder(), this);
+        if (thread == null)
+            this.thread = new MainThread(getHolder(), this);
+            Log.d("GameEngine", "GameEngine: Thread CRIADA");
 
         setFocusable(true);
     }
@@ -58,12 +64,18 @@ public final class GameEngine extends SurfaceView implements SurfaceHolder.Callb
     public void surfaceCreated(SurfaceHolder holder) {
         Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": Surface criada.");
         Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": Tela principal criada.");
-        this.thread.setRunning(true);
 
-        initBasicComponents();
+        try{
+            if (thread != null) {
+                thread.setRunning(true);
 
-        Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": Iniciando a thread.");
-        this.thread.start();
+                initBasicComponents();
+
+                Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": Iniciando a thread.");
+                thread.start();
+            }
+        }
+        catch (Exception e){}
     }
 
     @Override
@@ -79,26 +91,29 @@ public final class GameEngine extends SurfaceView implements SurfaceHolder.Callb
         boolean retry = true;
         while(retry){
             try{
+                if (thread != null) {
+                    this.thread.setRunning(false);
+                    this.thread.join();
+                }
                 retry = false;
-                this.thread.setRunning(false);
-                this.thread.join();
-
+                screen = null;
+                if (soundManager != null) {
+                    soundManager.release();
+                    soundManager = null;
+                }
             }
             catch (InterruptedException e){
                 Log.e("GameEngine", e.getMessage());
                 Log.e("GameEngine", e.getCause().toString());
                 //e.printStackTrace();
             }
-            finally {
-                if(!this.thread.running){
-                    Log.v("GameEngine", GameParameters.getInstance().logIndex++ + ": Zerando a lista de telas.");
-                    screen = null;
-                    soundManager.release();
-                    soundManager = null;
-                }
-            }
 
         }
+    }
+
+    public void stopPreview(){
+        if (thread != null)
+            thread = null;
     }
 
     private void initBasicComponents(){
@@ -119,12 +134,12 @@ public final class GameEngine extends SurfaceView implements SurfaceHolder.Callb
 
         connectionManager = new ConnectionManager(gameContext);
 
-        soundManager = new SoundManager();
+        soundManager = new SoundManager(getContext());
 
 
 
         new MainScreen(gameContext);
-        //new MatchScreen(gameContext, null, Character.ROMULO, Character.GUEDES);
+        //new MatchScreen(gameContext, null, Character.PATRICIA, Character.GUEDES);
     }
 
     @SuppressLint("MissingSuperCall")
@@ -175,6 +190,9 @@ public final class GameEngine extends SurfaceView implements SurfaceHolder.Callb
 
         if (screen != null && message == null)
             screen.onTouchEvent(event);
+        if (message != null)
+            if (event.getActionMasked() == MotionEvent.ACTION_DOWN)
+                message = null;
 
         return true;
     }

@@ -29,6 +29,7 @@ public class Text extends WindowEntity {
     private int horizontalAlignment;
     private String text;
     private String textToDraw[];
+    private Paint textToDrawPaint[];
     public static Font fonts[];
     private float textSize;
     private int colorText;
@@ -148,7 +149,26 @@ public class Text extends WindowEntity {
 
     }
 
-    private int checkEspecialChars(String text){
+    public static String[] getArrayFromText(String text){
+        String tmpText[];
+        if(checkEspecialChars(text) > 0){
+            tmpText = new String[checkEspecialChars(text) + 1];
+            int cont = 0;
+            for(int i=0; cont<text.length(); cont++){
+                if(tmpText[i] == null)
+                    tmpText[i] = "";
+                if(text.charAt(cont) == '\n')
+                    i++;
+                else
+                    tmpText[i] = tmpText[i] + text.charAt(cont);
+            }
+        }
+        else
+            tmpText = new String[]{text};
+        return tmpText;
+    }
+
+    public static int checkEspecialChars(String text){
         int cont = 0;
         for (int i=0; i<text.length(); i++)
             if(text.charAt(i) == '\n')

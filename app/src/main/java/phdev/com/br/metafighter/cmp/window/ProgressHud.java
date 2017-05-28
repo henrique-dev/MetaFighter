@@ -30,7 +30,7 @@ public class ProgressHud extends WindowEntity {
 
         this.percent = this.area.width() / 100;
 
-        super.paint.setColor(Color.BLUE);
+        super.paint.setColor(Color.RED);
         this.bar = new RectF(this.area.left, this.area.top, this.area.left, this.area.bottom);
 
     }

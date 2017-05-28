@@ -4,7 +4,10 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.util.Log;
 
 import java.io.IOException;
@@ -38,11 +41,33 @@ public final class BluetoothManager {
 
     private ConnectionManager connectionManager;
 
+    private BroadcastReceiver receiver;
+
     protected BluetoothManager(GameContext context, ConnectionManager connectionManager){
         this.context = context;
         this.bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         this.connectionManager = connectionManager;
     }
+
+    public boolean startDiscovery(BroadcastReceiver receiver){
+        if (!bluetoothAdapter.startDiscovery())
+            return false;
+
+        this.receiver = receiver;
+
+        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+        context.getAppContetxt().registerReceiver(receiver, filter);
+
+        return true;
+
+    }
+
+    public void cancelDiscovery(){
+        bluetoothAdapter.cancelDiscovery();
+        if (receiver != null)
+            context.getAppContetxt().unregisterReceiver(receiver);
+    }
+
 
     public boolean haveBluetooth(){
         return bluetoothAdapter == null;

@@ -9,12 +9,14 @@ import android.media.SoundPool;
 import android.view.MotionEvent;
 
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.Random;
 
 import phdev.com.br.metafighter.BluetoothManager;
 import phdev.com.br.metafighter.ConnectionManager;
 import phdev.com.br.metafighter.GameParameters;
 import phdev.com.br.metafighter.R;
+import phdev.com.br.metafighter.SoundManager;
 import phdev.com.br.metafighter.cmp.connections.packets.Action;
 import phdev.com.br.metafighter.cmp.connections.packets.Damage;
 import phdev.com.br.metafighter.cmp.connections.packets.Move;
@@ -52,19 +54,24 @@ public class MultiplayerMatchScreen extends Screen {
     private Scene posBattleScene;
 
     private ConnectionManager manager;
-    private SoundPool soundPool;
-    private MediaPlayer mediaPlayer;
+
+    private SoundManager soundManager;
+    //private SoundPool soundPool;
+    //private MediaPlayer mediaPlayer;
 
     private BackGround backGround;
     private BackGround preBattleBackground;
 
-    private Label timerLabel;
-
-    private Timer matchTimer;
-    private int currentTime = 0;
+    //private Label timerLabel;
+    //private Timer matchTimer;
+    //private int currentTime = 0;
 
     private LifeHud lifeHudPlayer1;
     private LifeHud lifeHudPlayer2;
+
+    private Paint hitPaint;
+    private Texture hitTexture;
+    private LinkedList<Hit> hits;
 
     private Texture backgroundTexture;
     private Texture preBattleBackgroundTexture;
@@ -106,8 +113,11 @@ public class MultiplayerMatchScreen extends Screen {
 
         context.getConnectionType().init();
         manager = context.getConnectionType();
-        mediaPlayer = context.getSoundManager().getMediaPlayer();
-        soundPool = context.getSoundManager().getSoundPool();
+
+        soundManager = context.getSoundManager();
+
+        hits = new LinkedList<>();
+        hitPaint = new Paint();
 
         if (myID == Constant.GAMEMODE_MULTIPLAYER_HOST) {
             this.myID = myID;
@@ -124,6 +134,20 @@ public class MultiplayerMatchScreen extends Screen {
         init();
     }
 
+    private class Hit{
+
+        public float x;
+        public float y;
+
+        public Hit(float x, float y){
+            this.x = x;
+            this.y = y;
+        }
+
+
+
+    }
+
     @Override
     protected boolean loadTextures() {
 
@@ -134,6 +158,8 @@ public class MultiplayerMatchScreen extends Screen {
 
         lifeHudTexture = new Texture("images/labels/label5.png");
         controllerDirTexture = new Texture("cmp/controller/directionalBase.png");
+
+        hitTexture = new Texture("images/animations/hit.png");
 
         return true;
     }
@@ -146,27 +172,16 @@ public class MultiplayerMatchScreen extends Screen {
     @Override
     protected boolean loadSounds() {
 
-        if (mediaPlayer != null)
-            mediaPlayer.stop();
-        mediaPlayer = MediaPlayer.create(context.getAppContetxt(), R.raw.music2);
-
-        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                if (mp != null)
-                    mp.start();
-            }
-        });
-
-        context.getProgressCmp().increase(65);
-
         sounds = new int[4];
         randSound = new Random();
 
-        sounds[0] = soundPool.load(context.getAppContetxt(), R.raw.p1, 1);
-        sounds[1] = soundPool.load(context.getAppContetxt(), R.raw.p2, 1);
-        sounds[2] = soundPool.load(context.getAppContetxt(), R.raw.p3, 1);
-        sounds[3] = soundPool.load(context.getAppContetxt(), R.raw.p4, 1);
+        sounds[0] = soundManager.getSoundPool().load(context.getAppContetxt(), R.raw.p1, 1);
+        sounds[1] = soundManager.getSoundPool().load(context.getAppContetxt(), R.raw.p2, 1);
+
+        context.getProgressCmp().increase(65);
+
+        sounds[2] = soundManager.getSoundPool().load(context.getAppContetxt(), R.raw.p3, 1);
+        sounds[3] = soundManager.getSoundPool().load(context.getAppContetxt(), R.raw.p4, 1);
 
         return true;
     }
@@ -185,6 +200,9 @@ public class MultiplayerMatchScreen extends Screen {
 
                 float divx = screenSize.width()/32;
                 float divy = screenSize.height()/16;
+
+                hitTexture.scaleImage((int)divx, (int)divy);
+
 
                 //RectF player1Area = new RectF(screenSize.centerX() - divx*7, screenSize.bottom - divy*10, screenSize.centerX() + divx*1, screenSize.bottom);
 
@@ -236,12 +254,14 @@ public class MultiplayerMatchScreen extends Screen {
 
                 context.getProgressCmp().increase(90);
 
+                /*
                 timerLabel = new Label(
                         new RectF(lifeHudPlayer1.getArea().right, 0, lifeHudPlayer2.getArea().left, lifeHudPlayer1.getArea().bottom + divy),
                         "99", null);
                 timerLabel.getText().setTextSize( Text.adaptText(new String[]{"99"}, timerLabel.getArea()) );
                 timerLabel.getText().getPaint().setColor(Color.WHITE);
                 timerLabel.getPaint().setAlpha(0);
+                */
 
                 RectF areaController = new RectF(0,0, 170, 170);
                 controller = new Controller(
@@ -266,7 +286,7 @@ public class MultiplayerMatchScreen extends Screen {
                 super.add(backGround);
                 super.add(lifeHudPlayer1);
                 super.add(lifeHudPlayer2);
-                super.add(timerLabel);
+                //super.add(timerLabel);
                 super.add(myPlayer);
                 super.add(otherPlayer);
                 super.add(controller);
@@ -275,9 +295,9 @@ public class MultiplayerMatchScreen extends Screen {
             @Override
             public Scene start(){
                 super.start();
-                matchTimer = new Timer();
-                matchTimer.start();
-                mediaPlayer.start();
+                //matchTimer = new Timer();
+                //matchTimer.start();
+                soundManager.playMusic(R.raw.music2);
                 return this;
             }
 
@@ -290,6 +310,7 @@ public class MultiplayerMatchScreen extends Screen {
 
                 if (gameIn) {
 
+                    /*
                     int tempTime = (int) (matchTimer.getTicks() / 1000000000);
                     if (tempTime != currentTime) {
                         if (timerLabel != null) {
@@ -297,6 +318,7 @@ public class MultiplayerMatchScreen extends Screen {
                             currentTime = tempTime;
                         }
                     }
+                    */
 
                     if (checkCollision(myPlayer.getCurrentCollision(), myPlayer.getX(), myPlayer.getY(),
                             otherPlayer.getCurrentCollision(), otherPlayer.getX(), otherPlayer.getY())) {
@@ -304,30 +326,29 @@ public class MultiplayerMatchScreen extends Screen {
                             manager.addPacketsToWrite(new Damage(0.5f));
                             otherPlayer.damaged(0.5f);
 
-                            soundPool.play(sounds[randSound.nextInt(4)], 1, 1, 1, 0, 1f);
+                            soundManager.playSound(sounds[randSound.nextInt(4)]);
+
 
                             //if (myID == Constant.GAMEMODE_MULTIPLAYER_HOST)
                             manager.addPacketsToWrite(new Request(YOUR_HP, -1, -1, -1));
                         }
-                        if (myPlayer.getCurrentAction() == Player.PUNCH1_ACTION) {
-                            manager.addPacketsToWrite(new Damage(0.3f));
-                            otherPlayer.damaged(0.3f);
+                        else
+                            if (myPlayer.getCurrentAction() == Player.PUNCH1_ACTION) {
+                                manager.addPacketsToWrite(new Damage(0.3f));
+                                otherPlayer.damaged(0.3f);
 
-                            soundPool.play(sounds[randSound.nextInt(4)], 1, 1, 1, 0, 1f);
+                                soundManager.playSound(sounds[randSound.nextInt(4)]);
 
-                            manager.addPacketsToWrite(new Request(YOUR_HP, myPlayer.getLifeHud().getHP(), -1, -1));
-                        }
-                        if (otherPlayer.getCurrentAction() == Player.KICK1_ACTION) {
-                            //myPlayer.damaged(0.5f);
-                        }
-                        if (otherPlayer.getCurrentAction() == Player.PUNCH1_ACTION) {
-                            //myPlayer.damaged(0.2f);
-                        }
+                                manager.addPacketsToWrite(new Request(YOUR_HP, myPlayer.getLifeHud().getHP(), -1, -1));
+                            }
+                            else
+                                hits.pop();
+
                     }
 
 
                     if (lifeHudPlayer1.getHP() <= 0 || lifeHudPlayer2.getHP() <= 0) {
-                        matchTimer.pause();
+                        //matchTimer.pause();
 
                         bot = null;
                         controller = null;
@@ -376,10 +397,36 @@ public class MultiplayerMatchScreen extends Screen {
                         //log("Enviou pacote AAAAA " + xo + " - " + myPlayer.getX() + " / " + yo + " - " + myPlayer.getY());
                     }
 
+                    if (!myPlayer.isInvert()){
+                        if (myPlayer.getX() > GameParameters.getInstance().screenSize.width())
+                            myPlayer.setX(GameParameters.getInstance().screenSize.width());
+                        else
+                            if (myPlayer.getX() < 0)
+                                myPlayer.setX(0);
+                    }
+                    else {
+                        if (myPlayer.getX() + myPlayer.getMainArea().width() > GameParameters.getInstance().screenSize.width())
+                            myPlayer.setX(GameParameters.getInstance().screenSize.width() - myPlayer.getMainArea().width());
+                        log("Here");
+                    }
+
+
                     xo = myPlayer.getX();
                     yo = myPlayer.getY();
                     actiono = myPlayer.getCurrentAction();
                 }
+
+            }
+
+            @Override
+            public void draw(Canvas canvas){
+                super.draw(canvas);
+
+                Hit hit = null;
+                if (hits.size() > 1)
+                    hit = hits.pop();
+                if (hit != null)
+                    canvas.drawBitmap(hitTexture.getImage(), otherPlayer.getX() + hit.x, otherPlayer.getY() + hit.y, hitPaint);
 
             }
 
@@ -730,11 +777,9 @@ public class MultiplayerMatchScreen extends Screen {
                             if (B[k][l] != null) {
                                 if (RectF.intersects(new RectF(AX + A[i][j].left, AY + A[i][j].top, AX + A[i][j].right, AY + A[i][j].bottom),
                                         new RectF(BX + B[k][l].left, BY + B[k][l].top, BX + B[k][l].right, BY + B[k][l].bottom))){
-                                    //log("Colidiu");
-                                    /*
-                                    log("AX: " + AX + " -  " + "A: (" + (AX + A[i][j].left) + ", " + (AY + A[i][j].top) + ", " + (AX + A[i][j].right) + ", " + (AY + A[i][j].bottom));
-                                    log("BX: " + BX + " -  " + "B: (" + (BX + B[k][l].left) + ", " + (BY + B[k][l].top) + ", " + (BX + B[k][l].right) + ", " + (BY + B[k][l].bottom));
-                                    */
+
+                                    hits.add(new Hit(B[k][l].centerX(), B[k][l].centerY()));
+
                                     return true;
                                 }
                             }

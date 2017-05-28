@@ -47,9 +47,6 @@ public class MultiplayerSelectCharacterScreen extends Screen {
 
     private Scene mainScene;
 
-    private MediaPlayer mediaPlayer;
-    private SoundPool soundPool;
-
     private ConnectionManager manager;
     private final int myID;
     private final int otherID;
@@ -95,7 +92,7 @@ public class MultiplayerSelectCharacterScreen extends Screen {
     private BackGround mainBackground;
 
     private Texture backButtonTexture;
-    private Texture gameLabelPlayerTexture;
+    //private Texture gameLabelPlayerTexture;
     private Texture gameLabelCharTexture;
     private Texture mainBackgroundTexture;
 
@@ -125,8 +122,6 @@ public class MultiplayerSelectCharacterScreen extends Screen {
 
         context.getConnectionType().init();
         manager = context.getConnectionType();
-        mediaPlayer = context.getSoundManager().getMediaPlayer();
-        soundPool = context.getSoundManager().getSoundPool();
 
         if (myID == Constant.GAMEMODE_MULTIPLAYER_HOST) {
             this.myID = myID;
@@ -145,7 +140,7 @@ public class MultiplayerSelectCharacterScreen extends Screen {
     protected boolean loadTextures() {
 
         backButtonTexture = new Texture("images/buttons/3.png");
-        gameLabelPlayerTexture = new Texture("images/labels/label3.png");
+        //gameLabelPlayerTexture = new Texture("images/labels/label3.png");
         gameLabelCharTexture = new Texture("images/labels/label4.png");
         mainBackgroundTexture = new Texture("images/backgrounds/2.png");
 
@@ -521,7 +516,7 @@ public class MultiplayerSelectCharacterScreen extends Screen {
                         if (flash == null)
                             //new MatchScreen(context, null, player1.getCharID(), player2.getCharID());
                             //new MatchScreen(context, null, Character.GUEDES, Character.GUEDES);
-                            new MultiplayerMatchScreen(context, myID, Character.GUEDES, Character.GUEDES);
+                            new MultiplayerMatchScreen(context, myID, player1.getCharID(), player2.getCharID());
                     }
                 }
             }

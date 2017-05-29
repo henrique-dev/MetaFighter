@@ -103,6 +103,7 @@ public class MatchScreen extends Screen {
 
         lifeHudTexture = new Texture("images/labels/label5.png");
         controllerDirTexture = new Texture("cmp/controller/directionalBase.png");
+        controllerButTexture = new Texture("cmp/controller/ActionBase.png");
 
         return true;
     }
@@ -179,11 +180,11 @@ public class MatchScreen extends Screen {
                 timerLabel.getText().getPaint().setColor(Color.WHITE);
                 timerLabel.getPaint().setAlpha(0);
 
-                RectF areaController = new RectF(0,0, 120, 120);
+                RectF areaController = new RectF(0,0, 170, 170);
                 controller = new Controller(
                         new RectF(10, screenSize.bottom - 10 - areaController.height(), 10 + areaController.width(), screenSize.bottom-10 ) , controllerDirTexture,
                         new RectF(screenSize.right - 10 - areaController.width(), screenSize.bottom - 10 - areaController.height(),
-                                screenSize.right - 10, screenSize.bottom-10), controllerDirTexture, player1.getControllerListener());
+                                screenSize.right - 10, screenSize.bottom-10), controllerButTexture, player1.getControllerListener());
 
                 bot = new Controller(player2.getControllerListener());
 
@@ -364,8 +365,7 @@ public class MatchScreen extends Screen {
 
                 for (int j=0; j < arqs.length; j++){
                     //tmpSpriteAction[contador++] = new Sprite(new Texture("images/characters/" + name + "/action/" + paths[i] + "/" + arqs[j]));
-                    tmpSpriteAction[contador++] = new Sprite(new Texture("images/characters/" + name + "/action/" + paths[i] + "/" + ((j+1) + ".png"), (int)screenSize.width()/15, (int)screenSize.height()/15));
-                    //log(paths[i] + " / " + arqs[j]);
+                    tmpSpriteAction[contador++] = new Sprite(new Texture("images/characters/" + name + "/action/" + paths[i] + "/" + ((j+1) + ".png"), (int)screenSize.width()/10, (int)screenSize.height()/10));
                 }
             }
 
@@ -405,22 +405,36 @@ public class MatchScreen extends Screen {
 
     }
 
-    protected boolean checkCollision(RectF[][] A, float AX, float AY, RectF[][] B, float BX, float BY){
+    float currentX;
+    float currentY;
 
-        for (int i=0; i<15; i++){
-            for (int j=0; j<15; j++){
-                if (A[i][j] != null) {
-                    for (int k = 0; k < 15; k++) {
-                        for (int l = 0; l < 15; l++) {
-                            if (B[k][l] != null) {
-                                if (RectF.intersects(new RectF(AX + A[i][j].left, AY + A[i][j].top, AX + A[i][j].right, AY + A[i][j].bottom),
-                                        new RectF(BX + B[k][l].left, BY + B[k][l].top, BX + B[k][l].right, BY + B[k][l].bottom))){
-                                    //log("Colidiu");
-                                    /*
-                                    log("AX: " + AX + " -  " + "A: (" + (AX + A[i][j].left) + ", " + (AY + A[i][j].top) + ", " + (AX + A[i][j].right) + ", " + (AY + A[i][j].bottom));
-                                    log("BX: " + BX + " -  " + "B: (" + (BX + B[k][l].left) + ", " + (BY + B[k][l].top) + ", " + (BX + B[k][l].right) + ", " + (BY + B[k][l].bottom));
-                                    */
-                                    return true;
+    //protected boolean checkCollision(RectF[][] A, float AX, float AY, RectF[][] B, float BX, float BY){
+    protected boolean checkCollision(Object objA, Object objB){
+
+        if (objA instanceof Player && objB instanceof  Player){
+
+            Player A = (Player)objA;
+            Player B = (Player)objB;
+
+            float AX = A.getX();
+            float AY = A.getY();
+            float BX = B.getX();
+            float BY = B.getY();
+
+            RectF[][] colA = A.getCurrentCollision();
+            RectF[][] colB = B.getCurrentCollision();
+
+            for (int i=0; i<15; i++){
+                for (int j=0; j<15; j++){
+                    if (colA[i][j] != null) {
+                        for (int k = 0; k < 15; k++) {
+                            for (int l = 0; l < 15; l++) {
+                                if (colB[k][l] != null) {
+                                    if (RectF.intersects(new RectF(AX + colA[i][j].left, AY + colA[i][j].top, AX + colA[i][j].right, AY + colA[i][j].bottom),
+                                            new RectF(BX + colB[k][l].left, BY + colB[k][l].top, BX + colB[k][l].right, BY + colB[k][l].bottom))){
+
+                                        return true;
+                                    }
                                 }
                             }
                         }
@@ -435,18 +449,38 @@ public class MatchScreen extends Screen {
     public void update(){
         super.update();
 
+
+
         if (gameIn) {
-            if (checkCollision(player1.getCurrentCollision(), player1.getX(), player1.getY(),
-                    player2.getCurrentCollision(), player2.getX(), player2.getY())) {
-                if (player1.getCurrentAction() == Player.KICK1_ACTION) {
-                    log("Acertou um chute");
-                    player2.damaged(0.5f);
+            if (checkCollision(player1, player2)) {
+
+                switch (player1.getCurrentAction()){
+                    case Player.KICK1_ACTION:
+
+                        if (player1.isActionPerformed())
+                            player2.damaged(5f);
+                        break;
+                    case Player.PUNCH1_ACTION:
+                        if (player1.isActionPerformed())
+                            player2.damaged(2f);
+                        break;
+                    case Player.WALKING_LEFT_ACTION:
+                        if (!player1.isInvert())
+                            player1.setStop(false);
+                        else
+                            player1.setStop(true);
+                        break;
+                    case Player.WALKING_RIGHT_ACTION:
+                        if (!player1.isInvert())
+                            player1.setStop(true);
+                        else
+                            player1.setStop(false);
+                        break;
                 }
-                if (player1.getCurrentAction() == Player.PUNCH1_ACTION) {
-                    player2.damaged(0.2f);
-                    //lifeHudPlayer2.decrementHP(0.2f);
-                    log("Acertou um soco");
-                }
+
+            }
+            else {
+                player1.setStop(false);
             }
 
 
@@ -480,6 +514,9 @@ public class MatchScreen extends Screen {
                     player2.setInvert(false);
                     player1.setInvert(true);
                 }
+                else
+                    if (player1.getX() < 0)
+                        player1.setX(0);
             }
             else
                 if (!player2.isInvert() && player1.isInvert()){

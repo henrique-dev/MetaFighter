@@ -87,7 +87,7 @@ public class SelectCharacterScreen extends Screen {
 
         backButtonTexture = new Texture("images/buttons/3.png");
 
-        gameLabelPlayerTexture = new Texture("images/labels/label3.png");
+        //gameLabelPlayerTexture = new Texture("images/labels/label3.png");
         gameLabelCharTexture = new Texture("images/labels/label4.png");
 
         mainBackgroundTexture = new Texture("images/backgrounds/2.png");
@@ -117,6 +117,7 @@ public class SelectCharacterScreen extends Screen {
     protected boolean loadComponents() {
 
         RectF screenSize = GameParameters.getInstance().screenSize;
+        float defaultTextSize = GameParameters.getInstance().defaultTextSize;
 
         characters = new Character[6];
 
@@ -131,12 +132,9 @@ public class SelectCharacterScreen extends Screen {
         characters[Character.ROMULO] = new Character(null, spriteViewRomulo, "Romulo");
 
         RectF buttonSize = new RectF(0, 0, screenSize.width()/4, screenSize.height()/4);
-        float fontSize = Text.adaptText(new String[]{"Voltar"}, buttonSize);
+
         this.backButton = new Button(
-                new RectF(screenSize.centerX() - buttonSize.width()/2,
-                        screenSize.bottom - buttonSize.height(),
-                        screenSize.centerX() + buttonSize.width()/2,
-                        screenSize.bottom),
+                new RectF(0, 0, buttonSize.width()/2, buttonSize.height()/2),
                 "Voltar", backButtonTexture);
         this.backButton.addEventListener(new ActionListener() {
             @Override
@@ -144,7 +142,7 @@ public class SelectCharacterScreen extends Screen {
                 new MainScreen(context);
             }
         });
-        this.backButton.getText().setTextSize(fontSize);
+        this.backButton.getText().setTextSize(defaultTextSize);
 
         this.mainBackground = new BackGround(screenSize, mainBackgroundTexture);
 
@@ -155,26 +153,28 @@ public class SelectCharacterScreen extends Screen {
 
         RectF gameLabelCharArea = new RectF(0,0,marginX*4, marginY*4);
 
-        this.gameLabelPlayer1 = new GameLabel(
+        gameLabelPlayer1 = new GameLabel(
                 new RectF( marginX*2,
                         marginY*6,
                         marginX*2 + gameLabelPlayerArea.width(),
                         marginY*6 + gameLabelPlayerArea.height()),
-                this.gameLabelPlayerTexture, null);
-        this.gameLabelPlayer1.addText("Jogador 1",
+                gameLabelPlayerTexture, null);
+        gameLabelPlayer1.addText("",
                 new RectF( marginX*2, marginY*4, gameLabelPlayer1.getArea().right, gameLabelPlayer1.getArea().top),
                 20, Color.WHITE);
+        gameLabelPlayer1.getText().setTextSize(defaultTextSize);
 
 
-        this.gameLabelPlayer2 = new GameLabel(
+        gameLabelPlayer2 = new GameLabel(
                 new RectF( screenSize.right - gameLabelPlayerArea.width() - marginX*2,
                         marginY*6,
                         screenSize.right - marginX*2,
                         marginY*6 + gameLabelPlayerArea.height()),
-                this.gameLabelPlayerTexture, null);
-        this.gameLabelPlayer2.addText("Jogador 2",
+                gameLabelPlayerTexture, null);
+        gameLabelPlayer2.addText("",
                 new RectF( gameLabelPlayer2.getArea().left, marginY*4, gameLabelPlayer2.getArea().right, gameLabelPlayer2.getArea().top),
                 20, Color.WHITE);
+        gameLabelPlayer2.getText().setTextSize(defaultTextSize);
 
         //HandlerChoiceCharacter handler = new HandlerChoiceCharacter();
 
@@ -302,6 +302,9 @@ public class SelectCharacterScreen extends Screen {
         mainScene = new Scene() {
             @Override
             public void init() {
+
+
+
                 super.add(mainBackground);
                 super.add(gameLabelPlayer1);
                 super.add(gameLabelPlayer2);

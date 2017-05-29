@@ -261,27 +261,27 @@ public class MultiplayerSelectCharacterScreen extends Screen {
             aTmpSpriteAction.getTexture().scaleImage((int) size.width(), (int) size.height());
         context.getProgressCmp().increase(86);
         charactersMoveAction[Character.GUEDES] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionGuedes, 0, 7, false), 10, -1, false);
-        charactersVictoryAction[Character.GUEDES] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionKaila, 8, 22, false), 6, -1, false);
+        charactersVictoryAction[Character.GUEDES] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionGuedes, 8, 22, false), 6, -1, false);
         for (Sprite aTmpSpriteAction : spriteActionGuedes)
             aTmpSpriteAction.getTexture().scaleImage((int) size.width(), (int) size.height());
         context.getProgressCmp().increase(87);
         charactersMoveAction[Character.LUIZ] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionLuiz, 0, 7, false), 10, -1, false);
-        charactersVictoryAction[Character.LUIZ] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionKaila, 8, 22, false), 6, -1, false);
+        charactersVictoryAction[Character.LUIZ] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionLuiz, 8, 22, false), 6, -1, false);
         for (Sprite aTmpSpriteAction : spriteActionLuiz)
             aTmpSpriteAction.getTexture().scaleImage((int) size.width(), (int) size.height());
         context.getProgressCmp().increase(88);
         charactersMoveAction[Character.PATRICIA] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionPatricia, 0, 7, false), 10, -1, false);
-        charactersVictoryAction[Character.PATRICIA] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionKaila, 8, 22, false), 6, -1, false);
+        charactersVictoryAction[Character.PATRICIA] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionPatricia, 8, 22, false), 6, -1, false);
         for (Sprite aTmpSpriteAction : spriteActionPatricia)
             aTmpSpriteAction.getTexture().scaleImage((int) size.width(), (int) size.height());
         context.getProgressCmp().increase(89);
         charactersMoveAction[Character.QUELE] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionQuele, 0, 7, false), 10, -1, false);
-        charactersVictoryAction[Character.QUELE] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionKaila, 8, 22, false), 6, -1, false);
+        charactersVictoryAction[Character.QUELE] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionQuele, 8, 22, false), 6, -1, false);
         for (Sprite aTmpSpriteAction : spriteActionQuele)
             aTmpSpriteAction.getTexture().scaleImage((int) size.width(), (int) size.height());
         context.getProgressCmp().increase(90);
         charactersMoveAction[Character.ROMULO] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionRomulo, 0, 7, false), 10, -1, false);
-        charactersVictoryAction[Character.ROMULO] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionKaila, 8, 22, false), 6, -1, false);
+        charactersVictoryAction[Character.ROMULO] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionRomulo, 8, 22, false), 6, -1, false);
         for (Sprite aTmpSpriteAction : spriteActionRomulo)
             aTmpSpriteAction.getTexture().scaleImage((int) size.width(), (int) size.height());
         context.getProgressCmp().increase(91);

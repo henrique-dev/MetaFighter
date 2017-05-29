@@ -21,6 +21,8 @@ public class Player implements Component {
 
     public static final int WALKING_LEFT_ACTION = 0;
     public static final int WALKING_RIGHT_ACTION = 1;
+    public static final int WALKING_FRONT = 19;
+    public static final int WALKING_BACK = 20;
     public static final int MOVE1_ACTION = 2;
     public static final int MOVE2_ACTION = 3;
     public static final int JUMP2_ACTION = 4;
@@ -39,25 +41,11 @@ public class Player implements Component {
     public static final int VICTORY2_ACTION = 17;
     public static final int DAMAGED_ACTION = 18;
 
+    private boolean actionPerformed;
+
     // Componentes para depuração
 
     private Paint debugPaint;
-
-    //
-
-    /*
-    public static final int STOP_ACTION = 0;
-    public static final int MOVE_ACTION = 1;
-    public static final int MOVE_RIGHT = 9;
-    public static final int MOVE_LEFT = 10;
-    public static final int JUMP_ACTION = 2;
-    public static final int CROUCH_ACTION = 3;
-    public static final int PUNCH_ACTION = 4;
-    public static final int KICK_ACTION = 5;
-    public static final int GUARD_ACTION = 6;
-    public static final int ESPECIAL_ACTION = 7;
-    public static final int DAMAGED_ACTION = 8;
-    */
 
     private Paint paint;
 
@@ -113,6 +101,8 @@ public class Player implements Component {
 
     private boolean guardState;
     private boolean guarding;
+
+    private boolean stop;
 
     private boolean movingstate;
     private int directionX = 0;
@@ -204,6 +194,18 @@ public class Player implements Component {
         paint = new Paint();
 
         log("Criou o player");
+    }
+
+    public boolean isStop() {
+        return stop;
+    }
+
+    public void setStop(boolean stop) {
+        this.stop = stop;
+    }
+
+    public boolean isActionPerformed() {
+        return actionPerformed;
     }
 
     public LifeHud getLifeHud() {
@@ -390,18 +392,6 @@ public class Player implements Component {
         log("Se abaixou");
     }
 
-    private void armAct(){
-        log("Executou uma ação com o braço");
-    }
-
-    private void legAct(){
-        log("Executou uma ação com a perna");
-    }
-
-    private void defend(){
-        log("Defendendo");
-    }
-
     @Override
     public void draw(Canvas canvas) {
 
@@ -414,13 +404,6 @@ public class Player implements Component {
             canvas.setMatrix(matrix);
             canvas.translate(-GameParameters.getInstance().screenSize.width(), 0);
         }
-
-        /*
-        if (invert)
-            log((GameParameters.getInstance().screenSize.width() - x - mainArea.width()/2) + "");
-        else
-            log(x + "");
-            */
 
 
         if (currentSprite != null){
@@ -444,6 +427,7 @@ public class Player implements Component {
     public void update() {
 
         Sprite tmpSprite = currentAction.getSprite();
+        actionPerformed = currentAction.isTheLastSprite();
 
         if (tmpSprite != null){
             currentSprite = tmpSprite;
@@ -517,7 +501,7 @@ public class Player implements Component {
         }
 
 
-        if (movingstate){
+        if (movingstate && !stop){
             x += (velocityX * directionX);
        }
 
@@ -592,10 +576,12 @@ public class Player implements Component {
 
             movingstate = true;
 
-            if (invert)
+            if (invert) {
                 directionX = -1;
-            else
+            }
+            else {
                 directionX = 1;
+            }
 
         }
 

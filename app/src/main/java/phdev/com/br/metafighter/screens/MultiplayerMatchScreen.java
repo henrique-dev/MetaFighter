@@ -93,6 +93,10 @@ public class MultiplayerMatchScreen extends Screen {
 
     // PARA TESTES
 
+    private RectF otherScreenSize;
+    private float factorX;
+    private float factorY;
+
     private Random randBot = new Random();
     private boolean executingSomething;
     private Timer taskBot = new Timer();
@@ -144,8 +148,6 @@ public class MultiplayerMatchScreen extends Screen {
             this.y = y;
         }
 
-
-
     }
 
     @Override
@@ -158,6 +160,7 @@ public class MultiplayerMatchScreen extends Screen {
 
         lifeHudTexture = new Texture("images/labels/label5.png");
         controllerDirTexture = new Texture("cmp/controller/directionalBase.png");
+        controllerButTexture = new Texture("cmp/controller/ActionBase.png");
 
         hitTexture = new Texture("images/animations/hit.png");
 
@@ -203,12 +206,7 @@ public class MultiplayerMatchScreen extends Screen {
 
                 hitTexture.scaleImage((int)divx, (int)divy);
 
-
-                //RectF player1Area = new RectF(screenSize.centerX() - divx*7, screenSize.bottom - divy*10, screenSize.centerX() + divx*1, screenSize.bottom);
-
                 RectF playerArea = new RectF(0,0, divx*7, divy*10);
-
-                //RectF player1Area = new RectF(screenSize.centerX() - divx*7, screenSize.bottom - divy*10, screenSize.centerX() + divx*1, screenSize.bottom);
 
 
                 //Carregamento dos personagens dos jogadores
@@ -237,9 +235,6 @@ public class MultiplayerMatchScreen extends Screen {
 
                 context.getProgressCmp().increase(80);
 
-                //player1 = loadPlayer(charIDplayer1, player1Area, false);
-                //player2 = loadPlayer(charIDplayer2, player2Area, true);
-
                 RectF lifeHudArea = new RectF(0,0,divx*13, divy);
 
                 lifeHudPlayer1 = new LifeHud( new RectF(divx, divy, divx + lifeHudArea.width(), divy + lifeHudArea.height()), lifeHudTexture, "Player 1");
@@ -254,20 +249,11 @@ public class MultiplayerMatchScreen extends Screen {
 
                 context.getProgressCmp().increase(90);
 
-                /*
-                timerLabel = new Label(
-                        new RectF(lifeHudPlayer1.getArea().right, 0, lifeHudPlayer2.getArea().left, lifeHudPlayer1.getArea().bottom + divy),
-                        "99", null);
-                timerLabel.getText().setTextSize( Text.adaptText(new String[]{"99"}, timerLabel.getArea()) );
-                timerLabel.getText().getPaint().setColor(Color.WHITE);
-                timerLabel.getPaint().setAlpha(0);
-                */
-
                 RectF areaController = new RectF(0,0, 170, 170);
                 controller = new Controller(
                         new RectF(10, screenSize.bottom - 10 - areaController.height(), 10 + areaController.width(), screenSize.bottom-10 ) , controllerDirTexture,
                         new RectF(screenSize.right - 10 - areaController.width(), screenSize.bottom - 10 - areaController.height(),
-                                screenSize.right - 10, screenSize.bottom-10), controllerDirTexture, myPlayer.getControllerListener());
+                                screenSize.right - 10, screenSize.bottom-10), controllerButTexture, myPlayer.getControllerListener());
 
                 bot = new Controller(otherPlayer.getControllerListener());
 
@@ -295,30 +281,15 @@ public class MultiplayerMatchScreen extends Screen {
             @Override
             public Scene start(){
                 super.start();
-                //matchTimer = new Timer();
-                //matchTimer.start();
                 soundManager.playMusic(R.raw.music2);
                 return this;
             }
-
-            int myCont = 0;
-            int otherCon = 0;
 
             @Override
             public void update(){
                 super.update();
 
                 if (gameIn) {
-
-                    /*
-                    int tempTime = (int) (matchTimer.getTicks() / 1000000000);
-                    if (tempTime != currentTime) {
-                        if (timerLabel != null) {
-                            timerLabel.getText().setText((99 - tempTime) + "");
-                            currentTime = tempTime;
-                        }
-                    }
-                    */
 
                     if (checkCollision(myPlayer.getCurrentCollision(), myPlayer.getX(), myPlayer.getY(),
                             otherPlayer.getCurrentCollision(), otherPlayer.getX(), otherPlayer.getY())) {
@@ -328,8 +299,6 @@ public class MultiplayerMatchScreen extends Screen {
 
                             soundManager.playSound(sounds[randSound.nextInt(4)]);
 
-
-                            //if (myID == Constant.GAMEMODE_MULTIPLAYER_HOST)
                             manager.addPacketsToWrite(new Request(YOUR_HP, -1, -1, -1));
                         }
                         else
@@ -348,7 +317,6 @@ public class MultiplayerMatchScreen extends Screen {
 
 
                     if (lifeHudPlayer1.getHP() <= 0 || lifeHudPlayer2.getHP() <= 0) {
-                        //matchTimer.pause();
 
                         bot = null;
                         controller = null;
@@ -371,7 +339,6 @@ public class MultiplayerMatchScreen extends Screen {
                             }
 
                         }
-
 
                         mainScene.remove(controller);
                         gameIn = false;
@@ -407,7 +374,6 @@ public class MultiplayerMatchScreen extends Screen {
                     else {
                         if (myPlayer.getX() + myPlayer.getMainArea().width() > GameParameters.getInstance().screenSize.width())
                             myPlayer.setX(GameParameters.getInstance().screenSize.width() - myPlayer.getMainArea().width());
-                        log("Here");
                     }
 
 
@@ -437,8 +403,8 @@ public class MultiplayerMatchScreen extends Screen {
                     if (currentScene != null) {
                         if (packet instanceof Move) {
                             int action = ((Move) packet).getValue1();
-                            float x = ((Move) packet).getX();
-                            float y = ((Move) packet).getY();
+                            float x = (((Move) packet).getX() * factorX);
+                            float y = (((Move) packet).getY() * factorY);
                             otherPlayer.setCurrentPlayerAction(action);
                             otherPlayer.setX(x);
                             otherPlayer.setY(y);
@@ -467,6 +433,7 @@ public class MultiplayerMatchScreen extends Screen {
                                                 otherPlayer.getLifeHud().setHP(otherHP);
                                                 manager.addPacketsToWrite(new Request(CHANGE_HP, myHP, otherHP, -1));
                                             }
+
                                             break;
                                         case CHANGE_HP:
                                             float myNewHP = ((Request)packet).getValue2();
@@ -528,17 +495,19 @@ public class MultiplayerMatchScreen extends Screen {
                                         if (packet != null) {
                                             Action action = (Action)packet;
                                             if (action.getValue1() == READY_FIRST){
-                                                manager.addPacketsToWrite(new Action(ME_TOO,-1,-1,-1));
+                                                otherScreenSize = new RectF(0,0,action.getValue2(), action.getValue3());
+                                                manager.addPacketsToWrite(new Action(ME_TOO, (int)screenSize.width(), (int)screenSize.height(),-1));
                                                 allReady = true;
                                                 waitingThread = null;
                                             }
                                             if (action.getValue1() == ME_TOO){
+                                                otherScreenSize = new RectF(0,0,action.getValue2(), action.getValue3());
                                                 allReady = true;
                                                 waitingThread = null;
                                             }
                                         }
                                         else
-                                            manager.addPacketsToWrite(new Action(READY_FIRST,-1,-1,-1));
+                                            manager.addPacketsToWrite(new Action(READY_FIRST, (int)screenSize.width(),(int)screenSize.height(),-1));
 
                                     }
                                     catch (Exception e){
@@ -551,17 +520,7 @@ public class MultiplayerMatchScreen extends Screen {
 
                 waitingThread.start();
 
-                //timer = new Timer();
-                //timer.start();
             }
-
-            /*
-            @Override
-            public void processPacket(Packet packet){
-                if (!waitingPlayers)
-                    super.processPacket(packet);
-            }
-            */
 
             @Override
             public void update(){
@@ -572,6 +531,8 @@ public class MultiplayerMatchScreen extends Screen {
                         timer = new Timer();
                         timer.start();
                         message = null;
+                        factorX = screenSize.width() / otherScreenSize.width();
+                        factorY = screenSize.height() / otherScreenSize.height();
                     }
                 }
                 else {

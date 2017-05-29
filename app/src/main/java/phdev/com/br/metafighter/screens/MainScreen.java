@@ -246,8 +246,8 @@ public class MainScreen extends Screen {
 
             private void singleplayerButtonAction(Event evt){
 
-                context.sendMessage("Somente modo 2 jogadores disponivel na versão beta", 6);
-                //new SelectCharacterScreen(context);
+                //context.sendMessage("Somente modo 2 jogadores disponivel na versão beta", 6);
+                new SelectCharacterScreen(context);
             }
         };
 

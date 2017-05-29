@@ -68,6 +68,7 @@ public class Controller implements Component {
         buttons = new ArrayList<>();
 
         this.directionalTexture = directionalTexture;
+        this.buttonTexture = buttonTexture;
 
         float divx = directionalArea.width() / 3;
         float divy = directionalArea.height() / 3;
@@ -192,7 +193,7 @@ public class Controller implements Component {
                 buttonsArea.top,
                 buttonsArea.left + divx*2,
                 buttonsArea.top + divy),
-                null, this.directionalTexture);
+                null, this.buttonTexture);
         action1Button.getPaint().setAlpha(170);
         action1Button.addEventListener(new ActionListener() {
             @Override
@@ -208,7 +209,7 @@ public class Controller implements Component {
                 buttonsArea.top + divy*2,
                 buttonsArea.left + divx*2,
                 buttonsArea.bottom ),
-                null, this.directionalTexture);
+                null, this.buttonTexture);
         action2Button.getPaint().setAlpha(170);
         action2Button.addEventListener(new ActionListener() {
             @Override
@@ -224,7 +225,7 @@ public class Controller implements Component {
                 buttonsArea.top + divy,
                 buttonsArea.left + divx,
                 buttonsArea.top + divy*2 ),
-                null, this.directionalTexture);
+                null, this.buttonTexture);
         action3Button.getPaint().setAlpha(170);
         action3Button.addEventListener(new ClickListener() {
             @Override
@@ -250,7 +251,7 @@ public class Controller implements Component {
                 buttonsArea.top + divy,
                 buttonsArea.right,
                 buttonsArea.top + divy*2 ),
-                null, this.directionalTexture);
+                null, this.buttonTexture);
         action4Button.getPaint().setAlpha(170);
         action4Button.addEventListener(new ActionListener() {
             @Override
@@ -271,7 +272,7 @@ public class Controller implements Component {
         buttons.add(action1Button);
         buttons.add(action2Button);
         buttons.add(action3Button);
-        buttons.add(action4Button);
+        //buttons.add(action4Button);
     }
 
     public Controller(ControllerListener listener){

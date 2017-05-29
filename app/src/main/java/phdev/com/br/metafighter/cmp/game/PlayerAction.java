@@ -62,6 +62,10 @@ public class PlayerAction {
         return collisions[currentSprite];
     }
 
+    public boolean isTheLastSprite(){
+        return currentSprite == totalSprites;
+    }
+
     public int getType(){
         return type;
     }

@@ -11,7 +11,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".GameActivity"
+        <activity android:name="com.br.phdev.metafighter.GameActivity"
             android:screenOrientation="landscape">
 
             <intent-filter>

@@ -1,38 +1,37 @@
 package phdev.com.br.metafighter.screens;
 
-import android.content.res.AssetManager;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
-import android.media.AudioManager;
-import android.util.Log;
 import android.view.MotionEvent;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.LinkedList;
 import java.util.Random;
 
 import phdev.com.br.metafighter.BluetoothManager;
+import phdev.com.br.metafighter.ConnectionManager;
 import phdev.com.br.metafighter.GameParameters;
+import phdev.com.br.metafighter.R;
 import phdev.com.br.metafighter.SoundManager;
-import phdev.com.br.metafighter.cmp.Component;
-import phdev.com.br.metafighter.cmp.Entity;
-import phdev.com.br.metafighter.cmp.event.listeners.EventListener;
+import phdev.com.br.metafighter.cmp.connections.packets.Action;
+import phdev.com.br.metafighter.cmp.connections.packets.Damage;
+import phdev.com.br.metafighter.cmp.connections.packets.Move;
+import phdev.com.br.metafighter.cmp.connections.packets.Packet;
+import phdev.com.br.metafighter.cmp.connections.packets.Request;
+import phdev.com.br.metafighter.cmp.event.listeners.AutoDestroyableListener;
 import phdev.com.br.metafighter.cmp.game.Character;
-import phdev.com.br.metafighter.cmp.game.Collision;
 import phdev.com.br.metafighter.cmp.game.Player;
 import phdev.com.br.metafighter.cmp.graphics.Sprite;
+import phdev.com.br.metafighter.cmp.misc.Constant;
 import phdev.com.br.metafighter.cmp.misc.Controller;
 import phdev.com.br.metafighter.cmp.game.LifeHud;
 import phdev.com.br.metafighter.cmp.graphics.Texture;
 import phdev.com.br.metafighter.cmp.misc.GameContext;
 import phdev.com.br.metafighter.cmp.misc.Timer;
 import phdev.com.br.metafighter.cmp.window.BackGround;
-import phdev.com.br.metafighter.cmp.window.Label;
+import phdev.com.br.metafighter.cmp.window.Popup;
 import phdev.com.br.metafighter.cmp.window.Scene;
 import phdev.com.br.metafighter.cmp.window.Screen;
 import phdev.com.br.metafighter.cmp.window.Text;
@@ -43,17 +42,15 @@ import phdev.com.br.metafighter.cmp.window.Text;
  */
 public class MatchScreen extends Screen {
 
-    private Scene mainScene;
-    private Scene preBattleScene;
+    private Scene mainSceneSinglePlayer;
+    private Scene mainSceneMultiPlayer;
+    private Scene preBattleMultiPlayerScene;
     private Scene posBattleScene;
 
     private BackGround backGround;
     private BackGround preBattleBackground;
 
-    private Label timerLabel;
-
-    private Timer matchTimer;
-    private int currentTime = 0;
+    private SoundManager soundManager;
 
     private LifeHud lifeHudPlayer1;
     private LifeHud lifeHudPlayer2;
@@ -64,8 +61,14 @@ public class MatchScreen extends Screen {
     private Texture controllerDirTexture;
     private Texture controllerButTexture;
 
+    private Player drawTopPlayer;
+    private Player drawBotPlayer;
     private Player player1;
     private Player player2;
+
+    private Paint hitPaint;
+    private Texture hitTexture;
+    private LinkedList<Hit> hits;
 
     private int charIDplayer1;
     private int charIDplayer2;
@@ -74,6 +77,8 @@ public class MatchScreen extends Screen {
 
     private Controller controller;
     private Controller bot;
+
+    private int gameMode;
 
     // PARA TESTES
 
@@ -86,13 +91,35 @@ public class MatchScreen extends Screen {
 
     //
 
-    public MatchScreen(GameContext context, BluetoothManager manager, int charIDplayer1, int charIDplayer2) {
+    private int[] sounds;
+    private Random randSound;
+
+    public MatchScreen(GameContext context, int gameMode, int charIDplayer1, int charIDplayer2) {
         super(context);
+
+        this.gameMode = gameMode;
+
+        soundManager = context.getSoundManager();
+
+        hits = new LinkedList<>();
+        hitPaint = new Paint();
 
         this.charIDplayer1 = charIDplayer1;
         this.charIDplayer2 = charIDplayer2;
 
         init();
+    }
+
+    private class Hit{
+
+        public float x;
+        public float y;
+
+        public Hit(float x, float y){
+            this.x = x;
+            this.y = y;
+        }
+
     }
 
     @Override
@@ -105,6 +132,8 @@ public class MatchScreen extends Screen {
         controllerDirTexture = new Texture("cmp/controller/directionalBase.png");
         controllerButTexture = new Texture("cmp/controller/ActionBase.png");
 
+        hitTexture = new Texture("images/animations/hit.png");
+
         return true;
     }
 
@@ -115,6 +144,18 @@ public class MatchScreen extends Screen {
 
     @Override
     protected boolean loadSounds() {
+
+        sounds = new int[4];
+        randSound = new Random();
+
+        sounds[0] = soundManager.getSoundPool().load(context.getAppContetxt(), R.raw.p1, 1);
+        sounds[1] = soundManager.getSoundPool().load(context.getAppContetxt(), R.raw.p2, 1);
+
+        context.getProgressCmp().increase(65);
+
+        sounds[2] = soundManager.getSoundPool().load(context.getAppContetxt(), R.raw.p3, 1);
+        sounds[3] = soundManager.getSoundPool().load(context.getAppContetxt(), R.raw.p4, 1);
+
         return true;
     }
 
@@ -122,63 +163,93 @@ public class MatchScreen extends Screen {
     protected boolean loadComponents() {
 
         final RectF screenSize = GameParameters.getInstance().screenSize;
+        final float divx = screenSize.width()/32;
+        final float divy = screenSize.height()/16;
 
-        mainScene = new Scene(){
+        hitTexture.scaleImage((int)divx, (int)divy);
+
+        backGround = new BackGround(screenSize, backgroundTexture);
+
+        //RectF player1Area = new RectF(screenSize.centerX() - divx*7, screenSize.bottom - divy*10, screenSize.centerX() + divx*1, screenSize.bottom);
+
+        RectF playerArea = new RectF(0,0, divx*7, divy*10);
+
+        //RectF player1Area = new RectF(screenSize.centerX() - divx*7, screenSize.bottom - divy*10, screenSize.centerX() + divx*1, screenSize.bottom);
+
+
+        //Carregamento dos personagens dos jogadores
+
+        try{
+            player1 = loadPlayer(charIDplayer1,
+                    new RectF(screenSize.centerX() - playerArea.width(), screenSize.bottom - playerArea.height(), screenSize.centerX(), screenSize.bottom), false);
+            player1.setDirectionX(1);
+            log("Carregou o jogador 1");
+
+            player2 = loadPlayer(charIDplayer2,
+                    new RectF(screenSize.centerX() - playerArea.width(), screenSize.bottom - playerArea.height(), screenSize.centerX(), screenSize.bottom), true);
+            player2.setDirectionX(-1);
+            log("Carregou o jogador 2");
+
+        }
+        catch (Exception e){
+            log(e.getMessage());
+        }
+
+        //player1 = loadPlayer(charIDplayer1, player1Area, false);
+        //player2 = loadPlayer(charIDplayer2, player2Area, true);
+
+        RectF lifeHudArea = new RectF(0,0,divx*13, divy);
+
+        lifeHudPlayer1 = new LifeHud( new RectF(divx, divy, divx + lifeHudArea.width(), divy + lifeHudArea.height()), lifeHudTexture, player1.getName());
+        lifeHudPlayer1.getText().setHorizontalAlignment(Text.LEFT);
+        lifeHudPlayer1.getText().getPaint().setColor(Color.BLUE);
+
+        lifeHudPlayer2 = new LifeHud( new RectF(screenSize.right - divx - lifeHudArea.width(),
+                divy, screenSize.right - divx, divy + lifeHudArea.height()), lifeHudTexture, player2.getName());
+        lifeHudPlayer2.getText().setHorizontalAlignment(Text.RIGHT);
+        lifeHudPlayer2.getText().getPaint().setColor(Color.BLUE);
+
+        player1.setLifeHud(lifeHudPlayer1);
+        player2.setLifeHud(lifeHudPlayer2);
+
+
+        if (gameMode == Constant.GAMEMODE_SINGLEPLAYER)
+            mainSceneSinglePlayer = new Scene(){
+
+            private Scene preBattleSinglePlayerScene;
 
             @Override
             public void init() {
 
-                backGround = new BackGround(screenSize, backgroundTexture);
+                preBattleSinglePlayerScene = new Scene(){
 
-                float divx = screenSize.width()/32;
-                float divy = screenSize.height()/16;
+                    private Timer timer;
 
-                //RectF player1Area = new RectF(screenSize.centerX() - divx*7, screenSize.bottom - divy*10, screenSize.centerX() + divx*1, screenSize.bottom);
+                    @Override
+                    public void init() {
 
-                RectF playerArea = new RectF(0,0, divx*7, divy*10);
-
-                //RectF player1Area = new RectF(screenSize.centerX() - divx*7, screenSize.bottom - divy*10, screenSize.centerX() + divx*1, screenSize.bottom);
+                        preBattleBackground = new BackGround(screenSize, preBattleBackgroundTexture);
 
 
-                //Carregamento dos personagens dos jogadores
+                        super.add(new BackGround(screenSize, Color.WHITE));
+                        super.add(preBattleBackground);
 
-                try{
-                    player1 = loadPlayer(charIDplayer1,
-                            new RectF(screenSize.centerX() - playerArea.width(), screenSize.bottom - playerArea.height(), screenSize.centerX(), screenSize.bottom), false);
-                    player1.setDirectionX(1);
-                    log("Carregou o jogador 1");
+                        timer = new Timer();
+                        timer.start();
+                    }
 
-                    player2 = loadPlayer(charIDplayer2,
-                            new RectF(screenSize.centerX() - playerArea.width(), screenSize.bottom - playerArea.height(), screenSize.centerX(), screenSize.bottom), true);
-                    player2.setDirectionX(-1);
-                    log("Carregou o jogador 2");
+                    @Override
+                    public void update(){
+                        super.update();
 
-                }
-                catch (Exception e){
-                    log(e.getMessage());
-                }
+                        if (timer.getTicks()/1000000000 > 3){
+                            currentScene = mainSceneSinglePlayer.start();
+                            gameIn = true;
+                            preBattleSinglePlayerScene = null;
+                        }
 
-                //player1 = loadPlayer(charIDplayer1, player1Area, false);
-                //player2 = loadPlayer(charIDplayer2, player2Area, true);
-
-                RectF lifeHudArea = new RectF(0,0,divx*13, divy);
-
-                lifeHudPlayer1 = new LifeHud( new RectF(divx, divy, divx + lifeHudArea.width(), divy + lifeHudArea.height()), lifeHudTexture, player1.getName());
-                lifeHudPlayer1.getText().setHorizontalAlignment(Text.LEFT);
-                lifeHudPlayer1.getText().getPaint().setColor(Color.BLUE);
-
-                lifeHudPlayer2 = new LifeHud( new RectF(screenSize.right - divx - lifeHudArea.width(),
-                        divy, screenSize.right - divx, divy + lifeHudArea.height()), lifeHudTexture, player2.getName());
-                lifeHudPlayer2.getText().setHorizontalAlignment(Text.RIGHT);
-                lifeHudPlayer2.getText().getPaint().setColor(Color.BLUE);
-
-
-                timerLabel = new Label(
-                        new RectF(lifeHudPlayer1.getArea().right, 0, lifeHudPlayer2.getArea().left, lifeHudPlayer1.getArea().bottom + divy),
-                        "99", null);
-                timerLabel.getText().setTextSize( Text.adaptText(new String[]{"99"}, timerLabel.getArea()) );
-                timerLabel.getText().getPaint().setColor(Color.WHITE);
-                timerLabel.getPaint().setAlpha(0);
+                    }
+                };
 
                 RectF areaController = new RectF(0,0, 170, 170);
                 controller = new Controller(
@@ -191,20 +262,24 @@ public class MatchScreen extends Screen {
                 player1.setLifeHud(lifeHudPlayer1);
                 player2.setLifeHud(lifeHudPlayer2);
 
+                drawTopPlayer = player1;
+                drawBotPlayer = player2;
+
                 super.add(backGround);
                 super.add(lifeHudPlayer1);
                 super.add(lifeHudPlayer2);
-                super.add(timerLabel);
-                super.add(player1);
-                super.add(player2);
+                super.add(drawBotPlayer);
+                super.add(drawTopPlayer);
                 super.add(controller);
+
+                currentScene = preBattleSinglePlayerScene.start();
+
             }
 
             @Override
             public Scene start(){
                 super.start();
-                matchTimer = new Timer();
-                matchTimer.start();
+                soundManager.playMusic(R.raw.music2);
                 return this;
             }
 
@@ -212,62 +287,518 @@ public class MatchScreen extends Screen {
             public void update(){
                 super.update();
 
-                int tempTime = (int)(matchTimer.getTicks()/1000000000);
-                if (tempTime != currentTime) {
-                    if (timerLabel != null) {
-                        timerLabel.getText().setText((99 - tempTime) + "");
-                        currentTime = tempTime;
+                if (gameIn) {
+                    if (checkCollision(player1, player2)) {
+
+                        switch (player1.getCurrentAction()){
+                            case Player.KICK1_ACTION:
+
+                                if (player1.isActionPerformed()) {
+
+                                    drawTopPlayer = player1;
+                                    drawBotPlayer = player2;
+
+                                    player2.damaged(5f);
+                                    soundManager.playSound(sounds[randSound.nextInt(4)]);
+                                }
+                                break;
+                            case Player.PUNCH1_ACTION:
+                                if (player1.isActionPerformed()) {
+
+                                    drawTopPlayer = player1;
+                                    drawBotPlayer = player2;
+
+                                    player2.damaged(2f);
+                                    soundManager.playSound(sounds[randSound.nextInt(4)]);
+                                }
+                                break;
+                            case Player.WALKING_LEFT_ACTION:
+                                if (!player1.isInvert())
+                                    player1.setStop(false);
+                                else
+                                    player1.setStop(true);
+                                break;
+                            case Player.WALKING_RIGHT_ACTION:
+                                if (!player1.isInvert())
+                                    player1.setStop(true);
+                                else
+                                    player1.setStop(false);
+                                break;
+                        }
+
                     }
+                    else {
+                        player1.setStop(false);
+                    }
+
+
+                    if (lifeHudPlayer1.getHP() <=0 || lifeHudPlayer2.getHP() <= 0) {
+
+                        bot = null;
+                        controller = null;
+
+                        if (lifeHudPlayer1.getHP() <=0){
+                            player2.winner();
+                            player1.loser();
+                        }
+                        else
+                        if (lifeHudPlayer2.getHP() <= 0){
+                            player2.loser();
+                            player1.winner();
+                        }
+
+
+                        mainSceneSinglePlayer.remove(controller);
+                        gameIn = false;
+                        currentScene = posBattleScene.start();
+                    }
+
+
+
+                    if (!player1.isInvert() && player2.isInvert()) {
+                        if (player1.getX() + player1.getMainArea().left > player2.getX() + player2.getMainArea().right) {
+                            player2.setInvert(false);
+                            player1.setInvert(true);
+                        }
+                        else
+                        if (player1.getX() < 0)
+                            player1.setX(0);
+                    }
+                    else
+                    if (!player2.isInvert() && player1.isInvert()){
+                        if (player1.getX() + player1.getMainArea().right < player2.getX() + player2.getMainArea().left) {
+                            player2.setInvert(true);
+                            player1.setInvert(false);
+                        }
+                    }
+
+                    // PARA TESTES COM O BOT
+
+            /*
+
+            if (player1.getCurrentAction() == Player.KICK_ACTION || player1.getCurrentAction() == Player.PUNCH_ACTION) {
+                bot.fireAction(Controller.ACTION_3_PRESSED);
+                executingSomething = true;
+            }
+            else {
+                bot.fireAction(Controller.ACTION_3_RELEASED);
+                executingSomething = false;
+            }
+
+            if (!executingSomething) {
+                if (randBot.nextInt(400) < 5) {
+                    executingSomething = true;
+                    botMove = true;
+                    taskBot.start();
+                    duration = randBot.nextInt(5);
                 }
             }
+
+            if (botMove){
+                if (!player1.isInvert())
+                    bot.fireAction(Controller.ARROW_LEFT_PRESSED);
+                else
+                    bot.fireAction(Controller.ARROW_RIGHT_PRESSED);
+
+                if (taskBot.getTicks()/100000000 > duration){
+                    botMove = false;
+                    executingSomething = false;
+                    bot.fireAction(Controller.ARROW_LEFT_RELEASED);
+                    bot.fireAction(Controller.ARROW_RIGHT_RELEASED);
+                    taskBot.stop();
+                }
+
+            }
+
+            */
+
+
+
+                    //
+
+
+
+                    if (!player1.isInvert()){
+                        if (player1.getX() > GameParameters.getInstance().screenSize.width())
+                            player1.setX(GameParameters.getInstance().screenSize.width());
+                    }
+                    else {
+                        if (player1.getX() + player1.getMainArea().width() > GameParameters.getInstance().screenSize.width())
+                            player1.setX(GameParameters.getInstance().screenSize.width() - player1.getMainArea().width());
+                    }
+
+                }
+
+            }
+
+            @Override
+            public boolean onTouchEvent(MotionEvent event){
+                super.onTouchEvent(event);
+                return true;
+            }
+
         };
+        else
+            mainSceneMultiPlayer = new Scene() {
 
-        preBattleScene = new Scene(){
+            private static final int YOUR_HP = 0;
+            private static final int MY_HP = 1;
+            private static final int CHANGE_HP = 2;
 
-            private Timer timer;
+            private ConnectionManager manager;
+
+            private Scene preBattleScene;
+
+            private int myID;
+
+            private Player myPlayer;
+            private Player otherPlayer;
+
+            float xo;
+            float yo;
+            int actiono;
+
+            private RectF otherScreenSize;
+            private float factorX;
+            private float factorY;
+
 
             @Override
             public void init() {
 
-                preBattleBackground = new BackGround(screenSize, preBattleBackgroundTexture);
+                preBattleScene = new Scene(){
 
+                    final int READY_FIRST = 0;
+                    final int ME_TOO = 1;
 
-                super.add(new BackGround(screenSize, Color.WHITE));
-                super.add(preBattleBackground);
+                    private Timer timer;
+                    private boolean waitingPlayers = true;
+                    private boolean allReady = false;
+                    private Popup message;
 
-                timer = new Timer();
-                timer.start();
+                    private Thread waitingThread;
+
+                    @Override
+                    public void init() {
+
+                        preBattleBackground = new BackGround(screenSize, preBattleBackgroundTexture);
+
+                        message = new Popup("Esperando outros jogadores", new AutoDestroyableListener() {
+                            @Override
+                            public void autoDestroy(Object entity) {}
+                        }, 1000);
+
+                        super.add(new BackGround(screenSize, Color.WHITE));
+                        super.add(preBattleBackground);
+
+                        waitingThread = new Thread(){
+
+                            @Override
+                            public void run(){
+                                Timer timer = new Timer().start();
+                                int currentSecond = (int)(timer.getTicks()/100000000);
+                                while (waitingPlayers){
+                                    int tmpSecond = (int)(timer.getTicks()/100000000);
+
+                                    if (tmpSecond > currentSecond){
+                                        currentSecond = tmpSecond + 3;
+                                        try{
+
+                                            Packet packet = getCurrentPacketToRead();
+
+                                            if (packet != null) {
+                                                Action action = (Action)packet;
+                                                if (action.getValue1() == READY_FIRST){
+                                                    otherScreenSize = new RectF(0,0,action.getValue2(), action.getValue3());
+                                                    manager.addPacketsToWrite(new Action(ME_TOO, (int)screenSize.width(), (int)screenSize.height(),-1));
+                                                    allReady = true;
+                                                    waitingThread = null;
+                                                }
+                                                if (action.getValue1() == ME_TOO){
+                                                    otherScreenSize = new RectF(0,0,action.getValue2(), action.getValue3());
+                                                    allReady = true;
+                                                    waitingThread = null;
+                                                }
+                                            }
+                                            else
+                                                manager.addPacketsToWrite(new Action(READY_FIRST, (int)screenSize.width(),(int)screenSize.height(),-1));
+
+                                        }
+                                        catch (Exception e){
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                }
+                            }
+                        };
+
+                        waitingThread.start();
+
+                    }
+
+                    @Override
+                    public void update(){
+
+                        if (waitingPlayers){
+                            if (allReady){
+                                waitingPlayers = false;
+                                timer = new Timer();
+                                timer.start();
+                                message = null;
+                                factorX = screenSize.width() / otherScreenSize.width();
+                                factorY = screenSize.height() / otherScreenSize.height();
+                            }
+                        }
+                        else {
+                            super.update();
+                            if (timer.getTicks()/1000000000 > 3){
+                                currentScene = mainSceneMultiPlayer.start();
+                                gameIn = true;
+                                preBattleScene = null;
+                            }
+                        }
+
+                    }
+
+                    @Override
+                    public void draw(Canvas canvas){
+                        if (waitingPlayers)
+                            message.draw(canvas);
+                        else
+                            super.draw(canvas);
+                    }
+                };
+
+                myID = gameMode;
+
+                manager = context.getConnectionType();
+                manager.init();
+
+                if (gameMode == Constant.GAMEMODE_MULTIPLAYER_HOST){
+                    myPlayer = player1;
+                    otherPlayer = player2;
+                }
+                else {
+                    myPlayer = player2;
+                    otherPlayer = player1;
+                }
+
+                super.add(backGround);
+                super.add(lifeHudPlayer1);
+                super.add(lifeHudPlayer2);
+                super.add(myPlayer);
+                super.add(otherPlayer);
+                super.add(controller);
+
+                currentScene = preBattleScene.start();
+
+            }
+
+            @Override
+            public Scene start(){
+                super.start();
+                soundManager.playMusic(R.raw.music2);
+                return this;
             }
 
             @Override
             public void update(){
                 super.update();
 
-                if (timer.getTicks()/1000000000 > 3){
-                    currentScene = mainScene.start();
-                    gameIn = true;
-                    preBattleScene = null;
+                if (gameIn) {
+
+                    if (checkCollision(myPlayer, otherPlayer)) {
+                        if (myPlayer.getCurrentAction() == Player.KICK1_ACTION) {
+                            manager.addPacketsToWrite(new Damage(0.5f));
+                            otherPlayer.damaged(0.5f);
+
+                            soundManager.playSound(sounds[randSound.nextInt(4)]);
+
+                            manager.addPacketsToWrite(new Request(YOUR_HP, -1, -1, -1));
+                        }
+                        else
+                        if (myPlayer.getCurrentAction() == Player.PUNCH1_ACTION) {
+                            manager.addPacketsToWrite(new Damage(0.3f));
+                            otherPlayer.damaged(0.3f);
+
+                            soundManager.playSound(sounds[randSound.nextInt(4)]);
+
+                            manager.addPacketsToWrite(new Request(YOUR_HP, myPlayer.getLifeHud().getHP(), -1, -1));
+                        }
+                        else
+                            hits.pop();
+
+                    }
+
+
+                    if (lifeHudPlayer1.getHP() <= 0 || lifeHudPlayer2.getHP() <= 0) {
+
+                        bot = null;
+                        controller = null;
+
+                        if (lifeHudPlayer1.getHP() <= 0) {
+                            if (myID == Constant.GAMEMODE_MULTIPLAYER_HOST) {
+                                myPlayer.loser();
+                                otherPlayer.winner();
+                            } else {
+                                myPlayer.winner();
+                                otherPlayer.loser();
+                            }
+                        } else if (lifeHudPlayer2.getHP() <= 0) {
+                            if (myID == Constant.GAMEMODE_MULTIPLAYER_HOST) {
+                                myPlayer.winner();
+                                otherPlayer.loser();
+                            } else {
+                                myPlayer.loser();
+                                otherPlayer.winner();
+                            }
+
+                        }
+
+                        mainSceneMultiPlayer.remove(controller);
+                        gameIn = false;
+                        currentScene = posBattleScene.start();
+                    }
+
+
+                    if (!myPlayer.isInvert() && otherPlayer.isInvert()) {
+                        if (myPlayer.getX() + myPlayer.getMainArea().left > otherPlayer.getX() + otherPlayer.getMainArea().right) {
+                            otherPlayer.setInvert(false);
+                            myPlayer.setInvert(true);
+                        }
+                    } else if (!otherPlayer.isInvert() && myPlayer.isInvert()) {
+                        if (myPlayer.getX() + myPlayer.getMainArea().right < otherPlayer.getX() + otherPlayer.getMainArea().left) {
+                            otherPlayer.setInvert(true);
+                            myPlayer.setInvert(false);
+                        }
+                    }
+
+
+                    if ((myPlayer.getX() != xo || myPlayer.getY() != yo || myPlayer.getCurrentAction() != actiono)) {
+                        manager.addPacketsToWrite(new Move(myPlayer.getCurrentAction(), myPlayer.getX(), myPlayer.getY()));
+                        //log("Enviou pacote AAAAA " + xo + " - " + myPlayer.getX() + " / " + yo + " - " + myPlayer.getY());
+                    }
+
+                    if (!myPlayer.isInvert()){
+                        if (myPlayer.getX() > GameParameters.getInstance().screenSize.width())
+                            myPlayer.setX(GameParameters.getInstance().screenSize.width());
+                        else
+                        if (myPlayer.getX() < 0)
+                            myPlayer.setX(0);
+                    }
+                    else {
+                        if (myPlayer.getX() + myPlayer.getMainArea().width() > GameParameters.getInstance().screenSize.width())
+                            myPlayer.setX(GameParameters.getInstance().screenSize.width() - myPlayer.getMainArea().width());
+                    }
+
+
+                    xo = myPlayer.getX();
+                    yo = myPlayer.getY();
+                    actiono = myPlayer.getCurrentAction();
                 }
 
+            }
+
+            @Override
+            public void draw(Canvas canvas){
+                super.draw(canvas);
+
+                Hit hit = null;
+                if (hits.size() > 1)
+                    hit = hits.pop();
+                if (hit != null)
+                    canvas.drawBitmap(hitTexture.getImage(), otherPlayer.getX() + hit.x, otherPlayer.getY() + hit.y, hitPaint);
+
+            }
+
+            @Override
+            public void processPacket(Packet packet){
+                if (packet != null) {
+
+                    if (currentScene != null) {
+                        if (packet instanceof Move) {
+                            int action = ((Move) packet).getValue1();
+                            float x = (((Move) packet).getX() * factorX);
+                            float y = (((Move) packet).getY() * factorY);
+                            otherPlayer.setCurrentPlayerAction(action);
+                            otherPlayer.setX(x);
+                            otherPlayer.setY(y);
+                        }
+                        else {
+                            if (packet instanceof Damage) {
+                                float damage = ((Damage) packet).getDamage();
+                                myPlayer.damaged(damage);
+                            } else {
+                                if (packet instanceof Request) {
+
+                                    switch (((Request) packet).getRequest()) {
+                                        case YOUR_HP:
+                                            manager.addPacketsToWrite(new Request(MY_HP, myPlayer.getLifeHud().getHP(),
+                                                    otherPlayer.getLifeHud().getHP(), -1));
+                                            break;
+                                        case MY_HP:
+                                            float myHP = myPlayer.getLifeHud().getHP();
+                                            float myHPthere = ((Request) packet).getValue1();
+
+                                            float otherHP = otherPlayer.getLifeHud().getHP();
+                                            float otherHPthere = ((Request) packet).getValue2();
+
+                                            if (myHP != myHPthere || otherHP != otherHPthere){
+                                                myPlayer.getLifeHud().setHP(myHP);
+                                                otherPlayer.getLifeHud().setHP(otherHP);
+                                                manager.addPacketsToWrite(new Request(CHANGE_HP, myHP, otherHP, -1));
+                                            }
+
+                                            break;
+                                        case CHANGE_HP:
+                                            float myNewHP = ((Request)packet).getValue2();
+                                            float otherNewHP =  ((Request)packet).getValue1();
+
+                                            myPlayer.getLifeHud().setHP(myNewHP);
+                                            otherPlayer.getLifeHud().setHP(otherNewHP);
+                                            break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         };
 
         posBattleScene = new Scene() {
+            private Timer timer;
+
             @Override
             public void init() {
                 Paint paint = new Paint();
                 paint.setColor(Color.BLACK);
                 paint.setAlpha(150);
 
-                super.add(mainScene);
-
+                super.add(mainSceneSinglePlayer != null ? mainSceneSinglePlayer : mainSceneMultiPlayer);
                 super.add(new BackGround(screenSize, paint));
             }
+
+            @Override
+            public Scene start(){
+                super.start();
+
+                timer = new Timer().start();
+
+                return this;
+            }
+
+            @Override
+            public void update(){
+                super.update();
+
+                if (timer != null)
+                    if (timer.getTicks()/1000000000 > 3) {
+
+                        new MainScreen(context);
+                    }
+            }
         };
-
-
-
-        currentScene = preBattleScene.start();
 
         return true;
     }
@@ -375,40 +906,6 @@ public class MatchScreen extends Screen {
         return tmpSpriteAction;
     }
 
-    @Override
-    public void draw(Canvas canvas){
-        super.draw(canvas);
-
-
-
-        /*
-        RectF[][] player1Collision = null;
-        RectF[][] player2Collision = null;
-
-        player2Collision = player2.getCurrentCollision();
-        player1Collision = player1.getCurrentCollision();
-
-        for (RectF[] aCurrentCollision : player2Collision)
-            for (RectF bCurrentCollision : aCurrentCollision)
-                if (bCurrentCollision != null) {
-                    canvas.drawRect(bCurrentCollision.left + player2.getX(), bCurrentCollision.top + player2.getY(), bCurrentCollision.right + player2.getX(), bCurrentCollision.bottom + player2.getY(), new Paint());
-                }
-
-        for (RectF[] aCurrentCollision : player1Collision)
-            for (RectF bCurrentCollision : aCurrentCollision)
-                if (bCurrentCollision != null) {
-                    canvas.drawRect(bCurrentCollision.left + player1.getX(), bCurrentCollision.top + player1.getY(), bCurrentCollision.right + player1.getX(), bCurrentCollision.bottom + player1.getY(), new Paint());
-                }
-                */
-
-
-
-    }
-
-    float currentX;
-    float currentY;
-
-    //protected boolean checkCollision(RectF[][] A, float AX, float AY, RectF[][] B, float BX, float BY){
     protected boolean checkCollision(Object objA, Object objB){
 
         if (objA instanceof Player && objB instanceof  Player){
@@ -432,7 +929,7 @@ public class MatchScreen extends Screen {
                                 if (colB[k][l] != null) {
                                     if (RectF.intersects(new RectF(AX + colA[i][j].left, AY + colA[i][j].top, AX + colA[i][j].right, AY + colA[i][j].bottom),
                                             new RectF(BX + colB[k][l].left, BY + colB[k][l].top, BX + colB[k][l].right, BY + colB[k][l].bottom))){
-
+                                        hits.add(new Hit(AX + colB[k][l].centerX(), AY + colB[k][l].centerY()));
                                         return true;
                                     }
                                 }
@@ -446,151 +943,14 @@ public class MatchScreen extends Screen {
     }
 
     @Override
-    public void update(){
-        super.update();
+    public void draw(Canvas canvas){
+        super.draw(canvas);
 
-
-
-        if (gameIn) {
-            if (checkCollision(player1, player2)) {
-
-                switch (player1.getCurrentAction()){
-                    case Player.KICK1_ACTION:
-
-                        if (player1.isActionPerformed())
-                            player2.damaged(5f);
-                        break;
-                    case Player.PUNCH1_ACTION:
-                        if (player1.isActionPerformed())
-                            player2.damaged(2f);
-                        break;
-                    case Player.WALKING_LEFT_ACTION:
-                        if (!player1.isInvert())
-                            player1.setStop(false);
-                        else
-                            player1.setStop(true);
-                        break;
-                    case Player.WALKING_RIGHT_ACTION:
-                        if (!player1.isInvert())
-                            player1.setStop(true);
-                        else
-                            player1.setStop(false);
-                        break;
-                }
-
-            }
-            else {
-                player1.setStop(false);
-            }
-
-
-
-            if (lifeHudPlayer1.getHP() <=0 || lifeHudPlayer2.getHP() <= 0) {
-                matchTimer.pause();
-
-                bot = null;
-                controller = null;
-
-                if (lifeHudPlayer1.getHP() <=0){
-                    player2.winner();
-                    player1.loser();
-                }
-                else
-                    if (lifeHudPlayer2.getHP() <= 0){
-                        player2.loser();
-                        player1.winner();
-                }
-
-
-                mainScene.remove(controller);
-                gameIn = false;
-                currentScene = posBattleScene.start();
-            }
-
-
-
-            if (!player1.isInvert() && player2.isInvert()) {
-                if (player1.getX() + player1.getMainArea().left > player2.getX() + player2.getMainArea().right) {
-                    player2.setInvert(false);
-                    player1.setInvert(true);
-                }
-                else
-                    if (player1.getX() < 0)
-                        player1.setX(0);
-            }
-            else
-                if (!player2.isInvert() && player1.isInvert()){
-                    if (player1.getX() + player1.getMainArea().right < player2.getX() + player2.getMainArea().left) {
-                        player2.setInvert(true);
-                        player1.setInvert(false);
-                    }
-                }
-
-            // PARA TESTES COM O BOT
-
-            /*
-
-            if (player1.getCurrentAction() == Player.KICK_ACTION || player1.getCurrentAction() == Player.PUNCH_ACTION) {
-                bot.fireAction(Controller.ACTION_3_PRESSED);
-                executingSomething = true;
-            }
-            else {
-                bot.fireAction(Controller.ACTION_3_RELEASED);
-                executingSomething = false;
-            }
-
-            if (!executingSomething) {
-                if (randBot.nextInt(400) < 5) {
-                    executingSomething = true;
-                    botMove = true;
-                    taskBot.start();
-                    duration = randBot.nextInt(5);
-                }
-            }
-
-            if (botMove){
-                if (!player1.isInvert())
-                    bot.fireAction(Controller.ARROW_LEFT_PRESSED);
-                else
-                    bot.fireAction(Controller.ARROW_RIGHT_PRESSED);
-
-                if (taskBot.getTicks()/100000000 > duration){
-                    botMove = false;
-                    executingSomething = false;
-                    bot.fireAction(Controller.ARROW_LEFT_RELEASED);
-                    bot.fireAction(Controller.ARROW_RIGHT_RELEASED);
-                    taskBot.stop();
-                }
-
-            }
-
-            */
-
-
-
-            //
-
-
-
-            if (!player1.isInvert()){
-                if (player1.getX() > GameParameters.getInstance().screenSize.width())
-                    player1.setX(GameParameters.getInstance().screenSize.width());
-            }
-            else {
-                if (player1.getX() + player1.getMainArea().width() > GameParameters.getInstance().screenSize.width())
-                    player1.setX(GameParameters.getInstance().screenSize.width() - player1.getMainArea().width());
-            }
-
-        }
-
-
-        /*
-        if (currentTime > 99)
-            new MainScreen(context);
-            */
-
-        //Player.checkCollision(player1)
-
+        Hit hit = null;
+        if (hits.size() > 1)
+            hit = hits.pop();
+        if (hit != null)
+            canvas.drawBitmap(hitTexture.getImage(), hit.x, hit.y, hitPaint);
     }
 
     @Override

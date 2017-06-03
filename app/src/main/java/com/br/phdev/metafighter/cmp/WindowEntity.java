@@ -8,6 +8,7 @@ import android.view.MotionEvent;
 
 import com.br.phdev.metafighter.cmp.event.ClickEvent;
 import com.br.phdev.metafighter.cmp.event.Event;
+import com.br.phdev.metafighter.cmp.event.animation.Fade;
 import com.br.phdev.metafighter.cmp.event.animation.GoAndBack;
 import com.br.phdev.metafighter.cmp.event.animation.Selected;
 import com.br.phdev.metafighter.cmp.event.listeners.ActionListener;
@@ -25,11 +26,13 @@ public abstract class WindowEntity extends Entity{
 
     protected Selected selectedAnimationListener;
     protected GoAndBack goAndBackAnimationListener;
+    protected Fade fadeAnimationListener;
 
     protected boolean visible;
     protected Paint paint;
     protected Texture texture;
     protected RectF drawableArea;
+    protected boolean showArea;
 
     public WindowEntity(RectF area, Paint paint, Texture texture) {
         super(area);
@@ -37,6 +40,14 @@ public abstract class WindowEntity extends Entity{
         this.paint = paint;
         this.texture = texture;
         this.drawableArea = new RectF(area);
+    }
+
+    public WindowEntity(RectF area, Paint paint, boolean showArea){
+        super(area);
+        this.paint = paint;
+        this.visible = true;
+        this.drawableArea = new RectF(area);
+        this.showArea = showArea;
     }
 
     public void addAnimationListener(AnimationListener listener){
@@ -48,6 +59,8 @@ public abstract class WindowEntity extends Entity{
             goAndBackAnimationListener = (GoAndBack)listener;
             return;
         }
+        if (listener instanceof Fade)
+            fadeAnimationListener = (Fade)listener;
     }
 
     public Paint getPaint() {
@@ -202,10 +215,24 @@ public abstract class WindowEntity extends Entity{
         if (this.texture != null){
             canvas.drawBitmap(this.texture.getImage(), super.getX(), super.getY(), this.paint);
         }
-        /*
+
         else
-            canvas.drawRect(super.getArea(), this.paint);
-            */
+            if (showArea)
+                canvas.drawRect(super.getArea(), this.paint);
+    }
+
+    @Override
+    public void update(){
+        super.update();
+
+        if (fadeAnimationListener != null) {
+            fadeAnimationListener.update();
+            int alpha = fadeAnimationListener.getAlpha();
+            if (alpha <= 0){
+                visible = false;
+            }
+            paint.setAlpha(fadeAnimationListener.getAlpha());
+        }
     }
 
     @Override

@@ -13,12 +13,12 @@ import com.br.phdev.metafighter.cmp.graphics.Texture;
 public class BackGround extends WindowEntity {
 
     public BackGround(RectF rect, int color){
-        super(rect, new Paint(), null);
+        super(rect, new Paint(), true);
         paint.setColor(color);
     }
 
-    public BackGround(RectF rect, Paint paint){
-        super(rect, paint, null);
+    public BackGround(RectF rect, Paint paint, boolean showArea){
+        super(rect, paint, showArea);
     }
 
     public BackGround(RectF rect, Texture texture){

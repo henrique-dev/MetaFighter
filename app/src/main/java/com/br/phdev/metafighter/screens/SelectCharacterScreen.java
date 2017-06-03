@@ -493,7 +493,7 @@ public class SelectCharacterScreen extends Screen {
                         selected.setEntity(entity);
 
                         if (currentSelect == charID) {
-                            flash = new Flash(new Fade(51, 0), entity, flashDuration, handler);
+                            flash = new Flash(new Fade(51, 0, true), entity, flashDuration, handler);
                             selected.setEstatic();
                             currentSelect = -1;
 
@@ -852,7 +852,7 @@ public class SelectCharacterScreen extends Screen {
                         selected.setEntity(entity);
 
                         if (currentSelect == charID) {
-                            flash = new Flash(new Fade(51, 0), entity, flashDuration, handler);
+                            flash = new Flash(new Fade(51, 0, true), entity, flashDuration, handler);
                             selected.setEstatic();
                             currentSelect = -1;
 

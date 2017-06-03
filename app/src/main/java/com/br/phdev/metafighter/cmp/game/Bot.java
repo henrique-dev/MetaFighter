@@ -118,8 +118,6 @@ public class Bot {
                 if (tmpTime > currentTime){
                     currentTime+= 5;
 
-                    Log.d("GameEngine", "run: executando");
-
                     if (checkCollision(bot, player, Player.NORMAL_DISTANCE)){
                         paraMovimento();
                         if (rand.nextInt(50) > 25){

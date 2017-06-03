@@ -12,10 +12,12 @@ public class Fade implements AnimationListener {
     private int alpha;
     private boolean fadein;
     private boolean fadeout;
+    private boolean loop;
 
-    public Fade(int tax, int alpha){
+    public Fade(int tax, int alpha, boolean loop){
         this.tax = tax;
         this.alpha = alpha;
+        this.loop = loop;
     }
 
     public void setActive(boolean active){
@@ -39,7 +41,8 @@ public class Fade implements AnimationListener {
             if (alpha >= 255){
                 alpha = 255;
                 fadein = false;
-                fadeout = true;
+                if (loop)
+                    fadeout = true;
             }
     }
 
@@ -51,7 +54,8 @@ public class Fade implements AnimationListener {
         if (alpha <= 0){
             alpha = 0;
             fadeout = false;
-            fadein = true;
+            if (loop)
+                fadein = true;
         }
     }
 

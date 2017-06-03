@@ -15,7 +15,6 @@ import com.br.phdev.metafighter.cmp.graphics.Texture;
 public class Label extends WindowEntity {
 
     protected Text text;
-    private boolean showArea;
 
     public Label(RectF area, String text, Texture texture){
         super(area, new Paint(), texture);
@@ -30,8 +29,7 @@ public class Label extends WindowEntity {
     }
 
     public Label(RectF area, String text, boolean showArea){
-        super(area, new Paint(), null);
-        this.showArea = showArea;
+        super(area, new Paint(), showArea);
         if (text != null){
             this.text = new Text(text);
             this.text.setDrawableArea(super.getArea());
@@ -88,9 +86,6 @@ public class Label extends WindowEntity {
     @Override
     public void draw(Canvas canvas) {
         super.draw(canvas);
-        if (showArea){
-            canvas.drawRect(area, paint);
-        }
         if(this.text != null)
             this.text.draw(canvas);
     }

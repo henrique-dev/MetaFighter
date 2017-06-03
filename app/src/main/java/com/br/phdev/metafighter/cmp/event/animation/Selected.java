@@ -30,7 +30,7 @@ public class Selected implements AnimationListener, Component {
         paint = new Paint();
         paint.setColor(Color.BLUE);
         edgeSize = 3;
-        fade = new Fade(15, 255);
+        fade = new Fade(15, 255, true);
         this.active = true;
         fade.setActive(true);
     }
@@ -39,7 +39,7 @@ public class Selected implements AnimationListener, Component {
         paint = new Paint();
         paint.setColor(color);
         edgeSize = 3;
-        fade = new Fade(15, 255);
+        fade = new Fade(15, 255, true);
     }
 
     public boolean isActive() {
@@ -62,7 +62,7 @@ public class Selected implements AnimationListener, Component {
     public void setEntity(Entity entity) {
         this.entity = entity;
         area = entity.getArea();
-        fade = new Fade(15, 255);
+        fade = new Fade(15, 255, true);
         this.active = true;
         fade.setActive(true);
     }

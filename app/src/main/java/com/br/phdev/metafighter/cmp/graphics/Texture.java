@@ -74,11 +74,11 @@ public class Texture {
 
                 ByteArrayOutputStream imagePosCompress = new ByteArrayOutputStream();
 
-                if((BitmapFactory.decodeByteArray(finalBuffer.toByteArray(), 0, finalBuffer.size(), options)).compress(Bitmap.CompressFormat.PNG, bitmapQuality, imagePosCompress))
+                if((BitmapFactory.decodeByteArray(finalBuffer.toByteArray(), 0, finalBuffer.size(), options)).compress(Bitmap.CompressFormat.PNG, bitmapQuality, imagePosCompress)) {
                     return BitmapFactory.decodeByteArray(imagePosCompress.toByteArray(), 0, imagePosCompress.size());
+                }
             }
-            else
-                return BitmapFactory.decodeByteArray(finalBuffer.toByteArray(), 0, finalBuffer.size());
+            return BitmapFactory.decodeByteArray(finalBuffer.toByteArray(), 0, finalBuffer.size());
 
 
             //return (BitmapFactory.decodeByteArray(finalBuffer.toByteArray(), 0, finalBuffer.size(), options));

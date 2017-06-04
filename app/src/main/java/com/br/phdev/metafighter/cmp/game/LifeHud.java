@@ -47,11 +47,15 @@ public class LifeHud extends GameEntity {
 
     public void setHP(float HP) {
         this.HP = HP;
+        bar.right = bar.left + HP * percent;
     }
 
     public void decrementHP(float damage){
         HP -= damage;
         bar.right = bar.left + HP * percent;
+
+        if (bar.right < bar.left)
+            bar.right = bar.left;
     }
 
     public Text getText() {

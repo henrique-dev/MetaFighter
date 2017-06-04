@@ -20,6 +20,11 @@ import com.br.phdev.metafighter.cmp.misc.Timer;
  */
 public class Player implements Component {
 
+    public static final float NORMAL_DISTANCE = 2;
+    public static final float VERYCLOSE_DISTANCE = 3;
+    public static final float PUNCH_DISTANCE = -20f;
+    public static final float KICK_DISTANCE = 4.5f;
+
     public static final int WALKING_LEFT_ACTION = 0;
     public static final int WALKING_RIGHT_ACTION = 1;
     public static final int WALKING_FRONT = 19;
@@ -103,6 +108,9 @@ public class Player implements Component {
     private boolean guardState;
     private boolean guarding;
 
+    private Timer damagedTimer;
+    private boolean damaged;
+
     private boolean stop;
 
     private boolean movingstate;
@@ -121,6 +129,8 @@ public class Player implements Component {
 
     private Matrix matrix;
     private boolean invert;
+
+    private Bot botIA;
 
     //
 
@@ -146,6 +156,8 @@ public class Player implements Component {
         this.invert = invert;
 
         //
+
+        log("Definindo os sprites de cada ação");
 
         Sprite[] sprites = character.getSprites();
 
@@ -177,6 +189,8 @@ public class Player implements Component {
 
 
         damageAction = new PlayerAction(Sprite.getSpritesFromSprites(sprites , 0 ,1, false), 8, DAMAGED_ACTION, true);
+
+        log("Terminou de definir os sprites de cada ação");
 
         changeCurrentAction(moving1Action);
 
@@ -350,8 +364,12 @@ public class Player implements Component {
             lifeHud.decrementHP((0.3f * damage));
             log("Defendeu");
         }
-        else
+        else{
             lifeHud.decrementHP(damage);
+            damaged = true;
+            damagedTimer = new Timer().start();
+        }
+
     }
 
     public void loser(){
@@ -426,6 +444,13 @@ public class Player implements Component {
 
     @Override
     public void update() {
+
+        if (damagedTimer != null){
+            if (damagedTimer.getTicks()/100000000 > 10) {
+                damaged = false;
+                damagedTimer = null;
+            }
+        }
 
         Sprite tmpSprite = currentAction.getSprite();
         actionPerformed = currentAction.isTheLastSprite();
@@ -541,6 +566,7 @@ public class Player implements Component {
 
         @Override
         public void arrowDownReleased(){
+
             crouching = false;
             crouchState = false;
             changeCurrentAction(moving1Action);
@@ -550,15 +576,17 @@ public class Player implements Component {
         @Override
         public void arrowLeftPressed(){
 
-            if (!jumpState)
-                if (!currentAction.equals(walkingActionLeft))
-                    changeCurrentAction(walkingActionLeft);
-            movingstate = true;
+            if (!damaged){
+                if (!jumpState)
+                    if (!currentAction.equals(walkingActionLeft))
+                        changeCurrentAction(walkingActionLeft);
+                movingstate = true;
 
-            if (invert)
-                directionX = 1;
-            else
-                directionX = -1;
+                if (invert)
+                    directionX = 1;
+                else
+                    directionX = -1;
+            }
 
         }
 
@@ -571,17 +599,20 @@ public class Player implements Component {
 
         @Override
         public void arrowRightPressed(){
-            if (!jumpState)
-                if (!currentAction.equals(walkingActionRight))
-                    currentAction = walkingActionRight;
 
-            movingstate = true;
+            if (!damaged){
+                if (!jumpState)
+                    if (!currentAction.equals(walkingActionRight))
+                        currentAction = walkingActionRight;
 
-            if (invert) {
-                directionX = -1;
-            }
-            else {
-                directionX = 1;
+                movingstate = true;
+
+                if (invert) {
+                    directionX = -1;
+                }
+                else {
+                    directionX = 1;
+                }
             }
 
         }
@@ -595,27 +626,28 @@ public class Player implements Component {
 
         @Override
         public void action1Performed(){
-            if (currentAction.equals(moving1Action) || currentAction.equals(moving2Action))
-                changeCurrentAction(punch1Action.execute());
+            if (!damaged)
+                if (currentAction.equals(moving1Action) || currentAction.equals(moving2Action))
+                    changeCurrentAction(punch1Action.execute());
         }
 
         @Override
         public void action2Performed(){
-            if (currentAction.equals(moving1Action) || currentAction.equals(moving2Action))
-                changeCurrentAction(kick1Action.execute());
+            if (!damaged)
+                if (currentAction.equals(moving1Action) || currentAction.equals(moving2Action))
+                    changeCurrentAction(kick1Action.execute());
         }
 
         @Override
         public void action3Pressed(){
-                changeCurrentAction(guardAction.execute());
+            changeCurrentAction(guardAction.execute());
         }
 
         @Override
         public void action3Released(){
-            if (currentAction.equals(moving1Action) || currentAction.equals(moving2Action))
-                changeCurrentAction(moving1Action);
+            //if (currentAction.equals(moving1Action) || currentAction.equals(moving2Action))
+            changeCurrentAction(moving1Action);
         }
-
 
 
     };

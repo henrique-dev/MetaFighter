@@ -8,6 +8,9 @@ import com.br.phdev.metafighter.cmp.graphics.Sprite;
  */
 public class PlayerAction {
 
+    public final static int MAX_COLLISION_BOX_ROW = 15;
+    public final static int MAX_COLLISION_BOX_COLUMN = 15;
+
     private Collision[] collisions;
 
     private Sprite[] sprites;
@@ -32,7 +35,7 @@ public class PlayerAction {
             collisions = new Collision[sprites.length];
             for (int i=0; i<=totalSprites; i++){
                 //collisions[i] = new Collision(Collision.detectCollisionFromTexture(sprites[i].getTexture(), 20, 20, 25));
-                collisions[i] = new Collision().detectCollisionFromTexture(sprites[i].getTexture(), 15, 15, 25);
+                collisions[i] = new Collision().detectCollisionFromTexture(sprites[i].getTexture(), MAX_COLLISION_BOX_ROW, MAX_COLLISION_BOX_COLUMN, 25);
             }
         }
     }

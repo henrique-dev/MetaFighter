@@ -15,7 +15,9 @@ import android.view.SurfaceView;
 import com.br.phdev.metafighter.cmp.Component;
 import com.br.phdev.metafighter.cmp.connections.packets.Packet;
 import com.br.phdev.metafighter.cmp.event.handlers.AutoDestroyableHandler;
+import com.br.phdev.metafighter.cmp.game.Character;
 import com.br.phdev.metafighter.cmp.graphics.Texture;
+import com.br.phdev.metafighter.cmp.misc.Constant;
 import com.br.phdev.metafighter.cmp.misc.GameContext;
 import com.br.phdev.metafighter.cmp.window.BackGround;
 import com.br.phdev.metafighter.cmp.window.LoadingScreen;
@@ -23,6 +25,7 @@ import com.br.phdev.metafighter.cmp.window.Popup;
 import com.br.phdev.metafighter.cmp.window.ProgressHud;
 import com.br.phdev.metafighter.cmp.window.Screen;
 import com.br.phdev.metafighter.screens.MainScreen;
+import com.br.phdev.metafighter.screens.MatchScreen;
 
 /**
  * @author Paulo Henrique Gonçalves Bacelar
@@ -136,8 +139,8 @@ public class GameEngine extends SurfaceView implements SurfaceHolder.Callback{
 
 
 
-        new MainScreen(gameContext);
-        //new MatchScreen(gameContext, null, Character.PATRICIA, Character.GUEDES);
+        //new MainScreen(gameContext);
+        new MatchScreen(gameContext, Constant.GAMEMODE_SINGLEPLAYER, Character.PATRICIA, Character.GUEDES);
     }
 
     @SuppressLint("MissingSuperCall")

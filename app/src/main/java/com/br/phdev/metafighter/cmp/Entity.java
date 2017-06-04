@@ -10,17 +10,15 @@ import java.util.List;
 import com.br.phdev.metafighter.GameParameters;
 import com.br.phdev.metafighter.cmp.connections.packets.Move;
 import com.br.phdev.metafighter.cmp.event.listeners.EventListener;
+import com.br.phdev.metafighter.cmp.window.BackGround;
+import com.br.phdev.metafighter.cmp.window.Button;
+import com.br.phdev.metafighter.cmp.window.LoadingScreen;
 
 /**
  * @author Paulo Henrique Gonçalves Bacelar
  * @version 1.0
  */
 public abstract class Entity implements Component {
-
-    protected int id;
-    //protected int[] users = new int[GameParameters.getInstance().maxPlayers];
-    protected int user;
-    private int counterUsers = 0;
 
     protected List<EventListener> listeners;
     protected RectF area;
@@ -32,14 +30,6 @@ public abstract class Entity implements Component {
         this.active = true;
         logMessages(this, null);
 
-    }
-
-    public void addUser(int id){
-        user = id;
-    }
-
-    public int getUser(){
-        return user;
     }
 
     public List<EventListener> getListener() {
@@ -64,14 +54,6 @@ public abstract class Entity implements Component {
 
     public void setArea(RectF area) {
         this.area = area;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public boolean isActive() {
@@ -102,13 +84,6 @@ public abstract class Entity implements Component {
         return this.area.top;
     }
 
-    public void processPacket(Move move){
-        if (this.id == move.getValue1()){
-            this.setX(move.getX());
-            this.setY(move.getY());
-        }
-    }
-
     public void move(float x, float y){
         this.setX( this.getX() + x);
         this.setY( this.getY() + y);
@@ -134,8 +109,12 @@ public abstract class Entity implements Component {
     protected static void logMessages(Object obj, String msg){
         if(!GameParameters.getInstance().debug)
             return;
-        if (GameParameters.getInstance().debugCreateObjects)
-            GameParameters.getInstance().log("      Objeto criado: " + obj.getClass().getSimpleName() + (msg != null ? msg : ""));
+        if (GameParameters.getInstance().debugCreateObjects) {
+            //if (obj instanceof BackGround)
+                GameParameters.getInstance().log("      Objeto criado: " + obj.getClass().getSimpleName() + (msg != null ? msg : ""));
+            LoadingScreen.info = "Carregando " + obj.getClass().getSimpleName();
+
+        }
     }
 
 

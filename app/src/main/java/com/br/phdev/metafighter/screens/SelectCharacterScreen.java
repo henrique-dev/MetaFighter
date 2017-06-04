@@ -45,6 +45,8 @@ public class SelectCharacterScreen extends Screen {
     private Scene mainSceneSinglePlayer;
     private Scene mainSceneMultiplayer;
 
+    private GameLabel[] gameLabel;
+
     private GameLabel gameLabelLuiz;
     private GameLabel gameLabelQuele;
     private GameLabel gameLabelRomulo;
@@ -56,7 +58,7 @@ public class SelectCharacterScreen extends Screen {
 
     private Character[] characters;
 
-    //private Sprite[] spriteViewKaila;
+    private Sprite[] spriteViewKaila;
     private Sprite[] spriteViewGuedes;
     private Sprite[] spriteViewQuele;
     private Sprite[] spriteViewRomulo;
@@ -80,7 +82,8 @@ public class SelectCharacterScreen extends Screen {
 
     private Texture backButtonTexture;
     private Texture gameLabelPlayerTexture;
-    private Texture gameLabelCharTexture;
+    private Texture gameLabelCharVisibleTexture;
+    private Texture gameLabelCharNoVisibleTexture;
     private Texture mainBackgroundTexture;
 
     private GameLabel gameLabelPlayer1;
@@ -120,18 +123,12 @@ public class SelectCharacterScreen extends Screen {
         backButtonTexture = new Texture("images/buttons/3.png");
 
         //gameLabelPlayerTexture = new Texture("images/labels/label3.png");
-        gameLabelCharTexture = new Texture("images/labels/label4.png");
+        gameLabelCharVisibleTexture = new Texture("images/labels/label4.png");
+        gameLabelCharNoVisibleTexture = new Texture("images/labels/label1.png");
 
         mainBackgroundTexture = new Texture("images/backgrounds/2.png");
 
-        //spriteViewKaila = Sprite.getSpriteFromTexture(new Texture("images/characters/kaila/view.png"), 1, 1);
-        spriteViewGuedes = Sprite.getSpriteFromTexture(new Texture("images/characters/guedes/view.png"), 1, 1);
-        spriteViewPatricia = Sprite.getSpriteFromTexture(new Texture("images/characters/patricia/view.png"), 1, 1);
-        spriteViewLuiz = Sprite.getSpriteFromTexture(new Texture("images/characters/luiz/view.png"), 1, 1);
-        spriteViewQuele = Sprite.getSpriteFromTexture(new Texture("images/characters/quele/view.png"), 1, 1);
-        spriteViewRomulo = Sprite.getSpriteFromTexture(new Texture("images/characters/romulo/view.png"), 1, 1);
-
-        //spriteViewKaila = Sprite.getSpriteFromTexture(new Texture("images/characters/kaila/view.png"), 1, 1);
+        spriteViewKaila = Sprite.getSpriteFromTexture(new Texture("images/characters/kaila/view.png"), 1, 1);
         spriteViewGuedes = Sprite.getSpriteFromTexture(new Texture("images/characters/guedes/view.png"), 1, 1);
         spriteViewPatricia = Sprite.getSpriteFromTexture(new Texture("images/characters/patricia/view.png"), 1, 1);
         spriteViewLuiz = Sprite.getSpriteFromTexture(new Texture("images/characters/luiz/view.png"), 1, 1);
@@ -174,7 +171,7 @@ public class SelectCharacterScreen extends Screen {
         selectedPlayer1 = new Selected(Color.BLUE);
         selectedPlayer2 = new Selected(Color.RED);
 
-        //characters[Character.KAILA] = new Character(null, spriteViewKaila, "Kaila");
+        characters[Character.KAILA] = new Character(null, spriteViewKaila, "Kaila");
         characters[Character.GUEDES] = new Character(null, spriteViewGuedes, "Carlos Guedes");
         characters[Character.LUIZ] = new Character(null, spriteViewLuiz, "Luiz Silva");
         characters[Character.PATRICIA] = new Character(null, spriteViewPatricia, "Patricia");
@@ -273,6 +270,113 @@ public class SelectCharacterScreen extends Screen {
         for (Sprite aTmpSpriteAction : spriteActionRomulo)
             aTmpSpriteAction.getTexture().scaleImage((int) size.width(), (int) size.height());
 
+        final RectF mainAreaGameLabelsChars = new RectF(screenSize.centerX() - marginX * 10,
+                marginY, screenSize.centerX() + marginX * 10, screenSize.centerY() + marginY * 5);
+
+        int rows = 3;
+        int columns = 4;
+        int counter = 0;
+        RectF areaGameLabelsChars[] = new RectF[rows * columns];
+
+
+        for (int i=0; i<rows; i++){
+            for (int j=0; j<columns; j++){
+                areaGameLabelsChars[counter] = new RectF(
+                        mainAreaGameLabelsChars.left + (mainAreaGameLabelsChars.width() / columns) * j,
+                        mainAreaGameLabelsChars.top + (mainAreaGameLabelsChars.height() / rows) * i,
+                        mainAreaGameLabelsChars.left + (mainAreaGameLabelsChars.width() / columns) * (j+1),
+                        mainAreaGameLabelsChars.top + (mainAreaGameLabelsChars.height() / rows) * (i+1));
+                counter++;
+            }
+        }
+
+        gameLabelLuiz = new GameLabel(
+                new RectF( areaGameLabelsChars[0]),
+                gameLabelCharVisibleTexture, null);
+        gameLabelLuiz.setSprites(characters[Character.LUIZ].getView());
+
+        gameLabelQuele = new GameLabel(
+                new RectF( areaGameLabelsChars[1]),
+                gameLabelCharVisibleTexture, null);
+        gameLabelQuele.setSprites(characters[Character.QUELE].getView());
+
+        gameLabelRomulo = new GameLabel(
+                new RectF( areaGameLabelsChars[2]),
+                gameLabelCharVisibleTexture, null);
+        gameLabelRomulo.setSprites(characters[Character.ROMULO].getView());
+
+        gameLabelPatricia = new GameLabel(
+                new RectF( areaGameLabelsChars[3]),
+                gameLabelCharVisibleTexture, null);
+        gameLabelPatricia.setSprites(characters[Character.PATRICIA].getView());
+
+        gameLabelKaila = new GameLabel(
+                new RectF(areaGameLabelsChars[4]),
+                gameLabelCharNoVisibleTexture, null);
+        gameLabelKaila.setSprites(characters[Character.KAILA].getView());
+
+        gameLabelGuedes = new GameLabel(
+                new RectF( areaGameLabelsChars[5]),
+                gameLabelCharVisibleTexture, null);
+        gameLabelGuedes.setSprites(characters[Character.GUEDES].getView());
+
+
+        /*
+        gameLabelLuiz = new GameLabel(
+                new RectF( gameLabelPlayer1.getArea().right + marginX,
+                        marginY,
+                        gameLabelPlayer1.getArea().right + marginX + gameLabelCharArea.width(),
+                        marginY + gameLabelCharArea.height()),
+                gameLabelCharVisibleTexture, null);
+        gameLabelLuiz.setSprites(characters[Character.LUIZ].getView());
+        gameLabelLuiz.setId(Character.LUIZ);
+
+        gameLabelQuele = new GameLabel(
+                new RectF( gameLabelLuiz.getArea().right + marginX,
+                        marginY,
+                        gameLabelLuiz.getArea().right + marginX + gameLabelCharArea.width(),
+                        marginY + gameLabelCharArea.height()),
+                gameLabelCharVisibleTexture, null);
+        gameLabelQuele.setSprites(characters[Character.QUELE].getView());
+        gameLabelQuele.setId(Character.QUELE);
+
+        gameLabelRomulo = new GameLabel(
+                new RectF( gameLabelQuele.getArea().right + marginX,
+                        marginY,
+                        gameLabelQuele.getArea().right + marginX + gameLabelCharArea.width(),
+                        marginY + gameLabelCharArea.height()),
+                gameLabelCharVisibleTexture, null);
+        gameLabelRomulo.setSprites(characters[Character.ROMULO].getView());
+        gameLabelRomulo.setId(Character.ROMULO);
+
+        gameLabelPatricia = new GameLabel(
+                new RectF( gameLabelPlayer1.getArea().right + marginX,
+                        marginY*2 + gameLabelCharArea.height(),
+                        gameLabelPlayer1.getArea().right + marginX + gameLabelCharArea.width(),
+                        marginY*2 + gameLabelCharArea.height() + gameLabelCharArea.height()),
+                gameLabelCharVisibleTexture, null);
+        gameLabelPatricia.setSprites(characters[Character.PATRICIA].getView());
+        gameLabelPatricia.setId(Character.PATRICIA);
+
+        gameLabelKaila = new GameLabel(
+                new RectF(gameLabelPatricia.getArea().right + marginX,
+                        marginY * 2 + gameLabelCharArea.height(),
+                        gameLabelPatricia.getArea().right + marginX + gameLabelCharArea.width(),
+                        marginY * 2 + gameLabelCharArea.height() + gameLabelCharArea.height()),
+                gameLabelCharVisibleTexture, null);
+        gameLabelKaila.setSprites(characters[Character.KAILA].getView());
+        gameLabelKaila.setId(Character.KAILA);
+
+        gameLabelGuedes = new GameLabel(
+                new RectF( gameLabelKaila.getArea().right + marginX,
+                        marginY*2 + gameLabelCharArea.height(),
+                        gameLabelKaila.getArea().right + marginX + gameLabelCharArea.width(),
+                        marginY*2 + gameLabelCharArea.height() + gameLabelCharArea.height()),
+                gameLabelCharVisibleTexture, null);
+        gameLabelGuedes.setSprites(characters[Character.GUEDES].getView());
+        gameLabelGuedes.setId(Character.GUEDES);
+        */
+
         if (gameMode == Constant.GAMEMODE_SINGLEPLAYER){
 
             mainSceneSinglePlayer = new Scene() {
@@ -280,132 +384,60 @@ public class SelectCharacterScreen extends Screen {
                 @Override
                 public void init() {
 
-                    gameLabelLuiz = new GameLabel(
-                            new RectF( gameLabelPlayer1.getArea().right + marginX,
-                                    marginY,
-                                    gameLabelPlayer1.getArea().right + marginX + gameLabelCharArea.width(),
-                                    marginY + gameLabelCharArea.height()),
-                            gameLabelCharTexture, null);
-                    gameLabelLuiz.setSprites(characters[Character.LUIZ].getView());
-                    gameLabelLuiz.setId(Character.LUIZ);
-                    //gameLabelLuiz.addEventListener(handler);
                     gameLabelLuiz.addEventListener(new ActionListener() {
                         @Override
                         public void actionPerformed(Event event) {
                             changeLabelPlayer(Character.LUIZ);
-
                             choseCharacter(gameLabelLuiz, Character.LUIZ);
-
                         }
                     });
 
-                    gameLabelQuele = new GameLabel(
-                            new RectF( gameLabelLuiz.getArea().right + marginX,
-                                    marginY,
-                                    gameLabelLuiz.getArea().right + marginX + gameLabelCharArea.width(),
-                                    marginY + gameLabelCharArea.height()),
-                            gameLabelCharTexture, null);
-                    gameLabelQuele.setSprites(characters[Character.QUELE].getView());
-                    gameLabelQuele.setId(Character.QUELE);
-                    //gameLabelQuele.addEventListener(handler);
                     gameLabelQuele.addEventListener(new ActionListener() {
                         @Override
                         public void actionPerformed(Event event) {
-
                             changeLabelPlayer(Character.QUELE);
-
                             choseCharacter(gameLabelQuele, Character.QUELE);
                         }
                     });
 
-                    gameLabelRomulo = new GameLabel(
-                            new RectF( gameLabelQuele.getArea().right + marginX,
-                                    marginY,
-                                    gameLabelQuele.getArea().right + marginX + gameLabelCharArea.width(),
-                                    marginY + gameLabelCharArea.height()),
-                            gameLabelCharTexture, null);
-                    gameLabelRomulo.setSprites(characters[Character.ROMULO].getView());
-                    gameLabelRomulo.setId(Character.ROMULO);
-                    //gameLabelRomulo.addEventListener(handler);
                     gameLabelRomulo.addEventListener(new ActionListener() {
                         @Override
                         public void actionPerformed(Event event) {
                             changeLabelPlayer(Character.ROMULO);
-
-
                             choseCharacter(gameLabelRomulo, Character.ROMULO);
                         }
                     });
 
-                    gameLabelPatricia = new GameLabel(
-                            new RectF( gameLabelPlayer1.getArea().right + marginX,
-                                    marginY*2 + gameLabelCharArea.height(),
-                                    gameLabelPlayer1.getArea().right + marginX + gameLabelCharArea.width(),
-                                    marginY*2 + gameLabelCharArea.height() + gameLabelCharArea.height()),
-                            gameLabelCharTexture, null);
-                    gameLabelPatricia.setSprites(characters[Character.PATRICIA].getView());
-                    gameLabelPatricia.setId(Character.PATRICIA);
-                    //gameLabelPatricia.addEventListener(handler);
                     gameLabelPatricia.addEventListener(new ActionListener() {
                         @Override
                         public void actionPerformed(Event event) {
                             changeLabelPlayer(Character.PATRICIA);
-
-
                             choseCharacter(gameLabelPatricia, Character.PATRICIA);
                         }
                     });
 
-                    try {
+                    gameLabelKaila.addEventListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(Event event) {
+                            changeLabelPlayer(Character.KAILA);
+                            choseCharacter(gameLabelKaila, Character.KAILA);
+                        }
+                    });
 
-                        gameLabelKaila = new GameLabel(
-                                new RectF(gameLabelPatricia.getArea().right + marginX,
-                                        marginY * 2 + gameLabelCharArea.height(),
-                                        gameLabelPatricia.getArea().right + marginX + gameLabelCharArea.width(),
-                                        marginY * 2 + gameLabelCharArea.height() + gameLabelCharArea.height()),
-                                gameLabelCharTexture, null);
-                        gameLabelKaila.setSprites(characters[Character.KAILA].getView());
-                        gameLabelKaila.setId(Character.KAILA);
-                        //gameLabelKaila.addEventListener(handler);
-                        gameLabelKaila.addEventListener(new ActionListener() {
-                            @Override
-                            public void actionPerformed(Event event) {
-                                changeLabelPlayer(Character.KAILA);
-
-
-                                choseCharacter(gameLabelKaila, Character.KAILA);
-                            }
-                        });
-                    }
-                    catch (Exception e){}
-
-
-                    gameLabelGuedes = new GameLabel(
-                            new RectF( gameLabelKaila.getArea().right + marginX,
-                                    marginY*2 + gameLabelCharArea.height(),
-                                    gameLabelKaila.getArea().right + marginX + gameLabelCharArea.width(),
-                                    marginY*2 + gameLabelCharArea.height() + gameLabelCharArea.height()),
-                            gameLabelCharTexture, null);
-                    gameLabelGuedes.setSprites(characters[Character.GUEDES].getView());
-                    gameLabelGuedes.setId(Character.GUEDES);
-                    //gameLabelGuedes.addEventListener(handler);
                     gameLabelGuedes.addEventListener(new ActionListener() {
                         @Override
                         public void actionPerformed(Event event) {
                             changeLabelPlayer(Character.GUEDES);
-
                             choseCharacter(gameLabelGuedes, Character.GUEDES);
                         }
                     });
-
-
 
                     super.add(mainBackground);
                     super.add(gameLabelPlayer1);
                     super.add(gameLabelPlayer2);
                     super.add(infoLabel);
                     super.add(gameLabelGuedes);
-                    //super.add(gameLabelKaila);
+                    super.add(gameLabelKaila);
                     super.add(gameLabelLuiz);
                     super.add(gameLabelPatricia);
                     super.add(gameLabelRomulo);
@@ -521,9 +553,8 @@ public class SelectCharacterScreen extends Screen {
                                         marginY,
                                         gameLabelPlayer1.getArea().right + marginX + gameLabelCharArea.width(),
                                         marginY + gameLabelCharArea.height()),
-                                gameLabelCharTexture, null);
+                                gameLabelCharVisibleTexture, null);
                         gameLabelLuiz.setSprites(characters[Character.LUIZ].getView());
-                        gameLabelLuiz.setId(Character.LUIZ);
                         //gameLabelLuiz.addEventListener(handler);
                         gameLabelLuiz.addEventListener(new ActionListener() {
                             @Override
@@ -538,9 +569,8 @@ public class SelectCharacterScreen extends Screen {
                                         marginY,
                                         gameLabelLuiz.getArea().right + marginX + gameLabelCharArea.width(),
                                         marginY + gameLabelCharArea.height()),
-                                gameLabelCharTexture, null);
+                                gameLabelCharVisibleTexture, null);
                         gameLabelQuele.setSprites(characters[Character.QUELE].getView());
-                        gameLabelQuele.setId(Character.QUELE);
                         //gameLabelQuele.addEventListener(handler);
                         gameLabelQuele.addEventListener(new ActionListener() {
                             @Override
@@ -555,9 +585,8 @@ public class SelectCharacterScreen extends Screen {
                                         marginY,
                                         gameLabelQuele.getArea().right + marginX + gameLabelCharArea.width(),
                                         marginY + gameLabelCharArea.height()),
-                                gameLabelCharTexture, null);
+                                gameLabelCharVisibleTexture, null);
                         gameLabelRomulo.setSprites(characters[Character.ROMULO].getView());
-                        gameLabelRomulo.setId(Character.ROMULO);
                         //gameLabelRomulo.addEventListener(handler);
                         gameLabelRomulo.addEventListener(new ActionListener() {
                             @Override
@@ -572,9 +601,8 @@ public class SelectCharacterScreen extends Screen {
                                         marginY*2 + gameLabelCharArea.height(),
                                         gameLabelPlayer1.getArea().right + marginX + gameLabelCharArea.width(),
                                         marginY*2 + gameLabelCharArea.height() + gameLabelCharArea.height()),
-                                gameLabelCharTexture, null);
+                                gameLabelCharVisibleTexture, null);
                         gameLabelPatricia.setSprites(characters[Character.PATRICIA].getView());
-                        gameLabelPatricia.setId(Character.PATRICIA);
                         //gameLabelPatricia.addEventListener(handler);
                         gameLabelPatricia.addEventListener(new ActionListener() {
                             @Override
@@ -589,9 +617,8 @@ public class SelectCharacterScreen extends Screen {
                                         marginY*2 + gameLabelCharArea.height(),
                                         gameLabelPatricia.getArea().right + marginX + gameLabelCharArea.width(),
                                         marginY*2 + gameLabelCharArea.height() + gameLabelCharArea.height()),
-                                gameLabelCharTexture, null);
+                                gameLabelCharVisibleTexture, null);
                         gameLabelKaila.setSprites(characters[Character.KAILA].getView());
-                        gameLabelKaila.setId(Character.KAILA);
                         //gameLabelKaila.addEventListener(handler);
                         gameLabelKaila.addEventListener(new ActionListener() {
                             @Override
@@ -606,9 +633,8 @@ public class SelectCharacterScreen extends Screen {
                                         marginY*2 + gameLabelCharArea.height(),
                                         gameLabelKaila.getArea().right + marginX + gameLabelCharArea.width(),
                                         marginY*2 + gameLabelCharArea.height() + gameLabelCharArea.height()),
-                                gameLabelCharTexture, null);
+                                gameLabelCharVisibleTexture, null);
                         gameLabelGuedes.setSprites(characters[Character.GUEDES].getView());
-                        gameLabelGuedes.setId(Character.GUEDES);
                         //gameLabelGuedes.addEventListener(handler);
                         gameLabelGuedes.addEventListener(new ActionListener() {
                             @Override
@@ -937,13 +963,13 @@ public class SelectCharacterScreen extends Screen {
                 numeroSpritesAchados += GameParameters.getInstance().assetManager.list("images/characters/" + name + "/action/" + paths[i]).length;
             }
 
-            log("Numero de sprites: " + numeroSpritesAchados);
+            //log("Numero de sprites: " + numeroSpritesAchados);
 
             int contador = 0;
             tmpSpriteAction = new Sprite[numeroSpritesAchados];
 
             for (int i=0; i<paths.length; i++){
-                log(paths[i] + "");
+                //log(paths[i] + "");
                 String arqs[] = GameParameters.getInstance().assetManager.list("images/characters/" + name + "/action/" + paths[i]);
 
                 for (int j=0; j < arqs.length; j++){

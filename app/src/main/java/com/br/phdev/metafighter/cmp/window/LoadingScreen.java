@@ -21,6 +21,7 @@ public class LoadingScreen implements Component {
     private Text text;
     private Timer timer;
     private int currentTime;
+    public static String info = "";
 
     public LoadingScreen(BackGround backGround, ProgressHud progressHud){
         this.backGround = backGround;
@@ -65,6 +66,7 @@ public class LoadingScreen implements Component {
 
     @Override
     public void update() {
+
         int tmpTime = (int)(timer.getTicks()/1000000000);
         if (tmpTime > currentTime){
             currentTime = tmpTime;
@@ -81,6 +83,7 @@ public class LoadingScreen implements Component {
                         if (tmpText.equals("Carregando..."))
                             text.setText("Carregando");
         }
+
     }
 
     @Override

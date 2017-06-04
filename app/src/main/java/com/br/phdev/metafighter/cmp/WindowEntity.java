@@ -221,12 +221,12 @@ public abstract class WindowEntity extends Entity{
             if (checkCollision(new RectF(x,y,x,y), this.area)){
                 if (listeners != null) {
                     //return this.processListeners(new ClickEvent(action, x, y, true, this.id, null));
-                    this.processListeners(new ClickEvent(action, x, y, true, this.id, null));
+                    this.processListeners(new ClickEvent(action, x, y, true, -1, null));
                 }
             }
             else {
                 if (clicked)
-                    this.processListeners(new ClickEvent(MotionEvent.ACTION_UP, event.getX(1), event.getY(1), false, this.id, null));
+                    this.processListeners(new ClickEvent(MotionEvent.ACTION_UP, event.getX(1), event.getY(1), false, -1, null));
             }
         }
         if (event.getActionIndex() == 0){
@@ -235,12 +235,12 @@ public abstract class WindowEntity extends Entity{
             if (checkCollision(new RectF(x,y,x,y), this.area)){
                 if (listeners != null) {
                     //return this.processListeners(new ClickEvent(action, x, y, true, this.id, null));
-                    this.processListeners(new ClickEvent(action, x, y, true, this.id, null));
+                    this.processListeners(new ClickEvent(action, x, y, true, -1, null));
                 }
             }
             else {
                 if (clicked)
-                    this.processListeners(new ClickEvent(MotionEvent.ACTION_UP, x, y, false, this.id, null));
+                    this.processListeners(new ClickEvent(MotionEvent.ACTION_UP, x, y, false, -1, null));
             }
         }
         return true;

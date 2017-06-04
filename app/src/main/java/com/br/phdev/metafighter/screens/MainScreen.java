@@ -158,7 +158,6 @@ public class MainScreen extends Screen {
                     }
                 });
                 singleplayerButton.addAnimationListener(new GoAndBack(singleplayerButton));
-                singleplayerButton.setId(0);
 
                 multiplayerButton = new Button(
                         new RectF( screenSize.centerX() + divx,
@@ -174,7 +173,6 @@ public class MainScreen extends Screen {
                     }
                 });
                 multiplayerButton.addAnimationListener(new GoAndBack(multiplayerButton));
-                multiplayerButton.setId(1);
 
                 optionsButton = new Button(
                         new RectF( screenSize.centerX() - (buttonSize.width()/2),
@@ -190,7 +188,6 @@ public class MainScreen extends Screen {
                     }
                 });
                 optionsButton.addAnimationListener(new GoAndBack(optionsButton));
-                optionsButton.setId(2);
 
                 context.getProgressCmp().increase(80);
 
@@ -258,7 +255,6 @@ public class MainScreen extends Screen {
                     }
                 });
                 hostButton.addAnimationListener(new GoAndBack(hostButton));
-                hostButton.setId(0);
 
                 joinButton = new Button(
                         new RectF( screenSize.centerX() - buttonSize.width()/2,
@@ -274,7 +270,6 @@ public class MainScreen extends Screen {
                     }
                 });
                 joinButton.addAnimationListener(new GoAndBack(joinButton));
-                joinButton.setId(1);
 
                 backToMainFromMultiSelectButton = new Button(
                         new RectF( screenSize.centerX() - buttonSize.width()/2,
@@ -290,7 +285,6 @@ public class MainScreen extends Screen {
                     }
                 });
                 backToMainFromMultiSelectButton.addAnimationListener(new GoAndBack(backToMainFromMultiSelectButton));
-                backToMainFromMultiSelectButton.setId(2);
 
                 context.getProgressCmp().increase(85);
 

@@ -23,6 +23,7 @@ public class TableItem extends WindowEntity {
     private Text text;
     private boolean clicked = false;
     private boolean moving = false;
+    private int id;
 
     public TableItem(String text){
         super(new RectF(), new Paint(), null);
@@ -36,6 +37,14 @@ public class TableItem extends WindowEntity {
         super.setArea(area);
         this.text.setDrawableArea(area);
         //this.text.setAutosize(true);
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     @Override
@@ -156,12 +165,12 @@ public class TableItem extends WindowEntity {
 
         if (checkCollision(new RectF(x,y,x,y), this.area)){
             if (super.listeners != null) {
-                return this.processListeners(new ClickEvent(action, x, y, true, super.id, null));
+                return this.processListeners(new ClickEvent(action, x, y, true, -1, null));
             }
         }
         else {
             if (clicked)
-                this.processListeners(new ClickEvent(MotionEvent.ACTION_UP, x, y, false, super.id, null));
+                this.processListeners(new ClickEvent(MotionEvent.ACTION_UP, x, y, false, -1, null));
         }
 
         return true;

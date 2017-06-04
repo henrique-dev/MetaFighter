@@ -192,12 +192,12 @@ public class GameLabel extends GameEntity {
 
         if (checkCollision(new RectF(x,y,x,y), this.area)){
             if (listeners != null) {
-                return this.processListeners(new ClickEvent(action, x, y, true, this.id, this));
+                return this.processListeners(new ClickEvent(action, x, y, true, -1, this));
             }
         }
         else {
             if (clicked)
-                this.processListeners(new ClickEvent(MotionEvent.ACTION_UP, x, y, false, this.id, this));
+                this.processListeners(new ClickEvent(MotionEvent.ACTION_UP, x, y, false, -1, this));
         }
 
         return true;

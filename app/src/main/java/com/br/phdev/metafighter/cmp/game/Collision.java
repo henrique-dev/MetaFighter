@@ -49,6 +49,8 @@ public class Collision {
 
     public Collision detectCollisionFromTexture(Texture texture, int numberLines, int numberColumns, final int percent){
 
+
+
         class Box {
 
             private int numberPixels;
@@ -89,7 +91,7 @@ public class Collision {
         for (int i=0; i<numberColumns; i++){
             for (int j=0; j<numberLines; j++){
                 for (int k=i*divWidth; k<((i+1)*divWidth); k++){
-                    for (int l=j*divHeight; l<((j+1)*divHeight); l++){
+                    for (int l=j*divHeight; l<((j+1)*divHeight); l+=2){
 
                         try{
                             box.set(tmpBitmap.getPixel(k,l));

@@ -27,6 +27,7 @@ public class Sprite {
         this.texture = texture;
     }
 
+
     public static Sprite[] getSpriteFromTexture(Texture texture, int numberSpritesLines, int numberSpritesColumns){
 
         Texture tmpTexture = texture;

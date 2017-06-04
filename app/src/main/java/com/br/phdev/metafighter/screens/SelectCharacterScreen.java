@@ -136,12 +136,12 @@ public class SelectCharacterScreen extends Screen {
         spriteViewRomulo = Sprite.getSpriteFromTexture(new Texture("images/characters/romulo/view.png"), 1, 1);
 
 
-        spriteActionKaila = loadTextureChar("kaila");
-        spriteActionGuedes = loadTextureChar("guedes");
-        spriteActionQuele = loadTextureChar("quele");
-        spriteActionRomulo = loadTextureChar("romulo");
-        spriteActionPatricia = loadTextureChar("patricia");
-        spriteActionLuiz = loadTextureChar("luiz");
+        spriteActionKaila = Sprite.getSpriteFromTexture(new Texture("images/characters/kaila/sprites01.png"), 9, 7);
+        spriteActionGuedes = Sprite.getSpriteFromTexture(new Texture("images/characters/guedes/sprites01.png"), 9, 7);
+        spriteActionQuele = Sprite.getSpriteFromTexture(new Texture("images/characters/quele/sprites01.png"), 9, 7);
+        spriteActionRomulo = Sprite.getSpriteFromTexture(new Texture("images/characters/romulo/sprites01.png"), 9, 7);
+        spriteActionPatricia = Sprite.getSpriteFromTexture(new Texture("images/characters/patricia/sprites01.png"), 9, 7);
+        spriteActionLuiz = Sprite.getSpriteFromTexture(new Texture("images/characters/luiz/sprites01.png"), 9, 7);
 
         return true;
     }
@@ -240,33 +240,33 @@ public class SelectCharacterScreen extends Screen {
 
         RectF size = gameLabelPlayer1.getArea();
 
-        charactersMoveAction[Character.KAILA] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionKaila, 0, 7, false), 10, -1, false);
-        charactersVictoryAction[Character.KAILA] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionKaila, 8, 22, false), 6, -1, false);
+        charactersMoveAction[Character.KAILA] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionKaila, 6, 13, false), 10, -1, false);
+        charactersVictoryAction[Character.KAILA] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionKaila, 47, 61, false), 6, -1, false);
         for (Sprite aTmpSpriteAction : spriteActionKaila)
             aTmpSpriteAction.getTexture().scaleImage((int) size.width(), (int) size.height());
 
-        charactersMoveAction[Character.GUEDES] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionGuedes, 0, 7, false), 10, -1, false);
-        charactersVictoryAction[Character.GUEDES] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionGuedes, 8, 22, false), 6, -1, false);
+        charactersMoveAction[Character.GUEDES] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionGuedes, 6, 13, false), 10, -1, false);
+        charactersVictoryAction[Character.GUEDES] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionGuedes, 47, 61, false), 6, -1, false);
         for (Sprite aTmpSpriteAction : spriteActionGuedes)
             aTmpSpriteAction.getTexture().scaleImage((int) size.width(), (int) size.height());
 
-        charactersMoveAction[Character.LUIZ] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionLuiz, 0, 7, false), 10, -1, false);
-        charactersVictoryAction[Character.LUIZ] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionLuiz, 8, 22, false), 6, -1, false);
+        charactersMoveAction[Character.LUIZ] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionLuiz, 6, 13, false), 10, -1, false);
+        charactersVictoryAction[Character.LUIZ] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionLuiz, 47, 61, false), 6, -1, false);
         for (Sprite aTmpSpriteAction : spriteActionLuiz)
             aTmpSpriteAction.getTexture().scaleImage((int) size.width(), (int) size.height());
 
-        charactersMoveAction[Character.PATRICIA] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionPatricia, 0, 7, false), 10, -1, false);
-        charactersVictoryAction[Character.PATRICIA] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionPatricia, 8, 22, false), 6, -1, false);
+        charactersMoveAction[Character.PATRICIA] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionPatricia, 6, 13, false), 10, -1, false);
+        charactersVictoryAction[Character.PATRICIA] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionPatricia, 47, 61, false), 6, -1, false);
         for (Sprite aTmpSpriteAction : spriteActionPatricia)
             aTmpSpriteAction.getTexture().scaleImage((int) size.width(), (int) size.height());
 
-        charactersMoveAction[Character.QUELE] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionQuele, 0, 7, false), 10, -1, false);
-        charactersVictoryAction[Character.QUELE] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionQuele, 8, 22, false), 6, -1, false);
+        charactersMoveAction[Character.QUELE] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionQuele, 6, 13, false), 10, -1, false);
+        charactersVictoryAction[Character.QUELE] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionQuele, 47, 61, false), 6, -1, false);
         for (Sprite aTmpSpriteAction : spriteActionQuele)
             aTmpSpriteAction.getTexture().scaleImage((int) size.width(), (int) size.height());
 
-        charactersMoveAction[Character.ROMULO] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionRomulo, 0, 7, false), 10, -1, false);
-        charactersVictoryAction[Character.ROMULO] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionRomulo, 8, 22, false), 6, -1, false);
+        charactersMoveAction[Character.ROMULO] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionRomulo, 6, 13, false), 10, -1, false);
+        charactersVictoryAction[Character.ROMULO] = new PlayerAction(Sprite.getSpritesFromSprites(spriteActionRomulo, 47, 61, false), 6, -1, false);
         for (Sprite aTmpSpriteAction : spriteActionRomulo)
             aTmpSpriteAction.getTexture().scaleImage((int) size.width(), (int) size.height());
 
@@ -501,11 +501,13 @@ public class SelectCharacterScreen extends Screen {
                                 player1 = new Player();
                                 player1.setName(characters[charID].getName());
                                 player1.setCharID(charID);
+                                currentPlayerAction1 = charactersVictoryAction[charID];
                             }
                             if (selected.equals(selectedPlayer2)) {
                                 player2 = new Player();
                                 player2.setName(characters[charID].getName());
                                 player2.setCharID(charID);
+                                currentPlayerAction2 = charactersVictoryAction[charID];
                             }
 
 

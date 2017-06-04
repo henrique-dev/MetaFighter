@@ -1,12 +1,7 @@
 package com.br.phdev.metafighter.cmp.game;
 
-import android.graphics.RectF;
-import android.util.Log;
-
-import com.br.phdev.metafighter.GameParameters;
 import com.br.phdev.metafighter.cmp.event.listeners.ControllerListener;
 import com.br.phdev.metafighter.cmp.misc.Timer;
-import com.br.phdev.metafighter.screens.MatchScreen;
 
 import java.util.Random;
 

@@ -84,14 +84,13 @@ public class MatchScreen extends Screen {
 
     // PARA TESTES
 
-    private Random randBot = new Random();
-    private boolean executingSomething;
-    private Timer taskBot = new Timer();
-    private int duration = 0;
-
-    private boolean botMove;
-
     private Bot bot;
+
+    //
+
+    // PARA DEPURAÇÃO
+
+    private Timer debugLoadingTimer;
 
     //
 
@@ -100,6 +99,10 @@ public class MatchScreen extends Screen {
 
     public MatchScreen(GameContext context, int gameMode, int charIDplayer1, int charIDplayer2) {
         super(context);
+
+        // para depuração
+        debugLoadingTimer = new Timer().start();
+        //
 
         this.gameMode = gameMode;
 
@@ -530,12 +533,8 @@ public class MatchScreen extends Screen {
 
             @Override
             public void init() {
-                Paint paint = new Paint();
-                paint.setColor(Color.BLACK);
-                paint.setAlpha(150);
 
                 super.add(mainSceneSinglePlayer != null ? mainSceneSinglePlayer : mainSceneMultiPlayer);
-                super.add(new BackGround(screenSize, paint, true));
             }
 
             @Override
@@ -559,65 +558,73 @@ public class MatchScreen extends Screen {
             }
         };
 
+        log("Tempo total de carregamento em milisegundos: " + debugLoadingTimer.getTicks()/1000000);
+        debugLoadingTimer = null;
+
         return true;
     }
 
     private Player loadPlayer(int charID, RectF size, boolean invert){
         Character character = null;
         Sprite[] tmpSpriteAction;
-        Texture tmpTexture;
         switch (charID){
             case Character.KAILA:
-                //tmpTexture = new Texture("images/characters/kaila/action/sprites.png");
-                //tmpSpriteAction = Sprite.getSpriteFromTexture(tmpTexture, 5, 5);
-                tmpSpriteAction = loadTextureChar("kaila");
+                //tmpSpriteAction = loadTextureChar("kaila", size);
+                tmpSpriteAction = Sprite.getSpriteFromTexture(new Texture("images/characters/kaila/sprites01.png"), 9, 7);
+
                 for (Sprite aTmpSpriteAction : tmpSpriteAction)
                     aTmpSpriteAction.getTexture().scaleImage((int) size.width(), (int) size.height());
+
                 character = new Character(tmpSpriteAction, null, "Kaila");
                 break;
             case Character.GUEDES:
-                //tmpTexture = new Texture("images/characters/guedes/action/sprites.png");
-                //tmpSpriteAction = Sprite.getSpriteFromTexture(tmpTexture, 5, 5);
-                tmpSpriteAction = loadTextureChar("guedes");
+                //tmpSpriteAction = loadTextureChar("guedes", size);
+                tmpSpriteAction = Sprite.getSpriteFromTexture(new Texture("images/characters/guedes/sprites01.png"), 9, 7);
+
                 for (Sprite aTmpSpriteAction : tmpSpriteAction)
                     aTmpSpriteAction.getTexture().scaleImage((int) size.width(), (int) size.height());
+
                 character = new Character(tmpSpriteAction, null, "Carlos Guedes");
                 break;
             case Character.LUIZ:
-                //tmpTexture = new Texture("images/characters/luiz/action/sprites.png");
-                //tmpSpriteAction = Sprite.getSpriteFromTexture(tmpTexture, 5, 5);
-                tmpSpriteAction = loadTextureChar("luiz");
+                //tmpSpriteAction = loadTextureChar("luiz", size);
+                tmpSpriteAction = Sprite.getSpriteFromTexture(new Texture("images/characters/luiz/sprites01.png"), 9, 7);
+
                 for (Sprite aTmpSpriteAction : tmpSpriteAction)
                     aTmpSpriteAction.getTexture().scaleImage((int) size.width(), (int) size.height());
+
                 character = new Character(tmpSpriteAction, null, "Luiz Silva");
                 break;
             case Character.PATRICIA:
-                //tmpTexture = new Texture("images/characters/patricia/action/sprites.png");
-                //tmpSpriteAction = Sprite.getSpriteFromTexture(tmpTexture, 5, 5);
-                tmpSpriteAction = loadTextureChar("patricia");
+                //tmpSpriteAction = loadTextureChar("patricia", size);
+                tmpSpriteAction = Sprite.getSpriteFromTexture(new Texture("images/characters/patricia/sprites01.png"), 9, 7);
+
                 for (Sprite aTmpSpriteAction : tmpSpriteAction)
                     aTmpSpriteAction.getTexture().scaleImage((int) size.width(), (int) size.height());
+
                 character = new Character(tmpSpriteAction, null, "Patricia");
                 break;
             case Character.QUELE:
-                //tmpTexture = new Texture("images/characters/quele/action/sprites.png");
-                //tmpSpriteAction = Sprite.getSpriteFromTexture(tmpTexture, 5, 5);
-                tmpSpriteAction = loadTextureChar("quele");
+                //tmpSpriteAction = loadTextureChar("quele", size);
+                tmpSpriteAction = Sprite.getSpriteFromTexture(new Texture("images/characters/quele/sprites01.png"), 9, 7);
+
                 for (Sprite aTmpSpriteAction : tmpSpriteAction)
                     aTmpSpriteAction.getTexture().scaleImage((int) size.width(), (int) size.height());
+
                 character = new Character(tmpSpriteAction, null, "Quele");
                 break;
             case Character.ROMULO:
-                //tmpTexture = new Texture("images/characters/romulo/action/sprites.png");
-                //tmpSpriteAction = Sprite.getSpriteFromTexture(tmpTexture, 5, 5);
-                tmpSpriteAction = loadTextureChar("romulo");
+                //tmpSpriteAction = loadTextureChar("romulo", size);
+                tmpSpriteAction = Sprite.getSpriteFromTexture(new Texture("images/characters/romulo/sprites01.png"), 9, 7);
+
                 for (Sprite aTmpSpriteAction : tmpSpriteAction)
                     aTmpSpriteAction.getTexture().scaleImage((int) size.width(), (int) size.height());
+
                 character = new Character(tmpSpriteAction, null, "Romulo");
                 break;
             case Character.TESTE:
 
-                tmpSpriteAction = loadTextureChar("teste");
+                tmpSpriteAction = loadTextureChar("teste", size);
 
                 for (Sprite aTmpSpriteAction : tmpSpriteAction)
                     aTmpSpriteAction.getTexture().scaleImage((int) size.width(), (int) size.height());
@@ -629,7 +636,7 @@ public class MatchScreen extends Screen {
         return new Player(character, size, invert);
     }
 
-    private Sprite[] loadTextureChar(String name){
+    private Sprite[] loadTextureChar(String name, RectF size){
 
         RectF screenSize = GameParameters.getInstance().screenSize;
 
@@ -644,18 +651,15 @@ public class MatchScreen extends Screen {
                 numeroSpritesAchados += GameParameters.getInstance().assetManager.list("images/characters/" + name + "/action/" + paths[i]).length;
             }
 
-            //log("Numero de sprites: " + numeroSpritesAchados);
-
             int contador = 0;
             tmpSpriteAction = new Sprite[numeroSpritesAchados];
 
             for (int i=0; i<paths.length; i++){
-                log(paths[i] + "");
                 String arqs[] = GameParameters.getInstance().assetManager.list("images/characters/" + name + "/action/" + paths[i]);
 
                 for (int j=0; j < arqs.length; j++){
-                    //tmpSpriteAction[contador++] = new Sprite(new Texture("images/characters/" + name + "/action/" + paths[i] + "/" + arqs[j]));
-                    tmpSpriteAction[contador++] = new Sprite(new Texture("images/characters/" + name + "/action/" + paths[i] + "/" + ((j+1) + ".png"), (int)screenSize.width()/10, (int)screenSize.height()/10));
+                    //tmpSpriteAction[contador++] = new Sprite(new Texture("images/characters/" + name + "/action/" + paths[i] + "/" + ((j+1) + ".png"), (int)screenSize.width()/10, (int)screenSize.height()/10));
+                    tmpSpriteAction[contador++] = new Sprite(new Texture("images/characters/" + name + "/action/" + paths[i] + "/" + ((j+1) + ".png"), (int)size.width(), (int)size.height()));
                 }
             }
 
@@ -818,22 +822,27 @@ public class MatchScreen extends Screen {
             tmpFade.setActive(true);
             fadeBackground.addAnimationListener(tmpFade);
 
-            roundLabel = new Label(new RectF(GameParameters.getInstance().screenSize), "Round " + (currentRound + ""), false);
-            roundLabel.getText().setTextSize(GameParameters.getInstance().defaultTextSize);
+            RectF roundLabelArea = new RectF(0, 0, GameParameters.getInstance().screenWidth, GameParameters.getInstance().screenSize.centerY());
+
+            roundLabel = new Label(roundLabelArea, "Round " + (currentRound + ""), false);
+            roundLabel.getText().setTextSize(GameParameters.getInstance().defaultTextSize * 3);
 
             super.add(fadeBackground);
 
             lifeHudPlayer1.setHP(100);
             lifeHudPlayer2.setHP(100);
 
+            player1.setInvert(false);
+
             player1.setX(originP1X);
             player1.setY(originP1Y);
-            player1.setDirectionX(1);
+
             player1.setCurrentPlayerAction(Player.MOVE1_ACTION);
+
+            player2.setInvert(true);
 
             player2.setX(originP2X);
             player2.setY(originP2Y);
-            player2.setDirectionX(-1);
             player2.setCurrentPlayerAction(Player.MOVE1_ACTION);
 
             if (bot == null)

@@ -9,8 +9,6 @@ import android.view.MotionEvent;
 import com.br.phdev.metafighter.GameParameters;
 import com.br.phdev.metafighter.cmp.Component;
 import com.br.phdev.metafighter.cmp.event.listeners.ControllerListener;
-import com.br.phdev.metafighter.cmp.game.Collision;
-import com.br.phdev.metafighter.cmp.game.PlayerAction;
 import com.br.phdev.metafighter.cmp.graphics.Sprite;
 import com.br.phdev.metafighter.cmp.misc.Timer;
 
@@ -198,7 +196,6 @@ public class Player implements Component {
         y = size.top;
 
         velocityX = GameParameters.getInstance().screenSize.width() / 150;
-        log(velocityX + "");
         velocityY = GameParameters.getInstance().screenSize.height() / 40;
         acceleration = velocityY / 0.5f;
 
@@ -362,7 +359,6 @@ public class Player implements Component {
     public void damaged(float damage){
         if (currentAction.getType() == GUARD_ACTION) {
             lifeHud.decrementHP((0.3f * damage));
-            log("Defendeu");
         }
         else{
             lifeHud.decrementHP(damage);
@@ -387,7 +383,6 @@ public class Player implements Component {
             jumpTimer = new Timer();
             jumpTimer.start();
             changeCurrentAction(jump1Action.execute());
-            log("Pulou");
         }
     }
 
@@ -408,7 +403,6 @@ public class Player implements Component {
             crouchState = true;
             changeCurrentAction(crouchAction.execute());
         }
-        log("Se abaixou");
     }
 
     @Override

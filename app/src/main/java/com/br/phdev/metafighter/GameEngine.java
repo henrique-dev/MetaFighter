@@ -139,8 +139,8 @@ public class GameEngine extends SurfaceView implements SurfaceHolder.Callback{
 
 
 
-        //new MainScreen(gameContext);
-        new MatchScreen(gameContext, Constant.GAMEMODE_SINGLEPLAYER, Character.PATRICIA, Character.GUEDES);
+        new MainScreen(gameContext);
+        //new MatchScreen(gameContext, Constant.GAMEMODE_SINGLEPLAYER, Character.GUEDES, Character.GUEDES);
     }
 
     @SuppressLint("MissingSuperCall")

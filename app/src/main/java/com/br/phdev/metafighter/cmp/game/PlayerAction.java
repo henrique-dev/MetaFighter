@@ -34,7 +34,6 @@ public class PlayerAction {
         if (collisionOn){
             collisions = new Collision[sprites.length];
             for (int i=0; i<=totalSprites; i++){
-                //collisions[i] = new Collision(Collision.detectCollisionFromTexture(sprites[i].getTexture(), 20, 20, 25));
                 collisions[i] = new Collision().detectCollisionFromTexture(sprites[i].getTexture(), MAX_COLLISION_BOX_ROW, MAX_COLLISION_BOX_COLUMN, 25);
             }
         }

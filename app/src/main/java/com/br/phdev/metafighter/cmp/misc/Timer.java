@@ -64,6 +64,7 @@ public class Timer {
     }
 
     public long getTicks(){
+
         // O tempo atual.
         long time = 0;
         // Se o timer esta rodando

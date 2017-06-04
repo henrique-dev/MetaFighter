@@ -21,6 +21,10 @@ public class Texture {
 
     private Bitmap image;
 
+    private boolean imageLoaded;
+
+    private ByteArrayOutputStream imageNoLoaded;
+
     public Texture(String path){
         this.image = openImage(path, -1, -1);
         if (GameParameters.getInstance().debugCreateImages)
@@ -28,22 +32,37 @@ public class Texture {
     }
 
     public Texture(String path, int recWidth, int recHeight){
+        this.imageLoaded = true;
         this.image = openImage(path, recWidth, recHeight);
         if (GameParameters.getInstance().debugCreateImages)
             GameParameters.getInstance().log("          Textura criada: Tamanho usado para alocar: " + this.sizeOf()/1000 + "kB");
     }
 
+    public Texture(String path, int recWidth, int recHeight, boolean imageLoaded){
+        this.image = openImage(path, recWidth, recHeight);
+        if (!imageLoaded)
+            this.imageNoLoaded = readImage(path, recWidth, recHeight);
+        this.imageLoaded = imageLoaded;
+    }
+
     public Texture(Bitmap image){
-        //this.image = Bitmap.createBitmap(image);
+        this.imageLoaded = true;
         this.image = image;
         if (GameParameters.getInstance().debugCreateImages)
             GameParameters.getInstance().log("          Textura criada: Tamanho usado para alocar: " + this.sizeOf()/1000 + "kB");
     }
 
     public Texture(Texture texture){
+        this.imageLoaded = true;
         this.image = Bitmap.createBitmap(texture.getImage());
         if (GameParameters.getInstance().debugCreateImages)
             GameParameters.getInstance().log("          Textura criada. Tamanho usado para alocar: " + this.sizeOf()/1000 + "kB / Usado construtor de cópia.");
+    }
+
+    public void openImage(int width, int height){
+        if (!imageLoaded){
+            this.image = Bitmap.createScaledBitmap(BitmapFactory.decodeByteArray(imageNoLoaded.toByteArray(), 0, imageNoLoaded.size()), width, height, false);
+        }
     }
 
     public Bitmap getImage() {
@@ -68,6 +87,7 @@ public class Texture {
             if(recWidth != 1 && reqHeight != -1){
                 final BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inJustDecodeBounds = true;
+
                 BitmapFactory.decodeByteArray(finalBuffer.toByteArray(), 0, finalBuffer.size(), options);
                 options.inSampleSize = calculateInSampleSize(options, recWidth, reqHeight);
                 options.inJustDecodeBounds = false;
@@ -75,6 +95,8 @@ public class Texture {
                 ByteArrayOutputStream imagePosCompress = new ByteArrayOutputStream();
 
                 if((BitmapFactory.decodeByteArray(finalBuffer.toByteArray(), 0, finalBuffer.size(), options)).compress(Bitmap.CompressFormat.PNG, bitmapQuality, imagePosCompress)) {
+
+                    //return Bitmap.createScaledBitmap(BitmapFactory.decodeByteArray(imagePosCompress.toByteArray(), 0, imagePosCompress.size()), recWidth, reqHeight, false);
                     return BitmapFactory.decodeByteArray(imagePosCompress.toByteArray(), 0, imagePosCompress.size());
                 }
             }
@@ -82,6 +104,42 @@ public class Texture {
 
 
             //return (BitmapFactory.decodeByteArray(finalBuffer.toByteArray(), 0, finalBuffer.size(), options));
+
+        }
+        catch (IOException e){
+            Log.e("GameEngine", e.getMessage());
+            Log.e("GameEngine", e.getCause().toString());
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public static ByteArrayOutputStream readImage(String path, int recWidth, int reqHeight){
+
+        try{
+            ByteArrayOutputStream finalBuffer = new ByteArrayOutputStream();
+            InputStream buffer = GameParameters.getInstance().assetManager.open(path);
+            int data = buffer.read();
+            while ( data != -1){
+                finalBuffer.write(data);
+                data = buffer.read();
+            }
+
+            if(recWidth != 1 && reqHeight != -1){
+                final BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inJustDecodeBounds = true;
+                BitmapFactory.decodeByteArray(finalBuffer.toByteArray(), 0, finalBuffer.size(), options);
+                options.inSampleSize = calculateInSampleSize(options, recWidth, reqHeight);
+                options.inJustDecodeBounds = false;
+
+                ByteArrayOutputStream imagePosCompress = new ByteArrayOutputStream();
+
+                if((BitmapFactory.decodeByteArray(finalBuffer.toByteArray(), 0, finalBuffer.size(), options)).compress(Bitmap.CompressFormat.PNG, bitmapQuality, imagePosCompress)) {
+                    //return BitmapFactory.decodeByteArray(imagePosCompress.toByteArray(), 0, imagePosCompress.size());
+                    return imagePosCompress;
+                }
+            }
 
         }
         catch (IOException e){

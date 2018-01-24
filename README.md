@@ -9,6 +9,6 @@ Passos concluídos:
 
 ## Descrição
 Jogo para smartphone (somente Android no momento), de luta. Foi utilizada a mesma técnica que o famoso jogo **Mortal Kombat**
-as os movimentos são executados por atores reais e capturados por câmeras, para então edição e obtenção dos quadros dos movimentos.
+onde os movimentos são executados por atores reais e capturados por câmeras, para então edição e obtenção dos quadros dos movimentos.
 O jogo não foi terminado ainda, porém é possivel jogar uma possível demo, [disponível aqui](https://play.google.com/store/apps/details?id=com.br.phdev.metafighter&hl=pt_BR)
 .
